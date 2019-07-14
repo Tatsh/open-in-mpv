@@ -1,21 +1,21 @@
 {
-  "manifest_version": 2,
-  "name": "Open in mpv",
-  "description": "Open an appropriate link in mpv.",
-  "version": "0.0.1",
   "author": "Andrew Udvare <andrew@udva.re>",
-  "homepage_url": "https://github.com/Tatsh/open-in-mpv",
   "background": {
     "scripts": [
       "background.js"
     ]
   },
+  "description": "Open an appropriate link in mpv.",
+  "homepage_url": "https://github.com/Tatsh/open-in-mpv",
   "icons": {
     "16": "icon-16.png",
     "48": "icon-48.png"
   },
+  "manifest_version": 2,
+  "name": "Open in mpv",
   "permissions": [
     "contextMenus",
     "nativeMessaging"
-  ]
+  ],
+  "version": "0.0.1"
 }
