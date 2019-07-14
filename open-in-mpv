@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-from typing import Callable
+from __future__ import print_function
+from __future__ import unicode_literals
+from os.path import expanduser, isdir, join as path_join
 import json
 import os
 import struct
@@ -7,7 +9,7 @@ import subprocess as sp
 import sys
 
 
-def spawn(func: Callable[[], None]):
+def spawn(func):
     """See Stevens' "Advanced Programming in the UNIX Environment" for details
     (ISBN 0201563177)
     Credit: https://stackoverflow.com/a/6011298/374110
@@ -41,15 +43,51 @@ def spawn(func: Callable[[], None]):
 
 
 def main():
-    req_len = struct.unpack('@i', sys.stdin.buffer.read(4))[0]
-    message = json.loads(sys.stdin.buffer.read(req_len))
+    py3 = sys.version_info.major == 3
+    data_path = expanduser('~/.local/share/open-in-mpv')
+    try:
+        os.makedirs(data_path)
+    except OSError:
+        pass
+    out_log_path = path_join(data_path, 'native.log')
+    log = open(out_log_path, 'a+')
+    stdin_buffer = sys.stdin
+    if py3:
+        stdin_buffer = sys.stdin.buffer
+    req_len = struct.unpack('@i', stdin_buffer.read(4))[0]
+    print('Message length: {}'.format(req_len), file=log)
+    message = json.loads(stdin_buffer.read(req_len))
+    print('Message contents: '.format(message), file=log)
+
     try:
         url = message['url']
     except KeyError:
-        print(json.dumps({'message': 'Missing URL value!'}))
-        sys.exit(1)
-    spawn(lambda: sp.run(['mpv', url], stdout=sp.PIPE, stderr=sp.PIPE))
+        print(json.dumps({'message': 'Missing URL!'}))
+        print('Did not get a URL', file=log)
+        return 1
+
+    # MacPorts
+    new_env = {}
+    if isdir('/opt/local/bin'):
+        print('Detected MacPorts. Setting PATH.', file=log)
+        try:
+            old_path = os.environ['PATH']
+            new_env = {'PATH': '/opt/local/bin:{old_path}'}
+        except KeyError:
+            new_env = {'PATH': '/opt/local/bin'}
+
+    print('About to spawn', file=log)
+
+    try:
+        spawn(lambda: sp.check_call(['mpv', '--quiet', url], env=new_env, stdout=log, stderr=log))
+    except Exception as exc:
+        print(exc, file=log)
+        return 1
+    print('mpv should open soon', file=log)
+    log.close()
+
+    return 0
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
