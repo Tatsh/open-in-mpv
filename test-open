@@ -1,0 +1,12 @@
+from struct import pack
+import json
+import subprocess as sp
+import sys
+
+if __name__ == '__main__':
+    data = json.dumps({'url': sys.argv[1]})
+    p = sp.Popen(['open-in-mpv', 'chrome://nothing'], stdin=sp.PIPE, stdout=sp.PIPE, stderr=sp.PIPE)
+    stream = pack('@i', len(data)) + data.encode('utf-8')
+    p.communicate(input=stream)
+    p.wait()
+    sys.exit(p.returncode)
