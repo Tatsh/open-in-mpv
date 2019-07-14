@@ -67,7 +67,7 @@ def main():
         return 1
 
     # MacPorts
-    new_env = {}
+    new_env = os.environ.copy()
     data_resp = {'log_path': out_log_path,
                  'py3': py3,
                  'message': 'About to spawn'}
@@ -76,9 +76,10 @@ def main():
         data_resp['macports'] = True
         try:
             old_path = os.environ['PATH']
-            new_env = {'PATH': '/opt/local/bin:{old_path}'}
+            new_env['PATH'] = '/opt/local/bin:{}'.format(old_path)
         except KeyError:
-            new_env = {'PATH': '/opt/local/bin'}
+            new_env['PATH'] = '/opt/local/bin'
+    data_resp['env'] = new_env
 
     print('About to spawn', file=log)
     resp = json.dumps(data_resp)
@@ -92,7 +93,7 @@ def main():
     stdout_buffer.write(resp)
 
     try:
-        spawn(lambda: sp.check_call(['mpv', '--quiet', url], env=new_env, stdout=log, stderr=log))
+        spawn(lambda: sp.check_call(['mpv', '-v', url], env=new_env, stdout=log, stderr=log))
     except Exception as exc:
         print(exc, file=log)
         return 1
