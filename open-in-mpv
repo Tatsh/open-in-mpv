@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+from typing import Callable
+import json
+import os
+import struct
+import subprocess as sp
+import sys
+
+
+def spawn(func: Callable[[], None]):
+    """See Stevens' "Advanced Programming in the UNIX Environment" for details
+    (ISBN 0201563177)
+    Credit: https://stackoverflow.com/a/6011298/374110
+
+    Takes a callable which will be called in the fork.
+    """
+    try:
+        pid = os.fork()
+        if pid > 0:
+            # parent process, return and keep running
+            return
+    except OSError as exc:
+        print('Fork #1 failed: {} ({})'.format(exc.errno, exc.strerror))
+        sys.exit(1)
+
+    os.setsid()
+
+    # do second fork
+    try:
+        pid = os.fork()
+        if pid > 0:
+            # exit from second parent
+            sys.exit(0)
+    except OSError as exc:
+        print('Fork #2 failed: {} ({})'.format(exc.errno, exc.strerror))
+        sys.exit(1)
+
+    func()
+
+    os._exit(os.EX_OK)
+
+
+def main():
+    req_len = struct.unpack('@i', sys.stdin.buffer.read(4))[0]
+    message = json.loads(sys.stdin.buffer.read(req_len))
+    try:
+        url = message['url']
+    except KeyError:
+        print(json.dumps({'message': 'Missing URL value!'}))
+        sys.exit(1)
+    spawn(lambda: sp.run(['mpv', url], stdout=sp.PIPE, stderr=sp.PIPE))
+
+
+if __name__ == '__main__':
+    main()
