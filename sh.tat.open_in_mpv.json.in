@@ -1,0 +1,9 @@
+{
+  "name": "sh.tat.open_in_mpv",
+  "description": "Opens a URL in mpv (for use with extension).",
+  "path": "@BIN_PATH@/open-in-mpv",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://cidocdphchfmafigjifackdgaanbphcp/"
+  ]
+}
