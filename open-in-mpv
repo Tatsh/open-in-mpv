@@ -68,8 +68,12 @@ def main():
 
     # MacPorts
     new_env = {}
+    data_resp = {'log_path': out_log_path,
+                 'py3': py3,
+                 'message': 'About to spawn'}
     if isdir('/opt/local/bin'):
         print('Detected MacPorts. Setting PATH.', file=log)
+        data_resp['macports'] = True
         try:
             old_path = os.environ['PATH']
             new_env = {'PATH': '/opt/local/bin:{old_path}'}
@@ -77,6 +81,15 @@ def main():
             new_env = {'PATH': '/opt/local/bin'}
 
     print('About to spawn', file=log)
+    resp = json.dumps(data_resp)
+    size = struct.pack('@i', len(resp))
+    stdout_buffer = sys.stdout
+    if py3:
+        stdout_buffer = sys.stdout.buffer
+        resp = resp.encode('utf-8')
+        size = struct.pack('@i', len(size))
+    stdout_buffer.write(size)
+    stdout_buffer.write(resp)
 
     try:
         spawn(lambda: sp.check_call(['mpv', '--quiet', url], env=new_env, stdout=log, stderr=log))
@@ -84,6 +97,7 @@ def main():
         print(exc, file=log)
         return 1
     print('mpv should open soon', file=log)
+    print('Exiting with status 0', file=log)
     log.close()
 
     return 0
