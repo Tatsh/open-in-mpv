@@ -93,7 +93,7 @@ def main():
     stdout_buffer.write(resp)
 
     try:
-        spawn(lambda: sp.check_call(['mpv', '-v', url], env=new_env, stdout=log, stderr=log))
+        spawn(lambda: sp.check_call(['mpv', '--quiet', url], env=new_env, stdout=log, stderr=log))
     except Exception as exc:
         print(exc, file=log)
         return 1
