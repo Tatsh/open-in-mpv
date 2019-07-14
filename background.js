@@ -9,8 +9,6 @@ chrome.contextMenus.create({
     if (!url) {
       return;
     }
-    chrome.runtime.sendNativeMessage(appID, { url: url }, function (resp) {
-      console.log(resp);
-    });
+    chrome.runtime.sendNativeMessage(appID, { url: url });
   }
 });
