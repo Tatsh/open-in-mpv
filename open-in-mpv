@@ -93,7 +93,10 @@ def main():
     stdout_buffer.write(resp)
 
     try:
-        spawn(lambda: sp.check_call(['mpv', '--quiet', url], env=new_env, stdout=log, stderr=log))
+        if isdir('/Applications/MacPorts/mpv.app'):
+            spawn(lambda: sp.check_call(['open', '-W', '/Applications/MacPorts/mpv.app', '--args', url], env=new_env, stdout=log, stderr=log))
+        else:
+            spawn(lambda: sp.check_call(['mpv', '--quiet', url], env=new_env, stdout=log, stderr=log))
     except Exception as exc:
         print(exc, file=log)
         return 1
