@@ -57,7 +57,7 @@ def main():
     req_len = struct.unpack('@i', stdin_buffer.read(4))[0]
     print('Message length: {}'.format(req_len), file=log)
     message = json.loads(stdin_buffer.read(req_len))
-    print('Message contents: '.format(message), file=log)
+    print('Message contents: {}'.format(message), file=log)
 
     try:
         url = message['url']
