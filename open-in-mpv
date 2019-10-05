@@ -1,12 +1,17 @@
 #!/usr/bin/env python
 from __future__ import print_function
 from __future__ import unicode_literals
-from os.path import expanduser, isdir, join as path_join
+from os.path import expanduser, isdir, exists, join as path_join
 import json
 import os
+import socket
 import struct
 import subprocess as sp
 import sys
+
+MPV_SOCKET = expanduser('~/.cache/open-in-mpv.sock')
+DATA_PATH = expanduser('~/.local/share/open-in-mpv')
+PY3 = sys.version_info.major == 3
 
 
 def spawn(func):
@@ -26,7 +31,6 @@ def spawn(func):
         sys.exit(1)
 
     os.setsid()
-
     # do second fork
     try:
         pid = os.fork()
@@ -36,23 +40,47 @@ def spawn(func):
     except OSError as exc:
         print('Fork #2 failed: {} ({})'.format(exc.errno, exc.strerror))
         sys.exit(1)
-
+    # Call the callback
     func()
-
+    # Exit without calling cleanup handlers
     os._exit(os.EX_OK)
 
 
+def spawn_init(url, log, new_env):
+    print('Spawning initial instance', file=log)
+    spawn(lambda: sp.check_call([
+        'mpv', '--quiet', '--player-operation-mode=pseudo-gui',
+        '--input-ipc-server={}'.format(MPV_SOCKET), url
+    ],
+                                env=new_env,
+                                stdout=log,
+                                stderr=log))
+
+
+def get_cb(url, log, new_env):
+    def cb():
+        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        try:
+            s.connect(MPV_SOCKET)
+            s.send(
+                json.dumps({
+                    'command': ['loadfile', url]
+                }).encode('utf-8', 'strict') + b'\n')
+        except ConnectionRefusedError:
+            print('Connection refused', file=log)
+            spawn_init(url, log, new_env)
+    return cb
+
+
 def main():
-    py3 = sys.version_info.major == 3
-    data_path = expanduser('~/.local/share/open-in-mpv')
     try:
-        os.makedirs(data_path)
+        os.makedirs(DATA_PATH)
     except OSError:
         pass
-    out_log_path = path_join(data_path, 'native.log')
+    out_log_path = path_join(DATA_PATH, 'native.log')
     log = open(out_log_path, 'a+')
     stdin_buffer = sys.stdin
-    if py3:
+    if PY3:
         stdin_buffer = sys.stdin.buffer
     req_len = struct.unpack('@i', stdin_buffer.read(4))[0]
     print('Message length: {}'.format(req_len), file=log)
@@ -63,14 +91,15 @@ def main():
         url = message['url']
     except KeyError:
         print(json.dumps({'message': 'Missing URL!'}))
-        print('Did not get a URL', file=log)
         return 1
 
     # MacPorts
     new_env = os.environ.copy()
-    data_resp = {'log_path': out_log_path,
-                 'py3': py3,
-                 'message': 'About to spawn'}
+    data_resp = {
+        'log_path': out_log_path,
+        'py3': PY3,
+        'message': 'About to spawn'
+    }
     if isdir('/opt/local/bin'):
         print('Detected MacPorts. Setting PATH.', file=log)
         data_resp['macports'] = True
@@ -85,21 +114,26 @@ def main():
     resp = json.dumps(data_resp)
     size = struct.pack('@i', len(resp))
     stdout_buffer = sys.stdout
-    if py3:
+    if PY3:
         stdout_buffer = sys.stdout.buffer
         resp = resp.encode('utf-8')
         size = struct.pack('@i', len(size))
     stdout_buffer.write(size)
     stdout_buffer.write(resp)
 
-    try:
-        if isdir('/Applications/MacPorts/mpv.app'):
-            spawn(lambda: sp.check_call(['open', '-W', '/Applications/MacPorts/mpv.app', '--args', url], env=new_env, stdout=log, stderr=log))
+    if isdir('/Applications/MacPorts/mpv.app'):
+        # mpv.app automatically restricts itself to one window
+        spawn(lambda: sp.check_call(
+            ['open', '-W', '/Applications/MacPorts/mpv.app', '--args', url],
+            env=new_env,
+            stdout=log,
+            stderr=log))
+    else:
+        if exists(MPV_SOCKET):
+            spawn(get_cb(url, log, new_env))
         else:
-            spawn(lambda: sp.check_call(['mpv', '--quiet', url], env=new_env, stdout=log, stderr=log))
-    except Exception as exc:
-        print(exc, file=log)
-        return 1
+            spawn_init(url, log, new_env)
+
     print('mpv should open soon', file=log)
     print('Exiting with status 0', file=log)
     log.close()
