@@ -3,14 +3,16 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from os.path import expanduser, isdir, exists, join as path_join
 import json
+import logging
 import os
 import socket
 import struct
 import subprocess as sp
 import sys
 
-MPV_SOCKET = expanduser('~/.cache/open-in-mpv.sock')
 DATA_PATH = expanduser('~/.local/share/open-in-mpv')
+LOG = logging.getLogger('open-in-mpv')
+MPV_SOCKET = expanduser('~/.cache/open-in-mpv.sock')
 PY3 = sys.version_info.major == 3
 
 
@@ -27,7 +29,7 @@ def spawn(func):
             # parent process, return and keep running
             return
     except OSError as exc:
-        print('Fork #1 failed: {} ({})'.format(exc.errno, exc.strerror))
+        LOG.exception('Fork #1 failed: %s (%s)', exc.errno, exc.strerror)
         sys.exit(1)
 
     os.setsid()
@@ -38,7 +40,7 @@ def spawn(func):
             # exit from second parent
             sys.exit(0)
     except OSError as exc:
-        print('Fork #2 failed: {} ({})'.format(exc.errno, exc.strerror))
+        LOG.exception('Fork #2 failed: %s (%s)', exc.errno, exc.strerror)
         sys.exit(1)
     # Call the callback
     func()
@@ -47,7 +49,7 @@ def spawn(func):
 
 
 def spawn_init(url, log, new_env):
-    print('Spawning initial instance', file=log)
+    LOG.debug('Spawning initial instance')
     spawn(lambda: sp.check_call([
         'mpv', '--quiet', '--player-operation-mode=pseudo-gui',
         '--input-ipc-server={}'.format(MPV_SOCKET), url
@@ -67,8 +69,9 @@ def get_cb(url, log, new_env):
                     'command': ['loadfile', url]
                 }).encode('utf-8', 'strict') + b'\n')
         except ConnectionRefusedError:
-            print('Connection refused', file=log)
+            LOG.exception('Connection refused')
             spawn_init(url, log, new_env)
+
     return cb
 
 
@@ -79,17 +82,21 @@ def main():
         pass
     out_log_path = path_join(DATA_PATH, 'native.log')
     log = open(out_log_path, 'a+')
+    LOG.setLevel(logging.ERROR)
+    LOG.addHandler(logging.StreamHandler(log))
+
     stdin_buffer = sys.stdin
     if PY3:
         stdin_buffer = sys.stdin.buffer
     req_len = struct.unpack('@i', stdin_buffer.read(4))[0]
-    print('Message length: {}'.format(req_len), file=log)
     message = json.loads(stdin_buffer.read(req_len))
-    print('Message contents: {}'.format(message), file=log)
+
+    LOG.debug('Message contents (%d): %s', req_len, message)
 
     try:
         url = message['url']
     except KeyError:
+        LOG.exception('No URL was given')
         print(json.dumps({'message': 'Missing URL!'}))
         return 1
 
@@ -110,7 +117,7 @@ def main():
             new_env['PATH'] = '/opt/local/bin'
     data_resp['env'] = new_env
 
-    print('About to spawn', file=log)
+    LOG.debug('About to spawn')
     resp = json.dumps(data_resp)
     size = struct.pack('@i', len(resp))
     stdout_buffer = sys.stdout
@@ -134,8 +141,8 @@ def main():
         else:
             spawn_init(url, log, new_env)
 
-    print('mpv should open soon', file=log)
-    print('Exiting with status 0', file=log)
+    LOG.debug('mpv should open soon')
+    LOG.debug('Exiting with status 0')
     log.close()
 
     return 0
