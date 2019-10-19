@@ -110,11 +110,9 @@ def main():
     if isdir('/opt/local/bin'):
         print('Detected MacPorts. Setting PATH.', file=log)
         data_resp['macports'] = True
-        try:
-            old_path = os.environ['PATH']
-            new_env['PATH'] = '/opt/local/bin:{}'.format(old_path)
-        except KeyError:
-            new_env['PATH'] = '/opt/local/bin'
+        old_path = os.environ.get('PATH')
+        new_env['PATH'] = '/opt/local/bin' if not old_path else ':'.join(
+            ['/opt/local/bin', old_path])
     data_resp['env'] = new_env
 
     LOG.debug('About to spawn')
@@ -128,18 +126,10 @@ def main():
     stdout_buffer.write(size)
     stdout_buffer.write(resp)
 
-    if isdir('/Applications/MacPorts/mpv.app'):
-        # mpv.app automatically restricts itself to one window
-        spawn(lambda: sp.check_call(
-            ['open', '-W', '/Applications/MacPorts/mpv.app', '--args', url],
-            env=new_env,
-            stdout=log,
-            stderr=log))
+    if exists(MPV_SOCKET):
+        spawn(get_cb(url, log, new_env))
     else:
-        if exists(MPV_SOCKET):
-            spawn(get_cb(url, log, new_env))
-        else:
-            spawn_init(url, log, new_env)
+        spawn_init(url, log, new_env)
 
     LOG.debug('mpv should open soon')
     LOG.debug('Exiting with status 0')
