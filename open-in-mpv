@@ -22,9 +22,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from __future__ import print_function
-from __future__ import unicode_literals
-from os.path import expanduser, isdir, exists, join as path_join
+from __future__ import print_function, unicode_literals
+
+from os.path import exists, expanduser, isdir, join as path_join
 import json
 import logging
 import os
@@ -93,6 +93,10 @@ def get_cb(url, log, new_env):
                 }).encode('utf-8', 'strict') + b'\n')
         except ConnectionRefusedError:
             LOG.exception('Connection refused')
+            try:
+                os.remove(MPV_SOCKET)
+            except OSError:
+                pass
             spawn_init(url, log, new_env)
 
     return cb
