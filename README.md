@@ -2,7 +2,7 @@
 
 ![Context menu item](context-item.png)
 
-This browser extension displays a context menu item *Open in mpv* for links. When clicked it will pass the URL of the link to mpv (which must be `PATH`).
+This browser extension displays a context menu item _Open in mpv_ for links. When clicked it will pass the URL of the link to mpv (which must be `PATH`).
 
 If you have `youtube-dl` installed and in `PATH`, then mpv will try to use it to resolve URLs it cannot handle. This means you can right-click on any YouTube video, choose `Open in mpv` and view the video with mpv.
 
@@ -28,4 +28,4 @@ For this case, `@BINPATH@` should be `/home/username/.local/bin` in `/etc/chromi
 
 ## Known issues
 
-At this time, Windows is not supported by the `open-in-mpv` Python script. It would need an equivalent of `spawn()`.
+At this time, Windows is not supported by the `open-in-mpv` Python script. It would need an equivalent of `fork()`.
