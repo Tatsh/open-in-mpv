@@ -1,0 +1,26 @@
+{
+  "author": "Andrew Udvare",
+  "bugs": {
+    "url": "https://github.com/Tatsh/open-in-mpv/issues"
+  },
+  "description": "Chrome extension to open a URL with mpv.",
+  "devDependencies": {
+    "@types/chrome": "^0.0.91",
+    "eslint": "^6.5.1"
+  },
+  "homepage": "https://github.com/Tatsh/open-in-mpv#readme",
+  "keywords": [
+    "chrome-extension",
+    "mpv"
+  ],
+  "license": "MIT",
+  "name": "open-in-mpv",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tatsh/open-in-mpv.git"
+  },
+  "scripts": {
+    "test": "./test-open 'https://www.youtube.com/watch?v=5rB7zgPlC5M'"
+  },
+  "version": "0.0.2"
+}
