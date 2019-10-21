@@ -20,7 +20,7 @@
     "url": "git+https://github.com/Tatsh/open-in-mpv.git"
   },
   "scripts": {
-    "test": "./test-open 'https://www.youtube.com/watch?v=5rB7zgPlC5M'"
+    "test": "./src/test-open 'https://www.youtube.com/watch?v=5rB7zgPlC5M'"
   },
   "version": "0.0.2"
 }
