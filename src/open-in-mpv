@@ -57,6 +57,7 @@ def spawn(func):
 
     os.setsid()
     # do second fork
+    LOG.debug('Second fork')
     try:
         pid = os.fork()
         if pid > 0:
@@ -66,27 +67,41 @@ def spawn(func):
         LOG.exception('Fork #2 failed: %s (%s)', exc.errno, exc.strerror)
         sys.exit(1)
     # Call the callback
+    LOG.debug('Calling callback')
     func()
+    LOG.debug('Callback returned')
     # Exit without calling cleanup handlers
     os._exit(os.EX_OK)
 
 
+def mpv_and_cleanup(url, new_env, log):
+    def cb():
+        sp.check_call([
+            'mpv', '--quiet', '--player-operation-mode=pseudo-gui',
+            '--input-ipc-server={}'.format(MPV_SOCKET), url
+        ],
+                      env=new_env,
+                      stdout=log,
+                      stderr=log)
+        os.remove(MPV_SOCKET)
+
+    return cb
+
+
 def spawn_init(url, log, new_env):
     LOG.debug('Spawning initial instance')
-    spawn(lambda: sp.check_call([
-        'mpv', '--quiet', '--player-operation-mode=pseudo-gui',
-        '--input-ipc-server={}'.format(MPV_SOCKET), url
-    ],
-                                env=new_env,
-                                stdout=log,
-                                stderr=log))
+    spawn(mpv_and_cleanup(url, new_env, log))
 
 
 def get_cb(url, log, new_env):
     def cb():
+        LOG.debug('Sending loadfile command')
         s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        s.settimeout(2)
         try:
             s.connect(MPV_SOCKET)
+            s.settimeout(None)
+            LOG.debug('Connected to socket')
             s.send(
                 json.dumps({
                     'command': ['loadfile', url]
