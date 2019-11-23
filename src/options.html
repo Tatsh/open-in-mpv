@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <style>
+      html {
+        box-sizing: border-box;
+      }
+
+      body,
+      p {
+        margin: 0;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      section>div,
+      section>p {
+        padding: 8px;
+      }
+
+      section>button {
+        margin-top: 8px;
+        margin-left: 8px;
+      }
+
+      #saved {
+        opacity: 0.8;
+      }
+
+    </style>
+    <title>Open in mpv options</title>
+  </head>
+
+  <body>
+    <section>
+      <div>
+        <label><input type="checkbox" id="single">Use a single instance of
+          mpv</label>
+      </div>
+      <div>
+        <label><input type="checkbox" id="debug">Enable debug mode</label>
+      </div>
+      <button id="save">Save</button>
+      <span class="hidden" id="saved">Saved</span>
+    </section>
+
+    <section id="info" class="hidden">
+      <p>Log file is located at <code id="log-file"></code></p>
+      <p>Uses socket at <code id="socket"></code></p>
+    </section>
+
+    <script src="options.js"></script>
+  </body>
+
+</html>
