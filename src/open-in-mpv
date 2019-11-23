@@ -24,7 +24,7 @@
 
 from __future__ import print_function, unicode_literals
 
-from os.path import exists, expanduser, isdir, join as path_join
+from os.path import dirname, exists, expanduser, isdir, join as path_join
 import json
 import logging
 import os
@@ -120,8 +120,10 @@ def get_cb(url, log, new_env):
 def main():
     try:
         os.makedirs(DATA_PATH)
+        os.makedirs(dirname(MPV_SOCKET))
     except OSError:
         pass
+
     out_log_path = path_join(DATA_PATH, 'native.log')
     log = open(out_log_path, 'a+')
     LOG.setLevel(logging.ERROR)
@@ -135,12 +137,34 @@ def main():
 
     LOG.debug('Message contents (%d): %s', req_len, message)
 
+    if 'init' in message:
+        resp = json.dumps({
+            'dataPath': DATA_PATH,
+            'socketPath': MPV_SOCKET,
+        })
+        size = struct.pack('@i', len(resp))
+        stdout_buffer = sys.stdout
+        if PY3:
+            stdout_buffer = sys.stdout.buffer
+            resp = resp.encode('utf-8')
+            size = struct.pack('@i', len(size))
+        stdout_buffer.write(size)
+        stdout_buffer.write(resp)
+        log.close()
+
+        return 0
+
     try:
         url = message['url']
     except KeyError:
         LOG.exception('No URL was given')
         print(json.dumps({'message': 'Missing URL!'}))
         return 1
+
+    if message.get('debug', False):
+        log.write('Debug mode enabled.\n')
+        LOG.setLevel(logging.DEBUG)
+    single = message.get('single', True)
 
     # MacPorts
     new_env = os.environ.copy()
@@ -168,7 +192,7 @@ def main():
     stdout_buffer.write(size)
     stdout_buffer.write(resp)
 
-    if exists(MPV_SOCKET):
+    if exists(MPV_SOCKET) and single:
         spawn(get_cb(url, log, new_env))
     else:
         spawn_init(url, log, new_env)

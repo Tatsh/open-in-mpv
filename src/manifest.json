@@ -11,6 +11,10 @@
   },
   "manifest_version": 2,
   "name": "Open in mpv",
-  "permissions": ["contextMenus", "nativeMessaging"],
+  "options_ui": {
+    "open_in_tab": false,
+    "page": "options.html"
+  },
+  "permissions": ["contextMenus", "nativeMessaging", "storage"],
   "version": "0.0.2"
 }
