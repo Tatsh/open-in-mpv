@@ -1,24 +1,24 @@
 const qs = document.querySelector.bind(document);
 
 const fields = {
-  singleFlag: qs("#single"),
-  debugFlag: qs("#debug")
+  singleFlag: qs('#single'),
+  debugFlag: qs('#debug')
 };
 const defaults = {
   singleFlag: true,
   debugFlag: false
 };
-const button = qs("#save");
-const logFile = qs("#log-file");
-const socket = qs("#socket");
-const info = qs("#info");
+const button = qs('#save');
+const logFile = qs('#log-file');
+const socket = qs('#socket');
+const info = qs('#info');
 const saved = qs('#saved');
 
-button.addEventListener("mousedown", () => {
+button.addEventListener('mousedown', () => {
   const data = {};
   for (const key of Object.keys(fields)) {
     const field = fields[key];
-    const value = field.type === "checkbox" ? field.checked : field.value;
+    const value = field.type === 'checkbox' ? field.checked : field.value;
     data[key] = value;
   }
   button.disabled = true;
@@ -32,18 +32,18 @@ button.addEventListener("mousedown", () => {
 chrome.storage.local.get(items => {
   for (const key of Object.keys(fields)) {
     fields[key].checked =
-      typeof items[key] !== "undefined" ? items[key] : defaults[key];
+      typeof items[key] !== 'undefined' ? items[key] : defaults[key];
   }
 });
 
 chrome.runtime.sendNativeMessage(
-  "sh.tat.open_in_mpv",
+  'sh.tat.open_in_mpv',
   {
     init: true
   },
   resp => {
     logFile.innerText = resp.dataPath;
     socket.innerText = resp.socketPath;
-    info.classList.remove("hidden");
+    info.classList.remove('hidden');
   }
 );
