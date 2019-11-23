@@ -23,10 +23,14 @@
  */
 
 chrome.contextMenus.create({
-  contexts: ['audio', 'link', 'page', 'video'],
+  contexts: ["audio", "link", "page", "video"],
   onclick: message =>
-    chrome.runtime.sendNativeMessage('sh.tat.open_in_mpv', {
-      url: message.linkUrl || message.srcUrl || message.pageUrl
-    }),
-  title: 'Open in mpv'
+    chrome.storage.local.get(items =>
+      chrome.runtime.sendNativeMessage("sh.tat.open_in_mpv", {
+        url: message.linkUrl || message.srcUrl || message.pageUrl,
+        debug: items.debugFlag,
+        single: items.singleFlag
+      })
+    ),
+  title: "Open in mpv"
 });
