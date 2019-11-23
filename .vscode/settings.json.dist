@@ -1,4 +1,12 @@
 {
+  "cSpell.words": [
+    "BINPATH",
+    "errno",
+    "ihiaopinemhbiihjadilnldeoocgbame",
+    "isdir",
+    "webextensions",
+    "youtube"
+  ],
   "python.formatting.provider": "yapf",
   "python.pythonPath": "/opt/local/bin/python"
 }
