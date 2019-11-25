@@ -6,6 +6,10 @@
   },
   "extends": ["eslint:recommended"],
   "rules": {
+    "no-alert": "error",
+    "no-debugger": "error",
+    "no-lonely-if": "error",
+    "no-magic-numbers": "error",
     "quotes": ["error", "single"]
   }
 }
