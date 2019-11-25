@@ -1,37 +1,35 @@
 const qs = document.querySelector.bind(document);
-
-const fields = {
-  singleFlag: qs('#single'),
-  debugFlag: qs('#debug')
+const button = qs('#save');
+const info = qs('#info');
+const logFile = qs('#log-file');
+const saved = qs('#saved');
+const socket = qs('#socket');
+const checkboxFields = {
+  debugFlag: qs('#debug'),
+  singleFlag: qs('#single')
 };
 const defaults = {
-  singleFlag: true,
-  debugFlag: false
+  debugFlag: false,
+  singleFlag: true
 };
-const button = qs('#save');
-const logFile = qs('#log-file');
-const socket = qs('#socket');
-const info = qs('#info');
-const saved = qs('#saved');
+const WAIT_TIME = 5000;
 
 button.addEventListener('mousedown', () => {
   const data = {};
-  for (const key of Object.keys(fields)) {
-    const field = fields[key];
-    const value = field.type === 'checkbox' ? field.checked : field.value;
-    data[key] = value;
+  for (const key of Object.keys(checkboxFields)) {
+    data[key] = checkboxFields[key].checked;
   }
   button.disabled = true;
   chrome.storage.local.set(data, () => {
     button.disabled = false;
     saved.classList.remove('hidden');
-    setTimeout(() => saved.classList.add('hidden'), 5000);
+    setTimeout(() => saved.classList.add('hidden'), WAIT_TIME);
   });
 });
 
 chrome.storage.local.get(items => {
-  for (const key of Object.keys(fields)) {
-    fields[key].checked =
+  for (const key of Object.keys(checkboxFields)) {
+    checkboxFields[key].checked =
       typeof items[key] !== 'undefined' ? items[key] : defaults[key];
   }
 });

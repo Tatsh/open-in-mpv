@@ -27,9 +27,9 @@ chrome.contextMenus.create({
   onclick: message =>
     chrome.storage.local.get(items =>
       chrome.runtime.sendNativeMessage('sh.tat.open_in_mpv', {
-        url: message.linkUrl || message.srcUrl || message.pageUrl,
         debug: items.debugFlag,
-        single: items.singleFlag
+        single: items.singleFlag,
+        url: message.linkUrl || message.srcUrl || message.pageUrl
       })
     ),
   title: 'Open in mpv'
