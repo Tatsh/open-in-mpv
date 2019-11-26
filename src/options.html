@@ -18,7 +18,7 @@
 
       section>div,
       section>p {
-        padding: 8px;
+        padding: 10px;
       }
 
       section>button {
@@ -26,8 +26,15 @@
         margin-left: 8px;
       }
 
-      #saved {
+      .text-saved {
         opacity: 0.8;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: rgb(40, 41, 45);
+          color: white;
+        }
       }
 
     </style>
@@ -44,7 +51,7 @@
         <label><input type="checkbox" id="debug">Enable debug mode</label>
       </div>
       <button id="save">Save</button>
-      <span class="hidden" id="saved">Saved</span>
+      <span class="hidden" id="saved" class="text-saved">Saved</span>
     </section>
 
     <section id="info" class="hidden">
