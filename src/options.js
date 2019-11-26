@@ -22,8 +22,11 @@
  * IN THE SOFTWARE.
  */
 
+/** @type ParentNode['querySelector'] */
 const qs = document.querySelector.bind(document);
+/** @type HTMLButtonElement */
 const button = qs('#save');
+/** @type {{[x: string]: HTMLInputElement}} */
 const checkboxFields = {
   debugFlag: qs('#debug'),
   singleFlag: qs('#single')
@@ -32,9 +35,13 @@ const defaults = {
   debugFlag: false,
   singleFlag: true
 };
+/** @type HTMLElement */
 const info = qs('#info');
+/** @type HTMLElement */
 const logFile = qs('#log-file');
+/** @type HTMLSpanElement */
 const saved = qs('#saved');
+/** @type HTMLElement */
 const socket = qs('#socket');
 const WAIT_TIME = 5000;
 
@@ -52,6 +59,10 @@ button.addEventListener('mousedown', () => {
 });
 
 chrome.storage.local.get(items => {
+  if (typeof items === 'undefined') {
+    console.error(chrome.runtime.lastError);
+    return;
+  }
   for (const key of Object.keys(checkboxFields)) {
     checkboxFields[key].checked =
       typeof items[key] !== 'undefined' ? items[key] : defaults[key];
@@ -64,6 +75,10 @@ chrome.runtime.sendNativeMessage(
     init: true
   },
   resp => {
+    if (typeof resp === 'undefined') {
+      console.error(chrome.runtime.lastError);
+      return;
+    }
     logFile.innerText = resp.dataPath;
     socket.innerText = resp.socketPath;
     info.classList.remove('hidden');
