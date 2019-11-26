@@ -24,13 +24,22 @@
 
 chrome.contextMenus.create({
   contexts: ['audio', 'link', 'page', 'video'],
-  onclick: message =>
-    chrome.storage.local.get(items =>
+  onclick: message => {
+    if (typeof message === 'undefined') {
+      console.error(chrome.runtime.lastError);
+      return;
+    }
+    chrome.storage.local.get(items => {
+      if (typeof items === 'undefined') {
+        console.error(chrome.runtime.lastError);
+        return;
+      }
       chrome.runtime.sendNativeMessage('sh.tat.open_in_mpv', {
         debug: items.debugFlag,
         single: items.singleFlag,
         url: message.linkUrl || message.srcUrl || message.pageUrl
-      })
-    ),
+      });
+    });
+  },
   title: 'Open in mpv'
 });
