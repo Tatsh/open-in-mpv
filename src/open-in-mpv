@@ -147,7 +147,7 @@ def main():
         if PY3:
             stdout_buffer = sys.stdout.buffer
             resp = resp.encode('utf-8')
-            size = struct.pack('@i', len(size))
+            size = struct.pack('@i', len(resp))
         stdout_buffer.write(size)
         stdout_buffer.write(resp)
         log.close()
