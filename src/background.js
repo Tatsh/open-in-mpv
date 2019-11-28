@@ -22,6 +22,12 @@
  * IN THE SOFTWARE.
  */
 
+/**
+ * @typedef StorageItems
+ * @property {boolean} debugFlag
+ * @property {boolean} singleFlag
+ */
+
 chrome.contextMenus.create({
   contexts: ['audio', 'link', 'page', 'video'],
   onclick: message => {
@@ -29,7 +35,9 @@ chrome.contextMenus.create({
       console.error(chrome.runtime.lastError);
       return;
     }
-    chrome.storage.local.get(items => {
+    chrome.storage.local.get((
+      /** @type StorageItems | null | undefined */ items
+    ) => {
       if (typeof items === 'undefined') {
         console.error(chrome.runtime.lastError);
         return;
