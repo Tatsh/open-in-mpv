@@ -1,40 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
   <head>
+    <link rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+      integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu"
+      crossorigin="anonymous">
     <style>
-      html {
-        box-sizing: border-box;
-      }
-
-      body,
-      p {
-        margin: 0;
-      }
-
-      .hidden {
-        display: none;
-      }
-
-      section>div,
-      section>p {
-        padding: 10px;
-      }
-
-      section>button {
-        margin-top: 8px;
-        margin-left: 8px;
-      }
-
-      .text-saved {
-        opacity: 0.8;
-      }
-
-      @media (prefers-color-scheme: dark) {
-        body {
-          background-color: rgb(40, 41, 45);
-          color: white;
-        }
+      .text-log {
+        margin-top: 20px;
       }
 
     </style>
@@ -42,22 +16,23 @@
   </head>
 
   <body>
-    <section>
-      <div>
-        <label><input type="checkbox" id="single">Use a single instance of
-          mpv</label>
-      </div>
-      <div>
-        <label><input type="checkbox" id="debug">Enable debug mode</label>
-      </div>
-      <button id="save">Save</button>
-      <span class="hidden" id="saved" class="text-saved">Saved</span>
-    </section>
+    <div class="container-fluid">
+      <form>
+        <div class="checkbox">
+          <label><input type="checkbox" id="single"> Use a single instance of
+            mpv</label>
+        </div>
+        <div class="checkbox">
+          <label><input type="checkbox" id="debug"> Enable debug mode</label>
+        </div>
+        <button type="submit" class="btn btn-default" id="save">Save</button>
+        <span id="saved" class="hidden label label-success">Saved</span>
+      </form>
 
-    <section id="info" class="hidden">
-      <p>Log file is located at <code id="log-file"></code></p>
-      <p>Uses socket at <code id="socket"></code></p>
-    </section>
+      <p class="text-info text-log">Log file: <code id="log-file"></code>
+      </p>
+      <p class="text-info">Socket: <code id="socket"></code></p>
+    </div>
 
     <script src="options.js"></script>
   </body>
