@@ -22,10 +22,18 @@
  * IN THE SOFTWARE.
  */
 
+/**
+ * @typedef InitResponse
+ * @property {string} dataPath
+ * @property {string} socketPath
+ */
+
 /** @type ParentNode['querySelector'] */
 const qs = document.querySelector.bind(document);
 /** @type HTMLButtonElement */
 const button = qs('#save');
+/** @type HTMLFormElement */
+const form = qs('form');
 /** @type {{[x: string]: HTMLInputElement}} */
 const checkboxFields = {
   debugFlag: qs('#debug'),
@@ -45,7 +53,8 @@ const saved = qs('#saved');
 const socket = qs('#socket');
 const WAIT_TIME = 5000;
 
-button.addEventListener('mousedown', () => {
+form.addEventListener('submit', event => {
+  event.preventDefault();
   const data = {};
   for (const key of Object.keys(checkboxFields)) {
     data[key] = checkboxFields[key].checked;
@@ -56,6 +65,7 @@ button.addEventListener('mousedown', () => {
     saved.classList.remove('hidden');
     setTimeout(() => saved.classList.add('hidden'), WAIT_TIME);
   });
+  return false;
 });
 
 chrome.storage.local.get(items => {
@@ -74,7 +84,7 @@ chrome.runtime.sendNativeMessage(
   {
     init: true
   },
-  resp => {
+  (/** @type InitResponse | null | undefined */ resp) => {
     if (typeof resp === 'undefined') {
       console.error(chrome.runtime.lastError);
       return;
