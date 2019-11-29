@@ -5,6 +5,7 @@
     "webextensions": true
   },
   "extends": ["eslint:recommended"],
+  "parserOptions": { "ecmaVersion": 8 },
   "rules": {
     "no-alert": "error",
     "no-debugger": "error",
