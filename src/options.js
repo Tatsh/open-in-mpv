@@ -44,8 +44,6 @@ const defaults = {
   singleFlag: true
 };
 /** @type HTMLElement */
-const info = qs('#info');
-/** @type HTMLElement */
 const logFile = qs('#log-file');
 /** @type HTMLSpanElement */
 const saved = qs('#saved');
@@ -66,6 +64,30 @@ form.addEventListener('submit', event => {
     setTimeout(() => saved.classList.add('hidden'), WAIT_TIME);
   });
   return false;
+});
+
+document.querySelectorAll('.text-info').forEach(el => {
+  el.addEventListener('mousedown', async () => {
+    const result = await navigator.permissions.query({
+      // @ts-ignore
+      name: 'clipboard-write'
+    });
+    if (result.state == 'granted' || result.state == 'prompt') {
+      try {
+        await navigator.clipboard.writeText(
+          el.querySelector('code').innerText.trim()
+        );
+        /** @type HTMLSpanElement */
+        const copied = el.querySelector('span');
+        copied.classList.remove('hidden');
+        setTimeout(() => copied.classList.add('hidden'), WAIT_TIME);
+      } catch (e) {
+        console.error(e);
+      }
+    } else {
+      console.error('Missing permissions for clipboard-write');
+    }
+  });
 });
 
 chrome.storage.local.get(items => {
@@ -91,6 +113,5 @@ chrome.runtime.sendNativeMessage(
     }
     logFile.innerText = resp.dataPath;
     socket.innerText = resp.socketPath;
-    info.classList.remove('hidden');
   }
 );
