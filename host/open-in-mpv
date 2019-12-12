@@ -25,6 +25,7 @@
 from __future__ import print_function, unicode_literals
 
 from os.path import dirname, exists, expanduser, isdir, join as path_join
+from typing import Any, Callable, Dict, NoReturn, TextIO, Union
 import json
 import logging
 import os
@@ -40,6 +41,7 @@ PY3 = sys.version_info.major == 3
 
 
 def spawn(func):
+    # type: (Callable[[], Any]) -> NoReturn
     """See Stevens' "Advanced Programming in the UNIX Environment" for details
     (ISBN 0201563177)
     Credit: https://stackoverflow.com/a/6011298/374110
@@ -75,7 +77,8 @@ def spawn(func):
 
 
 def mpv_and_cleanup(url, new_env, log):
-    def cb():
+    # type: (str, Dict[str, str], TextIO) -> Callable[[], None]
+    def cb():  # type: () -> None
         sp.check_call([
             'mpv', '--quiet', '--player-operation-mode=pseudo-gui',
             '--input-ipc-server={}'.format(MPV_SOCKET), url
@@ -89,12 +92,14 @@ def mpv_and_cleanup(url, new_env, log):
 
 
 def spawn_init(url, log, new_env):
+    # type: (str, TextIO, Dict[str, str]) -> None
     LOG.debug('Spawning initial instance')
     spawn(mpv_and_cleanup(url, new_env, log))
 
 
 def get_cb(url, log, new_env):
-    def cb():
+    # type: (str, TextIO, Dict[str, str]) -> Callable[[], None]
+    def cb():  # type: () -> None
         LOG.debug('Sending loadfile command')
         s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         s.settimeout(2)
@@ -106,7 +111,7 @@ def get_cb(url, log, new_env):
                 json.dumps({
                     'command': ['loadfile', url]
                 }).encode('utf-8', 'strict') + b'\n')
-        except ConnectionRefusedError:
+        except socket.error:
             LOG.exception('Connection refused')
             try:
                 os.remove(MPV_SOCKET)
@@ -118,13 +123,14 @@ def get_cb(url, log, new_env):
 
 
 def main():
+    # type: () -> int
     try:
         os.makedirs(DATA_PATH)
         os.makedirs(dirname(MPV_SOCKET))
     except OSError:
         pass
 
-    out_log_path = path_join(DATA_PATH, 'native.log')
+    out_log_path = path_join(DATA_PATH, 'native.log')  # type: str
     log = open(out_log_path, 'a+')
     LOG.setLevel(logging.ERROR)
     LOG.addHandler(logging.StreamHandler(log))
@@ -132,8 +138,9 @@ def main():
     stdin_buffer = sys.stdin
     if PY3:
         stdin_buffer = sys.stdin.buffer
-    req_len = struct.unpack('@i', stdin_buffer.read(4))[0]
-    message = json.loads(stdin_buffer.read(req_len))
+    req_len = struct.unpack('@i', stdin_buffer.read(4))[0]  # type: int
+    message = json.loads(
+        stdin_buffer.read(req_len))  # type: Dict[str, Union[str, bool]]
 
     LOG.debug('Message contents (%d): %s', req_len, message)
 
@@ -155,7 +162,7 @@ def main():
         return 0
 
     try:
-        url = message['url']
+        url = message['url']  # type: str
     except KeyError:
         LOG.exception('No URL was given')
         print(json.dumps({'message': 'Missing URL!'}))
@@ -164,11 +171,11 @@ def main():
     if message.get('debug', False):
         log.write('Debug mode enabled.\n')
         LOG.setLevel(logging.DEBUG)
-    single = message.get('single', True)
+    single = message.get('single', True)  # type: bool
 
     # MacPorts
     new_env = os.environ.copy()
-    data_resp = {
+    data_resp = {  # type: Dict[str, Union[str, bool, Dict[str, str]]]
         'log_path': out_log_path,
         'py3': PY3,
         'message': 'About to spawn'
