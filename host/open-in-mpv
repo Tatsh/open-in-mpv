@@ -25,7 +25,10 @@
 from __future__ import print_function, unicode_literals
 
 from os.path import dirname, exists, expanduser, isdir, join as path_join
-from typing import Any, Callable, Dict, NoReturn, TextIO, Union
+try:
+    from typing import Any, Callable, Dict, NoReturn, TextIO, Union
+except ImportError:
+    pass
 import json
 import logging
 import os
