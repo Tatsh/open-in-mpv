@@ -172,7 +172,7 @@ def main():
         return 0
 
     try:
-        url = message['url']  # type: str
+        url = cast(str, message['url'])  # type: str
     except KeyError:
         LOG.exception('No URL was given')
         print(json.dumps({'message': 'Missing URL!'}))
@@ -181,21 +181,21 @@ def main():
     if message.get('debug', False):
         log.write('Debug mode enabled.\n')
         LOG.setLevel(logging.DEBUG)
-    single = message.get('single', True)  # type: bool
+    single = cast(bool, message.get('single', True))  # type: bool
 
     # MacPorts
     new_env = os.environ.copy()
-    data_resp = {  # type: Dict[str, Union[str, bool, Dict[str, str]]]
+    data_resp = {
         'log_path': out_log_path,
         'py3': PY3,
         'message': 'About to spawn'
-    }
+    }  # type: Dict[str, Union[str, bool, Dict[str, str]]]
     if isdir('/opt/local/bin'):
         print('Detected MacPorts. Setting PATH.', file=log)
         data_resp['macports'] = True
         old_path = os.environ.get('PATH')
         new_env['PATH'] = '/opt/local/bin' if not old_path else ':'.join(
-            ['/opt/local/bin', old_path])
+            ('/opt/local/bin', old_path))
     data_resp['env'] = new_env
 
     LOG.debug('About to spawn')
