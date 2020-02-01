@@ -37,6 +37,11 @@ import struct
 import subprocess as sp
 import sys
 
+try:
+    from typing import Any, BinaryIO, Callable, Mapping, TextIO, Union, cast
+except ImportError:
+    cast = lambda y, x: x
+
 DATA_PATH = expanduser('~/.local/share/open-in-mpv')
 LOG = logging.getLogger('open-in-mpv')
 MPV_SOCKET = expanduser('~/.cache/open-in-mpv.sock')
@@ -44,7 +49,7 @@ PY3 = sys.version_info.major == 3
 
 
 def spawn(func):
-    # type: (Callable[[], Any]) -> NoReturn
+    # type: (Callable[[], Any]) -> None
     """See Stevens' "Advanced Programming in the UNIX Environment" for details
     (ISBN 0201563177)
     Credit: https://stackoverflow.com/a/6011298/374110
@@ -80,8 +85,9 @@ def spawn(func):
 
 
 def mpv_and_cleanup(url, new_env, log):
-    # type: (str, Dict[str, str], TextIO) -> Callable[[], None]
-    def cb():  # type: () -> None
+    # type: (str, Mapping[str, str], Union[BinaryIO, TextIO]) -> Callable[[], None]
+    def cb():
+        # type: () -> None
         sp.check_call([
             'mpv', '--quiet', '--player-operation-mode=pseudo-gui',
             '--input-ipc-server={}'.format(MPV_SOCKET), url
@@ -95,14 +101,15 @@ def mpv_and_cleanup(url, new_env, log):
 
 
 def spawn_init(url, log, new_env):
-    # type: (str, TextIO, Dict[str, str]) -> None
+    # type: (str, Union[BinaryIO, TextIO], Mapping[str, str]) -> None
     LOG.debug('Spawning initial instance')
     spawn(mpv_and_cleanup(url, new_env, log))
 
 
 def get_cb(url, log, new_env):
-    # type: (str, TextIO, Dict[str, str]) -> Callable[[], None]
-    def cb():  # type: () -> None
+    # type: (str, Union[BinaryIO, TextIO], Mapping[str, str]) -> Callable[[], None]
+    def cb():
+        # type: () -> None
         LOG.debug('Sending loadfile command')
         s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         s.settimeout(2)
@@ -138,7 +145,7 @@ def main():
     LOG.setLevel(logging.ERROR)
     LOG.addHandler(logging.StreamHandler(log))
 
-    stdin_buffer = sys.stdin
+    stdin_buffer = sys.stdin  # type: Union[BinaryIO, TextIO]
     if PY3:
         stdin_buffer = sys.stdin.buffer
     req_len = struct.unpack('@i', stdin_buffer.read(4))[0]  # type: int
@@ -151,12 +158,12 @@ def main():
         resp = json.dumps({
             'dataPath': DATA_PATH,
             'socketPath': MPV_SOCKET,
-        })
+        })  # type: Union[str, bytes]
         size = struct.pack('@i', len(resp))
-        stdout_buffer = sys.stdout
+        stdout_buffer = sys.stdout  # type: Union[BinaryIO, TextIO]
         if PY3:
             stdout_buffer = sys.stdout.buffer
-            resp = resp.encode('utf-8')
+            resp = cast(str, resp).encode('utf-8')
             size = struct.pack('@i', len(resp))
         stdout_buffer.write(size)
         stdout_buffer.write(resp)
