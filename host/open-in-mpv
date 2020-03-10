@@ -35,7 +35,7 @@ import subprocess as sp
 import sys
 
 try:
-    from typing import Any, BinaryIO, Callable, Mapping, TextIO, Union, cast
+    from typing import Any, BinaryIO, Callable, Dict, Mapping, TextIO, Union, cast
 except ImportError:
     cast = lambda y, x: x
 
