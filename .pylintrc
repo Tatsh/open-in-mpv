@@ -2,7 +2,7 @@
 disable=invalid-name,
         missing-docstring,
         missing-module-docstring,
-        missing-function-docstring
+        missing-function-docstring,
         too-many-statements,
         ungrouped-imports
 
