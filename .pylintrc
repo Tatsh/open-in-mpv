@@ -1,0 +1,5 @@
+[GENERAL]
+disable=invalid-name,missing-module-docstring,missing-function-docstring,too-many-statements
+
+[DESIGN]
+good-names=cb
