@@ -29,5 +29,5 @@ jobs:
         pip install pylint pylint-quotes
     - name: Lint with Pylint
       run: |
-        pylint host/open-in-mpv
-        pylint host/test-open
+        pylint --disable=unused-import host/open-in-mpv
+        pylint --disable=unused-import host/test-open
