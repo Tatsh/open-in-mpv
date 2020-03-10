@@ -1,5 +1,9 @@
 # Open in mpv
 
+![QA](https://github.com/Tatsh/open-in-mpv/workflows/QA/badge.svg)
+![Lint Python](https://github.com/Tatsh/open-in-mpv/workflows/Lint%20python/badge.svg)
+![Lint Python (macOS)](https://github.com/Tatsh/open-in-mpv/workflows/Lint%20python%20(macOS)/badge.svg)
+
 ![Context menu item](context-item.png)
 
 This browser extension displays a context menu item _Open in mpv_ for links. When clicked it will pass the URL of the link to mpv (which must be `PATH`).
