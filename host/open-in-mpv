@@ -147,7 +147,7 @@ def main():
     LOG.addHandler(logging.StreamHandler(log))
 
     stdin_buffer = sys.stdin  # type: Union[BinaryIO, TextIO]
-    if hasattr(sys.stdin, 'buffer'):
+    if PY3:
         stdin_buffer = sys.stdin.buffer  # pylint: disable=no-member
     req_len = struct.unpack('@i', stdin_buffer.read(4))[0]  # type: int
     message = json.loads(
@@ -162,7 +162,7 @@ def main():
         })  # type: Union[str, bytes]
         size = struct.pack('@i', len(resp))
         stdout_buffer = sys.stdout  # type: Union[BinaryIO, TextIO]
-        if hasattr(sys.stdout, 'buffer'):
+        if PY3:
             stdout_buffer = sys.stdout.buffer  # pylint: disable=no-member
             resp = cast(str, resp).encode('utf-8')
             size = struct.pack('@i', len(resp))
@@ -203,7 +203,7 @@ def main():
     resp = json.dumps(data_resp)
     size = struct.pack('@i', len(resp))
     stdout_buffer = sys.stdout
-    if hasattr(sys.stdout, 'buffer'):
+    if PY3:
         stdout_buffer = sys.stdout.buffer  # pylint: disable=no-member
         resp = resp.encode('utf-8')
         size = struct.pack('@i', len(size))
