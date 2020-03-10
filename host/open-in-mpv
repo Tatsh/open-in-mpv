@@ -151,7 +151,7 @@ def main():
         stdin_buffer = sys.stdin.buffer
     req_len = struct.unpack('@i', stdin_buffer.read(4))[0]  # type: int
     message = json.loads(
-        stdin_buffer.read(req_len))  # type: Dict[str, Union[str, bool]]
+        stdin_buffer.read(req_len).decode())  # type: Dict[str, Union[str, bool]]
 
     LOG.debug('Message contents (%d): %s', req_len, message)
 
