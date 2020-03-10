@@ -148,7 +148,7 @@ def main():
 
     stdin_buffer = sys.stdin  # type: Union[BinaryIO, TextIO]
     if hasattr(sys.stdin, 'buffer'):
-        stdin_buffer = sys.stdin.buffer
+        stdin_buffer = sys.stdin.buffer  # pylint: disable=no-member
     req_len = struct.unpack('@i', stdin_buffer.read(4))[0]  # type: int
     message = json.loads(
         stdin_buffer.read(req_len).decode())  # type: Dict[str, Union[str, bool]]
@@ -163,7 +163,7 @@ def main():
         size = struct.pack('@i', len(resp))
         stdout_buffer = sys.stdout  # type: Union[BinaryIO, TextIO]
         if hasattr(sys.stdout, 'buffer'):
-            stdout_buffer = sys.stdout.buffer
+            stdout_buffer = sys.stdout.buffer  # pylint: disable=no-member
             resp = cast(str, resp).encode('utf-8')
             size = struct.pack('@i', len(resp))
         stdout_buffer.write(size)
@@ -204,7 +204,7 @@ def main():
     size = struct.pack('@i', len(resp))
     stdout_buffer = sys.stdout
     if hasattr(sys.stdout, 'buffer'):
-        stdout_buffer = sys.stdout.buffer
+        stdout_buffer = sys.stdout.buffer  # pylint: disable=no-member
         resp = resp.encode('utf-8')
         size = struct.pack('@i', len(size))
     stdout_buffer.write(size)
