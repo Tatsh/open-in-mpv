@@ -82,7 +82,7 @@ def spawn(func):
     func()
     LOG.debug('Callback returned')
     # Exit without calling cleanup handlers
-    os._exit(os.EX_OK)
+    os._exit(os.EX_OK)  # pylint: disable=protected-access
 
 
 def mpv_and_cleanup(url, new_env, log):
