@@ -26,7 +26,7 @@ $open_in_mpv_bin_dir = "${HOME}\AppData\Roaming\open-in-mpv"
 
 $nmh_manifest_url = "${url_prefix}/${revName}.json.in"
 $output = "${open_in_mpv_bin_dir}\${rev_name}.json.in"
-$exe_json = "${open_in_mpv_bin_dir}\\open-in-mpv.exe"
+$exe_json = "${open_in_mpv_bin_dir}\open-in-mpv.exe"
 $exe = "${open_in_mpv_bin_dir}\open-in-mpv.exe"
 (New-Object System.Net.WebClient).DownloadFile($nmh_manifest_url, $output)
 Get-Content -Path $output | % { $_ -replace '@BINPATH@/open-in-mpv', `
@@ -45,7 +45,7 @@ New-ItemProperty `
   -Value $output `
   -PropertyType String `
   -Force | Out-Null
-  
+
 New-Item -ItemType Directory `
   -Directory "${HOME}\AppData\Roaming\open-in-mpv"
 $open_in_mpv_url = "${url_prefix}/open-in-mpv"
