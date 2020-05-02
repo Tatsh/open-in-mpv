@@ -37,6 +37,10 @@ NO_KILL_CHROME=${NO_KILL_CHROME:-false}
 main() {
     local hosts_dir
 
+    if ! command -v sudo &> /dev/null; then
+        echo 'Please install sudo before using this script.' >&2
+    fi
+
     if [[ "$(uname)" == Linux ]]; then
         if [[ $_BROWSER == chrome ]]; then
             hosts_dir="$CHROME_HOSTS_DIR_LINUX"
