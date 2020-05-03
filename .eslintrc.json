@@ -10,7 +10,10 @@
     "no-alert": "error",
     "no-debugger": "error",
     "no-lonely-if": "error",
-    "no-magic-numbers": "error",
+    "no-magic-numbers": [
+      "error",
+      { "ignoreArrayIndexes": true, "enforceConst": true, "ignore": [0] }
+    ],
     "quotes": ["error", "single"]
   }
 }
