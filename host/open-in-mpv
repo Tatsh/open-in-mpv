@@ -40,11 +40,11 @@ except ImportError:
     cast = lambda y, x: x
 
 if platform.mac_ver()[0]:
-    MPV_SOCKET = expanduser('~/Library/Caches/open-in-mpv.sock')
     DATA_PATH = expanduser('~/Library/Application Support/open-in-mpv')
+    MPV_SOCKET = expanduser('~/Library/Caches/open-in-mpv.sock')
 else:
-    MPV_SOCKET = expanduser('~/.cache/open-in-mpv.sock')
     DATA_PATH = expanduser('~/.local/share/open-in-mpv')
+    MPV_SOCKET = expanduser('~/.cache/open-in-mpv.sock')
 LOG = logging.getLogger('open-in-mpv')
 PY3 = sys.version_info.major == 3
 
@@ -180,8 +180,8 @@ def main():
         return 1
 
     if message.get('debug', False):
-        log.write('Debug mode enabled.\n')
         LOG.setLevel(logging.DEBUG)
+        LOG.info('Debug mode enabled.')
     single = cast(bool, message.get('single', True))  # type: bool
 
     # MacPorts
@@ -192,7 +192,7 @@ def main():
         'message': 'About to spawn'
     }  # type: Dict[str, Union[str, bool, Dict[str, str]]]
     if isdir('/opt/local/bin'):
-        print('Detected MacPorts. Setting PATH.', file=log)
+        LOG.info('Detected MacPorts. Setting PATH.')
         data_resp['macports'] = True
         old_path = os.environ.get('PATH')
         new_env['PATH'] = '/opt/local/bin' if not old_path else ':'.join(
