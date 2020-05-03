@@ -2,7 +2,7 @@
 
 # This file is part of open-in-mpv.
 #
-# Copyright 2019 Andrew Udvare
+# Copyright 2020 Andrew Udvare
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -150,8 +150,8 @@ def main():
     if PY3:
         stdin_buffer = sys.stdin.buffer  # pylint: disable=no-member
     req_len = struct.unpack('@i', stdin_buffer.read(4))[0]  # type: int
-    message = json.loads(
-        stdin_buffer.read(req_len).decode())  # type: Dict[str, Union[str, bool]]
+    message = json.loads(stdin_buffer.read(
+        req_len).decode())  # type: Dict[str, Union[str, bool]]
 
     LOG.debug('Message contents (%d): %s', req_len, message)
 
