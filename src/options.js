@@ -1,7 +1,7 @@
 /**
  * This file is part of open-in-mpv.
  *
- * Copyright 2019 Andrew Udvare
+ * Copyright 2020 Andrew Udvare
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -37,11 +37,11 @@ const form = qs('form');
 /** @type {{[x: string]: HTMLInputElement}} */
 const checkboxFields = {
   debugFlag: qs('#debug'),
-  singleFlag: qs('#single')
+  singleFlag: qs('#single'),
 };
 const defaults = {
   debugFlag: false,
-  singleFlag: true
+  singleFlag: true,
 };
 /** @type HTMLElement */
 const logFile = qs('#log-file');
@@ -70,7 +70,7 @@ document.querySelectorAll('.text-info').forEach(el => {
   el.addEventListener('mousedown', async () => {
     const result = await navigator.permissions.query({
       // @ts-ignore
-      name: 'clipboard-write'
+      name: 'clipboard-write',
     });
     if (result.state == 'granted' || result.state == 'prompt') {
       try {
@@ -104,10 +104,10 @@ chrome.storage.local.get(items => {
 chrome.runtime.sendNativeMessage(
   'sh.tat.open_in_mpv',
   {
-    init: true
+    init: true,
   },
   (/** @type InitResponse | null | undefined */ resp) => {
-    if (typeof resp === 'undefined') {
+    if (!resp) {
       console.error(chrome.runtime.lastError);
       return;
     }
