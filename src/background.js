@@ -1,7 +1,7 @@
 /**
  * This file is part of open-in-mpv.
  *
- * Copyright 2019 Andrew Udvare
+ * Copyright 2020 Andrew Udvare
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -45,9 +45,9 @@ chrome.contextMenus.create({
       chrome.runtime.sendNativeMessage('sh.tat.open_in_mpv', {
         debug: items.debugFlag,
         single: items.singleFlag,
-        url: message.linkUrl || message.srcUrl || message.pageUrl
+        url: message.linkUrl || message.srcUrl || message.pageUrl,
       });
     });
   },
-  title: 'Open in mpv'
+  title: 'Open in mpv',
 });
