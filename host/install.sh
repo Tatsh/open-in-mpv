@@ -39,6 +39,7 @@ main() {
 
     if ! command -v sudo &> /dev/null; then
         echo 'Please install sudo before using this script.' >&2
+        return 1
     fi
 
     if [[ "$(uname)" == Linux ]]; then
@@ -48,7 +49,7 @@ main() {
             hosts_dir="$CHROMIUM_HOSTS_DIR_LINUX"
         else
             echo 'Unknown browser.' >&2
-            exit 1
+            return 1
         fi
     elif command -v sw_vers &> /dev/null; then
         IS_MAC=true
@@ -58,11 +59,11 @@ main() {
             hosts_dir="$CHROMIUM_HOSTS_DIR_MAC"
         else
             echo 'Unknown browser.' >&2
-            exit 1
+            return 1
         fi
     else
         echo 'Unsupported OS.' >&2
-        exit 1
+        return 1
     fi
 
     sudo mkdir -p "$hosts_dir" "$_BIN_PATH"
