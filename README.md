@@ -33,8 +33,10 @@ mkdir -p ~/.local/bin
 cp open-in-mpv ~/.local/bin/
 ```
 
-For this case, `@BINPATH@` should be `/home/username/.local/bin` in `/etc/chromium/native-messaging-hosts/sh.tat.open_in_mpv.json`. `~/.local/bin` must be in PATH,
-including from X's point of view, usually sourced in via `~/.xprofile` or similar.
+For this case, `@BINPATH@` should be `/home/username/.local/bin` in
+`/etc/chromium/native-messaging-hosts/sh.tat.open_in_mpv.json`. `~/.local/bin`
+must be in PATH, including from X's point of view, usually sourced in via
+`~/.xprofile` or similar.
 
 ## Known issues
 
