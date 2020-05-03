@@ -1,8 +1,8 @@
 # Open in mpv
 
-![QA](https://github.com/Tatsh/open-in-mpv/workflows/QA/badge.svg)
-![Lint Python](https://github.com/Tatsh/open-in-mpv/workflows/Lint%20python/badge.svg)
-![Lint Python (macOS)](<https://github.com/Tatsh/open-in-mpv/workflows/Lint%20python%20(macOS)/badge.svg>)
+[![QA](https://github.com/Tatsh/open-in-mpv/workflows/QA/badge.svg)](https://github.com/Tatsh/open-in-mpv/actions?query=workflow%3AQA)
+[![Lint Python](https://github.com/Tatsh/open-in-mpv/workflows/Lint%20python/badge.svg)](https://github.com/Tatsh/open-in-mpv/actions?query=workflow%3A%22Lint+python%22)
+[![Lint Python (macOS)](<https://github.com/Tatsh/open-in-mpv/workflows/Lint%20python%20(macOS)/badge.svg>)](https://github.com/Tatsh/open-in-mpv/actions?query=workflow%3A%22Lint+python+%28macOS%29%22)
 
 ![Context menu item](context-item.png)
 
