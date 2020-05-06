@@ -5,14 +5,20 @@
     "webextensions": true
   },
   "extends": ["eslint:recommended"],
-  "parserOptions": { "ecmaVersion": 8 },
+  "parserOptions": {
+    "ecmaVersion": 8
+  },
   "rules": {
     "no-alert": "error",
     "no-debugger": "error",
     "no-lonely-if": "error",
     "no-magic-numbers": [
       "error",
-      { "ignoreArrayIndexes": true, "enforceConst": true, "ignore": [0] }
+      {
+        "enforceConst": true,
+        "ignore": [0],
+        "ignoreArrayIndexes": true
+      }
     ],
     "quotes": ["error", "single"]
   }
