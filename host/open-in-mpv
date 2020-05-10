@@ -122,7 +122,7 @@ def get_cb(url, log, new_env):
             s.send(
                 json.dumps({
                     'command': ['loadfile', url]
-                }).encode('utf-8', 'strict') + b'\n')
+                }).encode(errors='strict') + b'\n')
         except socket.error:
             LOG.exception('Connection refused')
             try:
@@ -163,7 +163,7 @@ def real_main(log):
         stdout_buffer = sys.stdout  # type: Union[BinaryIO, TextIO]
         if PY3:
             stdout_buffer = sys.stdout.buffer  # pylint: disable=no-member
-            resp = cast(str, resp).encode('utf-8')
+            resp = cast(str, resp).encode()
             size = struct.pack('@i', len(resp))
         stdout_buffer.write(size)
         stdout_buffer.write(resp)
@@ -204,7 +204,7 @@ def real_main(log):
     stdout_buffer = sys.stdout
     if PY3:
         stdout_buffer = sys.stdout.buffer  # pylint: disable=no-member
-        resp = resp.encode('utf-8')
+        resp = resp.encode()
         size = struct.pack('@i', len(size))
     stdout_buffer.write(size)
     stdout_buffer.write(resp)
