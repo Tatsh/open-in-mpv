@@ -77,7 +77,7 @@ main() {
     if ! [[ "$NO_KILL_CHROME" ]]; then
         if [[ "$IS_MAC" ]]; then
             if [[ $_BROWSER == chrome ]]; then
-                killall 'Google Chrome'
+                killall 'Google Chrome' 'Google Chrome Beta'
             else
                 killall 'Google Chromium'
             fi
