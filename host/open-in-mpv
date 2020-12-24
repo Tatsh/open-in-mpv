@@ -47,6 +47,7 @@ else:
     MPV_SOCKET = expanduser('~/.cache/open-in-mpv.sock')
 LOG = logging.getLogger('open-in-mpv')
 PY3 = sys.version_info.major == 3
+VERSION = 'v0.0.4'
 
 
 def makedirs_exists_ok(path):
@@ -152,6 +153,7 @@ def real_main(log):
     LOG.debug('Message contents (%d): %s', req_len, message)
     if 'init' in message:
         resp = json.dumps({
+            'version': VERSION,
             'logPath': log.name,
             'socketPath': MPV_SOCKET,
         })  # type: Union[str, bytes]
@@ -178,6 +180,7 @@ def real_main(log):
     # MacPorts
     new_env = os.environ.copy()
     data_resp = {
+        'version': VERSION,
         'log_path': log.name,
         'py3': PY3,
         'message': 'About to spawn'
@@ -211,7 +214,7 @@ def real_main(log):
 def main():
     # type: () -> int
     if '--version' in sys.argv or '-V' in sys.argv:
-        print('v0.0.4')
+        print(VERSION)
         return 0
     if '--help' in sys.argv or '-h' in sys.argv:
         print('This script is intended to be used with the Chrome extension. '
