@@ -211,6 +211,13 @@ def real_main(log):
 
 def main():
     # type: () -> int
+    if '--version' in sys.argv or '-V' in sys.argv:
+        print('v0.0.3')
+        return 0
+    if '--help' in sys.argv or '-h' in sys.argv:
+        print('This script is intended to be used with the Chrome extension. '
+              'There is no CLI interface for general use.')
+        return 0
     makedirs_exists_ok(LOG_PATH)
     out_log_path = path_join(LOG_PATH, 'native.log')  # type: str
     log = open(out_log_path, 'a+')
