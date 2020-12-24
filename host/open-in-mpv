@@ -21,7 +21,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
 from __future__ import print_function, unicode_literals
 
 from os.path import dirname, exists, expanduser, isdir, join as path_join
@@ -41,10 +40,10 @@ except ImportError:
     cast = lambda y, x: x
 
 if platform.mac_ver()[0]:
-    DATA_PATH = expanduser('~/Library/Application Support/open-in-mpv')
+    LOG_PATH = expanduser('~/Library/Logs')
     MPV_SOCKET = expanduser('~/Library/Caches/open-in-mpv.sock')
 else:
-    DATA_PATH = expanduser('~/.local/share/open-in-mpv')
+    LOG_PATH = expanduser('~/.local/share/open-in-mpv')
     MPV_SOCKET = expanduser('~/.cache/open-in-mpv.sock')
 LOG = logging.getLogger('open-in-mpv')
 PY3 = sys.version_info.major == 3
@@ -63,7 +62,6 @@ def spawn(func):
     """See Stevens' "Advanced Programming in the UNIX Environment" for details
     (ISBN 0201563177)
     Credit: https://stackoverflow.com/a/6011298/374110
-
     Takes a callable which will be called in the fork.
     """
     try:
@@ -74,7 +72,6 @@ def spawn(func):
     except OSError as exc:
         LOG.exception('Fork #1 failed: %s (%s)', exc.errno, exc.strerror)
         sys.exit(1)
-
     os.setsid()
     # do second fork
     LOG.debug('Second fork')
@@ -86,7 +83,6 @@ def spawn(func):
     except OSError as exc:
         LOG.exception('Fork #2 failed: %s (%s)', exc.errno, exc.strerror)
         sys.exit(1)
-    # Call the callback
     LOG.debug('Calling callback')
     func()
     LOG.debug('Callback returned')
@@ -145,22 +141,18 @@ def get_cb(url, log, new_env):
 def real_main(log):
     # type: (TextIO) -> int
     makedirs_exists_ok(dirname(MPV_SOCKET))
-
     LOG.setLevel(logging.ERROR)
     LOG.addHandler(logging.StreamHandler(log))
-
     stdin_buffer = sys.stdin  # type: Union[BinaryIO, TextIO]
     if PY3:
         stdin_buffer = sys.stdin.buffer  # pylint: disable=no-member
     req_len = struct.unpack('@i', stdin_buffer.read(4))[0]  # type: int
     message = json.loads(stdin_buffer.read(
         req_len).decode())  # type: Dict[str, Union[str, bool]]
-
     LOG.debug('Message contents (%d): %s', req_len, message)
-
     if 'init' in message:
         resp = json.dumps({
-            'dataPath': DATA_PATH,
+            'logPath': LOG_PATH,
             'socketPath': MPV_SOCKET,
         })  # type: Union[str, bytes]
         size = struct.pack('@i', len(resp))
@@ -174,19 +166,16 @@ def real_main(log):
         log.close()
 
         return 0
-
     try:
         url = cast(str, message['url'])  # type: str
     except KeyError:
         LOG.exception('No URL was given')
         print(json.dumps({'message': 'Missing URL!'}))
         return 1
-
     if message.get('debug', False):
         LOG.setLevel(logging.DEBUG)
         LOG.info('Debug mode enabled.')
     single = cast(bool, message.get('single', True))  # type: bool
-
     # MacPorts
     new_env = os.environ.copy()
     data_resp = {
@@ -201,7 +190,6 @@ def real_main(log):
         new_env['PATH'] = '/opt/local/bin' if not old_path else ':'.join(
             ('/opt/local/bin', old_path))
     data_resp['env'] = new_env
-
     LOG.debug('About to spawn')
     resp = json.dumps(data_resp)
     size = struct.pack('@i', len(resp))
@@ -212,22 +200,19 @@ def real_main(log):
         size = struct.pack('@i', len(size))
     stdout_buffer.write(size)
     stdout_buffer.write(resp)
-
     if exists(MPV_SOCKET) and single:
         spawn(get_cb(url, log, new_env))
     else:
         spawn_init(url, log, new_env)
-
     LOG.debug('mpv should open soon')
     LOG.debug('Exiting with status 0')
-
     return 0
 
 
 def main():
     # type: () -> int
-    makedirs_exists_ok(DATA_PATH)
-    out_log_path = path_join(DATA_PATH, 'native.log')  # type: str
+    makedirs_exists_ok(LOG_PATH)
+    out_log_path = path_join(LOG_PATH, 'native.log')  # type: str
     log = open(out_log_path, 'a+')
     try:
         return real_main(log)
