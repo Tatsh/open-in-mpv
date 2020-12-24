@@ -24,7 +24,7 @@
 
 /**
  * @typedef InitResponse
- * @property {string} dataPath
+ * @property {string} logPath
  * @property {string} socketPath
  */
 
@@ -50,7 +50,6 @@ const saved = qs('#saved');
 /** @type HTMLElement */
 const socket = qs('#socket');
 const WAIT_TIME = 5000;
-
 form.addEventListener('submit', event => {
   event.preventDefault();
   const data = {};
@@ -65,7 +64,6 @@ form.addEventListener('submit', event => {
   });
   return false;
 });
-
 document.querySelectorAll('.text-info').forEach(el => {
   el.addEventListener('mousedown', async () => {
     const result = await navigator.permissions.query({
@@ -89,7 +87,6 @@ document.querySelectorAll('.text-info').forEach(el => {
     }
   });
 });
-
 chrome.storage.local.get(items => {
   if (typeof items === 'undefined') {
     console.error(chrome.runtime.lastError);
@@ -100,7 +97,6 @@ chrome.storage.local.get(items => {
       typeof items[key] !== 'undefined' ? items[key] : defaults[key];
   }
 });
-
 chrome.runtime.sendNativeMessage(
   'sh.tat.open_in_mpv',
   {
@@ -111,7 +107,7 @@ chrome.runtime.sendNativeMessage(
       console.error(chrome.runtime.lastError);
       return;
     }
-    logFile.innerText = resp.dataPath;
+    logFile.innerText = resp.logPath;
     socket.innerText = resp.socketPath;
   }
 );
