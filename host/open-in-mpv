@@ -52,7 +52,7 @@ PY3 = sys.version_info.major == 3
 def makedirs_exists_ok(path):
     # type: (str) -> None
     try:
-        os.makedirs(dirname(path))
+        os.makedirs(path)
     except OSError:
         pass
 
@@ -152,7 +152,7 @@ def real_main(log):
     LOG.debug('Message contents (%d): %s', req_len, message)
     if 'init' in message:
         resp = json.dumps({
-            'logPath': LOG_PATH,
+            'logPath': log.name,
             'socketPath': MPV_SOCKET,
         })  # type: Union[str, bytes]
         size = struct.pack('@i', len(resp))
@@ -164,7 +164,6 @@ def real_main(log):
         stdout_buffer.write(size)
         stdout_buffer.write(resp)
         log.close()
-
         return 0
     try:
         url = cast(str, message['url'])  # type: str
@@ -212,14 +211,14 @@ def real_main(log):
 def main():
     # type: () -> int
     if '--version' in sys.argv or '-V' in sys.argv:
-        print('v0.0.3')
+        print('v0.0.4')
         return 0
     if '--help' in sys.argv or '-h' in sys.argv:
         print('This script is intended to be used with the Chrome extension. '
               'There is no CLI interface for general use.')
         return 0
     makedirs_exists_ok(LOG_PATH)
-    out_log_path = path_join(LOG_PATH, 'native.log')  # type: str
+    out_log_path = path_join(LOG_PATH, 'open-in-mpv.log')  # type: str
     log = open(out_log_path, 'a+')
     try:
         return real_main(log)
