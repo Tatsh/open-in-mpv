@@ -50,6 +50,14 @@ LOG = logging.getLogger('open-in-mpv')
 PY3 = sys.version_info.major == 3
 
 
+def makedirs_exists_ok(path):
+    # type: (str) -> None
+    try:
+        os.makedirs(dirname(path))
+    except OSError:
+        pass
+
+
 def spawn(func):
     # type: (Callable[[], Any]) -> None
     """See Stevens' "Advanced Programming in the UNIX Environment" for details
@@ -136,11 +144,7 @@ def get_cb(url, log, new_env):
 
 def real_main(log):
     # type: (TextIO) -> int
-    try:
-        os.makedirs(DATA_PATH)
-        os.makedirs(dirname(MPV_SOCKET))
-    except OSError:
-        pass
+    makedirs_exists_ok(dirname(MPV_SOCKET))
 
     LOG.setLevel(logging.ERROR)
     LOG.addHandler(logging.StreamHandler(log))
@@ -222,6 +226,7 @@ def real_main(log):
 
 def main():
     # type: () -> int
+    makedirs_exists_ok(DATA_PATH)
     out_log_path = path_join(DATA_PATH, 'native.log')  # type: str
     log = open(out_log_path, 'a+')
     try:
