@@ -26,6 +26,7 @@
  * @typedef InitResponse
  * @property {string} logPath
  * @property {string} socketPath
+ * @property {string} version
  */
 
 /** @type ParentNode['querySelector'] */
@@ -49,6 +50,8 @@ const logFile = qs('#log-file');
 const saved = qs('#saved');
 /** @type HTMLElement */
 const socket = qs('#socket');
+/** @type HTMLElement */
+const version = qs('#version');
 const WAIT_TIME = 5000;
 form.addEventListener('submit', event => {
   event.preventDefault();
@@ -109,5 +112,6 @@ chrome.runtime.sendNativeMessage(
     }
     logFile.innerText = resp.logPath;
     socket.innerText = resp.socketPath;
+    version.innerText = resp.version;
   }
 );
