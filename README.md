@@ -25,6 +25,8 @@ An example script `open-in-mpv` is provided but you do not have to use it.
 
 ## An example installation for Linux
 
+<!-- cspell: disable -->
+
 ```sh
 killall chrome
 sudo mkdir -p /etc/chromium/native-messaging-hosts/
@@ -32,6 +34,8 @@ sudo cp sh.tat.open_in_mpv.json.in /etc/chromium/native-messaging-hosts/sh.tat.o
 mkdir -p ~/.local/bin
 cp open-in-mpv ~/.local/bin/
 ```
+
+<!-- cspell: enable -->
 
 For this case, `@BINPATH@` should be `/home/username/.local/bin` in
 `/etc/chromium/native-messaging-hosts/sh.tat.open_in_mpv.json`. `~/.local/bin`
