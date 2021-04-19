@@ -1,0 +1,11 @@
+{
+  "dictionaryDefinitions": [
+    { "name": "shellCommands", "path": "./.vscode/dict-shell-commands.txt" }
+  ],
+  "languageSettings": [
+    {
+      "languageId": "shellscript",
+      "dictionaries": ["shellCommands"]
+    }
+  ]
+}
