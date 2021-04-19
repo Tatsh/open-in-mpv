@@ -15,12 +15,6 @@ __pycache__/
 *.swp*
 *.kate-swp
 
-# KDevelop
-.kdev4/
-
-# Miscellaneous
-*.sqlite
-
 # OS generated files
 .directory
 .DS_Store
