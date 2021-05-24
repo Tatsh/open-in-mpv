@@ -33,14 +33,14 @@ OPEN_IN_MPV_ARGS = ('./open-in-mpv', 'chrome://nothing')
 def main():
     # type: () -> int
     data = json.dumps({'init': True})
-    p0 = sp.Popen(  # pylint: disable=consider-using-with
+    p0 = sp.Popen(  # pylint: disable=all
         OPEN_IN_MPV_ARGS,
         stdin=sp.PIPE,
         stdout=sp.PIPE)
     p0.communicate(input=pack('@i', len(data)) + data.encode('utf-8'))
     p0.wait()
     data = json.dumps({'url': sys.argv[1]})
-    p = sp.Popen(  # pylint: disable=consider-using-with
+    p = sp.Popen(  # pylint: disable=all
         OPEN_IN_MPV_ARGS,
         stdin=sp.PIPE,
         stdout=sp.PIPE)
