@@ -222,11 +222,8 @@ def main():
         return 0
     makedirs_exists_ok(LOG_PATH)
     out_log_path = path_join(LOG_PATH, 'open-in-mpv.log')  # type: str
-    log = open(out_log_path, 'a+')
-    try:
+    with open(out_log_path, 'a+') as log:
         return real_main(log)
-    finally:
-        log.close()
 
 
 if __name__ == '__main__':
