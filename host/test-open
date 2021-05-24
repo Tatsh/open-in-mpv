@@ -33,14 +33,14 @@ OPEN_IN_MPV_ARGS = ('./open-in-mpv', 'chrome://nothing')
 def main():
     # type: () -> int
     data = json.dumps({'init': True})
-    with sp.Popen(OPEN_IN_MPV_ARGS, stdin=sp.PIPE, stdout=sp.PIPE) as p0:
-        p0.communicate(input=pack('@i', len(data)) + data.encode('utf-8'))
-        p0.wait()
-        data = json.dumps({'url': sys.argv[1]})
-        with sp.Popen(OPEN_IN_MPV_ARGS, stdin=sp.PIPE, stdout=sp.PIPE) as p:
-            p.communicate(input=pack('@i', len(data)) + data.encode('utf-8'))
-            p.wait()
-            return 0 if p0.returncode == 0 and p.returncode == 0 else 1
+    p0 = sp.Popen(OPEN_IN_MPV_ARGS, stdin=sp.PIPE, stdout=sp.PIPE)
+    p0.communicate(input=pack('@i', len(data)) + data.encode('utf-8'))
+    p0.wait()
+    data = json.dumps({'url': sys.argv[1]})
+    p = sp.Popen(OPEN_IN_MPV_ARGS, stdin=sp.PIPE, stdout=sp.PIPE)
+    p.communicate(input=pack('@i', len(data)) + data.encode('utf-8'))
+    p.wait()
+    return 0 if p0.returncode == 0 and p.returncode == 0 else 1
 
 
 if __name__ == '__main__':
