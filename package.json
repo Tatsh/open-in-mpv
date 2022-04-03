@@ -22,5 +22,5 @@
   "scripts": {
     "test": "./src/test-open 'https://www.youtube.com/watch?v=5rB7zgPlC5M'"
   },
-  "version": "0.1.0"
+  "version": "0.0.5"
 }
