@@ -62,12 +62,12 @@ form.addEventListener('submit', event => {
   button.disabled = true;
   chrome.storage.local.set(data, () => {
     button.disabled = false;
-    saved.classList.remove('hidden');
-    setTimeout(() => saved.classList.add('hidden'), WAIT_TIME);
+    saved.classList.remove('d-none');
+    setTimeout(() => saved.classList.add('d-none'), WAIT_TIME);
   });
   return false;
 });
-document.querySelectorAll('.text-info').forEach(el => {
+document.querySelectorAll('.fw-bold').forEach(el => {
   el.addEventListener('mousedown', async () => {
     const result = await navigator.permissions.query({
       // @ts-ignore
@@ -76,12 +76,12 @@ document.querySelectorAll('.text-info').forEach(el => {
     if (result.state == 'granted' || result.state == 'prompt') {
       try {
         await navigator.clipboard.writeText(
-          el.querySelector('code').innerText.trim()
+          el.querySelector('.font-monospace').innerText.trim()
         );
         /** @type HTMLSpanElement */
-        const copied = el.querySelector('span');
-        copied.classList.remove('hidden');
-        setTimeout(() => copied.classList.add('hidden'), WAIT_TIME);
+        const copied = el.querySelector('.copied');
+        copied.classList.remove('d-none');
+        setTimeout(() => copied.classList.add('d-none'), WAIT_TIME);
       } catch (e) {
         console.error(e);
       }
