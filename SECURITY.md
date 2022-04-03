@@ -4,7 +4,7 @@
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 0.1.x   | :white_check_mark: |
+| 0.0.5   | :white_check_mark: |
 
 ## Reporting a Vulnerability
 
@@ -21,3 +21,4 @@ vulnerability is considered critical. In that case, email me.
 - Anything in the `test-open` script as this is only for testing for use by
   developers.
 - The lack of a complete uninstaller.
+Z
