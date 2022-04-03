@@ -23,6 +23,7 @@
 # SOFTWARE.
 from __future__ import print_function, unicode_literals
 
+from functools import lru_cache
 from os.path import dirname, exists, expanduser, isdir, join as path_join
 import json
 import logging
@@ -37,20 +38,33 @@ try:
     from typing import (Any, BinaryIO, Callable, Dict, Mapping, TextIO, Union,
                         cast)
 except ImportError:
-    cast = lambda y, x: x
+    cast = lambda _, x: x
 
-if platform.mac_ver()[0]:
-    LOG_PATH = expanduser('~/Library/Logs')
-    MPV_SOCKET = expanduser('~/Library/Caches/open-in-mpv.sock')
-else:
-    LOG_PATH = expanduser('~/.local/share/open-in-mpv')
-    MPV_SOCKET = expanduser('~/.cache/open-in-mpv.sock')
+
+@lru_cache()
+def get_log_path() -> str:
+    # type: () -> str
+    if platform.mac_ver()[0]:
+        return expanduser('~/Library/Logs')
+    return expanduser('~/.local/share/open-in-mpv')
+
+
+@lru_cache()
+def get_socket_path():
+    # type: () -> str
+    if platform.mac_ver()[0]:
+        return expanduser('~/Library/Caches/open-in-mpv.sock')
+    return expanduser('~/.cache/open-in-mpv.sock')
+
+
 LOG = logging.getLogger('open-in-mpv')
+LOG_PATH = get_log_path()
+MPV_SOCKET = get_socket_path()
 PY3 = sys.version_info.major == 3
 VERSION = 'v0.0.4'
 
 
-def makedirs_exists_ok(path):
+def makedirs(path):
     # type: (str) -> None
     try:
         os.makedirs(path)
@@ -95,13 +109,16 @@ def mpv_and_cleanup(url, new_env, log):
     # type: (str, Mapping[str, str], TextIO) -> Callable[[], None]
     def cb():
         # type: () -> None
-        sp.check_call([
-            'mpv', '--quiet', '--player-operation-mode=pseudo-gui',
-            '--input-ipc-server={}'.format(MPV_SOCKET), url
-        ],
+        sp.check_call((
+            'mpv',
+            '--quiet',
+            '--player-operation-mode=pseudo-gui',
+            '--input-ipc-server={}'.format(MPV_SOCKET),
+            url,
+        ),
                       env=new_env,
-                      stdout=log,
-                      stderr=log)
+                      stderr=log,
+                      stdout=log)
         os.remove(MPV_SOCKET)
 
     return cb
@@ -113,9 +130,9 @@ def spawn_init(url, log, new_env):
     spawn(mpv_and_cleanup(url, new_env, log))
 
 
-def get_cb(url, log, new_env):
+def get_callback(url, log, new_env):
     # type: (str, TextIO, Mapping[str, str]) -> Callable[[], None]
-    def cb():
+    def callback():
         # type: () -> None
         LOG.debug('Sending loadfile command')
         s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -125,9 +142,8 @@ def get_cb(url, log, new_env):
             s.settimeout(None)
             LOG.debug('Connected to socket')
             s.send(
-                json.dumps({
-                    'command': ['loadfile', url]
-                }).encode(errors='strict') + b'\n')
+                json.dumps(dict(command=['loadfile', url])).encode(
+                    errors='strict') + b'\n')
         except socket.error:
             LOG.exception('Connection refused')
             try:
@@ -136,12 +152,12 @@ def get_cb(url, log, new_env):
                 pass
             spawn_init(url, log, new_env)
 
-    return cb
+    return callback
 
 
 def real_main(log):
     # type: (TextIO) -> int
-    makedirs_exists_ok(dirname(MPV_SOCKET))
+    makedirs(dirname(MPV_SOCKET))
     LOG.setLevel(logging.ERROR)
     LOG.addHandler(logging.StreamHandler(log))
     stdin_buffer = sys.stdin  # type: Union[BinaryIO, TextIO]
@@ -152,11 +168,9 @@ def real_main(log):
         req_len).decode())  # type: Dict[str, Union[str, bool]]
     LOG.debug('Message contents (%d): %s', req_len, message)
     if 'init' in message:
-        resp = json.dumps({
-            'version': VERSION,
-            'logPath': log.name,
-            'socketPath': MPV_SOCKET,
-        })  # type: Union[str, bytes]
+        resp = json.dumps(
+            dict(version=VERSION, logPath=log.name,
+                 socketPath=MPV_SOCKET))  # type: Union[str, bytes]
         size = struct.pack('@i', len(resp))
         stdout_buffer = sys.stdout  # type: Union[BinaryIO, TextIO]
         if PY3:
@@ -171,7 +185,7 @@ def real_main(log):
         url = cast(str, message['url'])  # type: str
     except KeyError:
         LOG.exception('No URL was given')
-        print(json.dumps({'message': 'Missing URL!'}))
+        print(json.dumps(dict(message='Missing URL!')))
         return 1
     if message.get('debug', False):
         LOG.setLevel(logging.DEBUG)
@@ -179,12 +193,11 @@ def real_main(log):
     single = cast(bool, message.get('single', True))  # type: bool
     # MacPorts
     new_env = os.environ.copy()
-    data_resp = {
-        'version': VERSION,
-        'log_path': log.name,
-        'py3': PY3,
-        'message': 'About to spawn'
-    }  # type: Dict[str, Union[str, bool, Dict[str, str]]]
+    data_resp = dict(version=VERSION,
+                     log_path=log.name,
+                     py3=PY3,
+                     message='About to spawn'
+                     )  # type: Dict[str, Union[str, bool, Dict[str, str]]]
     if isdir('/opt/local/bin'):
         LOG.info('Detected MacPorts. Setting PATH.')
         data_resp['macports'] = True
@@ -203,7 +216,7 @@ def real_main(log):
     stdout_buffer.write(size)
     stdout_buffer.write(resp)
     if exists(MPV_SOCKET) and single:
-        spawn(get_cb(url, log, new_env))
+        spawn(get_callback(url, log, new_env))
     else:
         spawn_init(url, log, new_env)
     LOG.debug('mpv should open soon')
@@ -217,10 +230,11 @@ def main():
         print(VERSION)
         return 0
     if '--help' in sys.argv or '-h' in sys.argv:
-        print('This script is intended to be used with the Chrome extension. '
-              'There is no CLI interface for general use.')
+        print(('This script is intended to be used with the '
+               'Chrome extension. There is no CLI interface for general use.'),
+              file=sys.stderr)
         return 0
-    makedirs_exists_ok(LOG_PATH)
+    makedirs(LOG_PATH)
     out_log_path = path_join(LOG_PATH, 'open-in-mpv.log')  # type: str
     with open(out_log_path, 'a+') as log:
         return real_main(log)
