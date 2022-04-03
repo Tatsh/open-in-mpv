@@ -30,7 +30,10 @@
 
 chrome.contextMenus.create({
   contexts: ['audio', 'link', 'page', 'video'],
-  onclick: message => {
+  id: 'open-in-mpv-menu',
+  title: 'Open in mpv',
+});
+chrome.contextMenus.onClicked.addListener(message => {
     if (typeof message === 'undefined') {
       console.error(chrome.runtime.lastError);
       return;
@@ -48,6 +51,4 @@ chrome.contextMenus.create({
         url: message.linkUrl || message.srcUrl || message.pageUrl,
       });
     });
-  },
-  title: 'Open in mpv',
-});
+  })
