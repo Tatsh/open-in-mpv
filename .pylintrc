@@ -1,10 +1,9 @@
 [GENERAL]
-disable=invalid-name,
+disable=consider-using-f-string,
+        invalid-name,
         missing-docstring,
         missing-module-docstring,
         missing-function-docstring,
         too-many-statements,
-        ungrouped-imports
-
-[DESIGN]
-good-names=cb
+        ungrouped-imports,
+        unspecified-encoding
