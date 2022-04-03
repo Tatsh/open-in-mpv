@@ -28,11 +28,13 @@
  * @property {boolean} singleFlag
  */
 
-chrome.contextMenus.create({
-  contexts: ['audio', 'link', 'page', 'video'],
-  id: 'open-in-mpv-menu',
-  title: 'Open in mpv',
-});
+chrome.runtime.onInstalled.addListener(() =>
+  chrome.contextMenus.create({
+    contexts: ['audio', 'link', 'page', 'video'],
+    id: 'open-in-mpv-menu',
+    title: 'Open in mpv',
+  })
+);
 chrome.contextMenus.onClicked.addListener(message => {
     if (typeof message === 'undefined') {
       console.error(chrome.runtime.lastError);
