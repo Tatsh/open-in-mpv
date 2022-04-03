@@ -21,4 +21,3 @@ vulnerability is considered critical. In that case, email me.
 - Anything in the `test-open` script as this is only for testing for use by
   developers.
 - The lack of a complete uninstaller.
-Z
