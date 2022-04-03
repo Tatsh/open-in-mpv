@@ -42,7 +42,7 @@ except ImportError:
 
 
 @lru_cache()
-def get_log_path() -> str:
+def get_log_path():
     # type: () -> str
     if platform.mac_ver()[0]:
         return expanduser('~/Library/Logs')
