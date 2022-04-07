@@ -70,10 +70,9 @@ form.addEventListener('submit', event => {
 document.querySelectorAll('.fw-bold').forEach(el => {
   el.addEventListener('mousedown', async () => {
     const result = await navigator.permissions.query({
-      // @ts-ignore
-      name: 'clipboard-write',
+      name: /** @type PermissionName */ 'clipboard-write',
     });
-    if (result.state == 'granted' || result.state == 'prompt') {
+    if (result.state === 'granted' || result.state === 'prompt') {
       try {
         await navigator.clipboard.writeText(
           el.querySelector('.font-monospace').innerText.trim()
