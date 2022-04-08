@@ -23,7 +23,7 @@
 # SOFTWARE.
 from functools import lru_cache
 from os.path import dirname, exists, expanduser, isdir, join as path_join
-from typing import Any, Callable, Mapping, TextIO, cast
+from typing import Any, Callable, Dict, Mapping, TextIO, cast
 import json
 import logging
 import os
@@ -51,7 +51,6 @@ def get_socket_path() -> str:
 LOG = logging.getLogger('open-in-mpv')
 LOG_PATH = get_log_path()
 MPV_SOCKET = get_socket_path()
-PY3 = sys.version_info.major == 3
 VERSION = 'v0.0.4'
 
 
@@ -94,7 +93,8 @@ def spawn(func: Callable[[], Any]) -> None:
     os._exit(os.EX_OK)  # pylint: disable=protected-access
 
 
-def mpv_and_cleanup(url: str, new_env: Mapping[str, str], log: TextIO) -> Callable[[], None]:
+def mpv_and_cleanup(url: str, new_env: Mapping[str, str],
+                    log: TextIO) -> Callable[[], None]:
     def cb() -> None:
         sp.check_call((
             'mpv',
@@ -116,7 +116,8 @@ def spawn_init(url: str, log: TextIO, new_env: Mapping[str, str]) -> None:
     spawn(mpv_and_cleanup(url, new_env, log))
 
 
-def get_callback(url: str, log: TextIO, new_env: Mapping[str, str]) -> Callable[[], None]:
+def get_callback(url: str, log: TextIO,
+                 new_env: Mapping[str, str]) -> Callable[[], None]:
     def callback() -> None:
         LOG.debug('Sending loadfile command')
         s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -143,23 +144,16 @@ def real_main(log: TextIO) -> int:
     makedirs(dirname(MPV_SOCKET))
     LOG.setLevel(logging.ERROR)
     LOG.addHandler(logging.StreamHandler(log))
-    stdin_buffer = sys.stdin
-    if PY3:
-        stdin_buffer = sys.stdin.buffer  # pylint: disable=no-member
+    stdin_buffer = sys.stdin.buffer
     req_len = struct.unpack('@i', stdin_buffer.read(4))[0]
-    message = json.loads(stdin_buffer.read(
-        req_len).decode())
+    message = json.loads(stdin_buffer.read(req_len).decode())
     LOG.debug('Message contents (%d): %s', req_len, message)
     if 'init' in message:
         resp = json.dumps(
             dict(version=VERSION, logPath=log.name,
-                 socketPath=MPV_SOCKET))
+                 socketPath=MPV_SOCKET)).encode()
         size = struct.pack('@i', len(resp))
-        stdout_buffer = sys.stdout
-        if PY3:
-            stdout_buffer = sys.stdout.buffer  # pylint: disable=no-member
-            resp = cast(str, resp).encode()
-            size = struct.pack('@i', len(resp))
+        stdout_buffer = sys.stdout.buffer
         stdout_buffer.write(size)
         stdout_buffer.write(resp)
         log.close()
@@ -176,11 +170,9 @@ def real_main(log: TextIO) -> int:
     single = cast(bool, message.get('single', True))
     # MacPorts
     new_env = os.environ.copy()
-    data_resp = dict(version=VERSION,
-                     log_path=log.name,
-                     py3=PY3,
-                     message='About to spawn'
-                     )
+    data_resp = cast(
+        Dict[str, Any],
+        dict(version=VERSION, log_path=log.name, message='About to spawn'))
     if isdir('/opt/local/bin'):
         LOG.info('Detected MacPorts. Setting PATH.')
         data_resp['macports'] = True
@@ -189,13 +181,9 @@ def real_main(log: TextIO) -> int:
             ('/opt/local/bin', old_path))
     data_resp['env'] = new_env
     LOG.debug('About to spawn')
-    resp = json.dumps(data_resp)
+    resp = json.dumps(data_resp).encode()
     size = struct.pack('@i', len(resp))
-    stdout_buffer = sys.stdout
-    if PY3:
-        stdout_buffer = sys.stdout.buffer  # pylint: disable=no-member
-        resp = resp.encode()
-        size = struct.pack('@i', len(size))
+    stdout_buffer = sys.stdout.buffer
     stdout_buffer.write(size)
     stdout_buffer.write(resp)
     if exists(MPV_SOCKET) and single:
