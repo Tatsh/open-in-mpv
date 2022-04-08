@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # This file is part of open-in-mpv.
 #
@@ -30,8 +30,7 @@ import sys
 OPEN_IN_MPV_ARGS = ('./open-in-mpv', 'chrome://nothing')
 
 
-def main():
-    # type: () -> int
+def main() -> int:
     data = json.dumps({'init': True})
     p0 = sp.Popen(  # pylint: disable=all
         OPEN_IN_MPV_ARGS,

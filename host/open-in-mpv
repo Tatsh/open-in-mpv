@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # This file is part of open-in-mpv.
 #
@@ -21,10 +21,9 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from __future__ import print_function, unicode_literals
-
 from functools import lru_cache
 from os.path import dirname, exists, expanduser, isdir, join as path_join
+from typing import Any, Callable, Mapping, TextIO, cast
 import json
 import logging
 import os
@@ -34,24 +33,16 @@ import struct
 import subprocess as sp
 import sys
 
-try:
-    from typing import (Any, BinaryIO, Callable, Dict, Mapping, TextIO, Union,
-                        cast)
-except ImportError:
-    cast = lambda _, x: x
-
 
 @lru_cache()
-def get_log_path():
-    # type: () -> str
+def get_log_path() -> str:
     if platform.mac_ver()[0]:
         return expanduser('~/Library/Logs')
     return expanduser('~/.local/share/open-in-mpv')
 
 
 @lru_cache()
-def get_socket_path():
-    # type: () -> str
+def get_socket_path() -> str:
     if platform.mac_ver()[0]:
         return expanduser('~/Library/Caches/open-in-mpv.sock')
     return expanduser('~/.cache/open-in-mpv.sock')
@@ -64,16 +55,14 @@ PY3 = sys.version_info.major == 3
 VERSION = 'v0.0.4'
 
 
-def makedirs(path):
-    # type: (str) -> None
+def makedirs(path: str) -> None:
     try:
         os.makedirs(path)
     except OSError:
         pass
 
 
-def spawn(func):
-    # type: (Callable[[], Any]) -> None
+def spawn(func: Callable[[], Any]) -> None:
     """See Stevens' "Advanced Programming in the UNIX Environment" for details
     (ISBN 0201563177)
     Credit: https://stackoverflow.com/a/6011298/374110
@@ -105,10 +94,8 @@ def spawn(func):
     os._exit(os.EX_OK)  # pylint: disable=protected-access
 
 
-def mpv_and_cleanup(url, new_env, log):
-    # type: (str, Mapping[str, str], TextIO) -> Callable[[], None]
-    def cb():
-        # type: () -> None
+def mpv_and_cleanup(url: str, new_env: Mapping[str, str], log: TextIO) -> Callable[[], None]:
+    def cb() -> None:
         sp.check_call((
             'mpv',
             '--quiet',
@@ -124,16 +111,13 @@ def mpv_and_cleanup(url, new_env, log):
     return cb
 
 
-def spawn_init(url, log, new_env):
-    # type: (str, TextIO, Mapping[str, str]) -> None
+def spawn_init(url: str, log: TextIO, new_env: Mapping[str, str]) -> None:
     LOG.debug('Spawning initial instance')
     spawn(mpv_and_cleanup(url, new_env, log))
 
 
-def get_callback(url, log, new_env):
-    # type: (str, TextIO, Mapping[str, str]) -> Callable[[], None]
-    def callback():
-        # type: () -> None
+def get_callback(url: str, log: TextIO, new_env: Mapping[str, str]) -> Callable[[], None]:
+    def callback() -> None:
         LOG.debug('Sending loadfile command')
         s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         s.settimeout(2)
@@ -155,24 +139,23 @@ def get_callback(url, log, new_env):
     return callback
 
 
-def real_main(log):
-    # type: (TextIO) -> int
+def real_main(log: TextIO) -> int:
     makedirs(dirname(MPV_SOCKET))
     LOG.setLevel(logging.ERROR)
     LOG.addHandler(logging.StreamHandler(log))
-    stdin_buffer = sys.stdin  # type: Union[BinaryIO, TextIO]
+    stdin_buffer = sys.stdin
     if PY3:
         stdin_buffer = sys.stdin.buffer  # pylint: disable=no-member
-    req_len = struct.unpack('@i', stdin_buffer.read(4))[0]  # type: int
+    req_len = struct.unpack('@i', stdin_buffer.read(4))[0]
     message = json.loads(stdin_buffer.read(
-        req_len).decode())  # type: Dict[str, Union[str, bool]]
+        req_len).decode())
     LOG.debug('Message contents (%d): %s', req_len, message)
     if 'init' in message:
         resp = json.dumps(
             dict(version=VERSION, logPath=log.name,
-                 socketPath=MPV_SOCKET))  # type: Union[str, bytes]
+                 socketPath=MPV_SOCKET))
         size = struct.pack('@i', len(resp))
-        stdout_buffer = sys.stdout  # type: Union[BinaryIO, TextIO]
+        stdout_buffer = sys.stdout
         if PY3:
             stdout_buffer = sys.stdout.buffer  # pylint: disable=no-member
             resp = cast(str, resp).encode()
@@ -182,7 +165,7 @@ def real_main(log):
         log.close()
         return 0
     try:
-        url = cast(str, message['url'])  # type: str
+        url = cast(str, message['url'])
     except KeyError:
         LOG.exception('No URL was given')
         print(json.dumps(dict(message='Missing URL!')))
@@ -190,14 +173,14 @@ def real_main(log):
     if message.get('debug', False):
         LOG.setLevel(logging.DEBUG)
         LOG.info('Debug mode enabled.')
-    single = cast(bool, message.get('single', True))  # type: bool
+    single = cast(bool, message.get('single', True))
     # MacPorts
     new_env = os.environ.copy()
     data_resp = dict(version=VERSION,
                      log_path=log.name,
                      py3=PY3,
                      message='About to spawn'
-                     )  # type: Dict[str, Union[str, bool, Dict[str, str]]]
+                     )
     if isdir('/opt/local/bin'):
         LOG.info('Detected MacPorts. Setting PATH.')
         data_resp['macports'] = True
@@ -224,8 +207,7 @@ def real_main(log):
     return 0
 
 
-def main():
-    # type: () -> int
+def main() -> int:
     if '--version' in sys.argv or '-V' in sys.argv:
         print(VERSION)
         return 0
@@ -235,7 +217,7 @@ def main():
               file=sys.stderr)
         return 0
     makedirs(LOG_PATH)
-    out_log_path = path_join(LOG_PATH, 'open-in-mpv.log')  # type: str
+    out_log_path = path_join(LOG_PATH, 'open-in-mpv.log')
     with open(out_log_path, 'a+') as log:
         return real_main(log)
 
