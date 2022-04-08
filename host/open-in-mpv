@@ -51,7 +51,7 @@ def get_socket_path() -> str:
 LOG = logging.getLogger('open-in-mpv')
 LOG_PATH = get_log_path()
 MPV_SOCKET = get_socket_path()
-VERSION = 'v0.0.4'
+VERSION = 'v0.0.6'
 
 
 def makedirs(path: str) -> None:

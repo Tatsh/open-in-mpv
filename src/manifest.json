@@ -16,5 +16,5 @@
     "page": "options.html"
   },
   "permissions": ["contextMenus", "nativeMessaging", "storage"],
-  "version": "0.0.5"
+  "version": "0.0.6"
 }
