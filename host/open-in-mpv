@@ -23,7 +23,7 @@
 # SOFTWARE.
 from functools import lru_cache
 from os.path import dirname, exists, expanduser, isdir, join as path_join
-from typing import Any, Callable, Mapping, TextIO
+from typing import Any, Callable, Dict, Mapping, TextIO
 import json
 import logging
 import os
@@ -170,7 +170,9 @@ def real_main(log: TextIO) -> int:
     single: bool = message.get('single', True)
     # MacPorts
     new_env = os.environ.copy()
-    data_resp = dict(version=VERSION, log_path=log.name, message='About to spawn')
+    data_resp: Dict[str, Any] = dict(version=VERSION,
+                                            log_path=log.name,
+                                            message='About to spawn')
     if isdir('/opt/local/bin'):
         LOG.info('Detected MacPorts. Setting PATH.')
         data_resp['macports'] = True
