@@ -23,7 +23,7 @@
 # SOFTWARE.
 from functools import lru_cache
 from os.path import dirname, exists, expanduser, isdir, join as path_join
-from typing import Any, Callable, Dict, Mapping, TextIO, cast
+from typing import Any, Callable, Mapping, TextIO
 import json
 import logging
 import os
@@ -159,7 +159,7 @@ def real_main(log: TextIO) -> int:
         log.close()
         return 0
     try:
-        url = cast(str, message['url'])
+        url: str = message['url']
     except KeyError:
         LOG.exception('No URL was given')
         print(json.dumps(dict(message='Missing URL!')))
@@ -167,12 +167,10 @@ def real_main(log: TextIO) -> int:
     if message.get('debug', False):
         LOG.setLevel(logging.DEBUG)
         LOG.info('Debug mode enabled.')
-    single = cast(bool, message.get('single', True))
+    single: bool = message.get('single', True)
     # MacPorts
     new_env = os.environ.copy()
-    data_resp = cast(
-        Dict[str, Any],
-        dict(version=VERSION, log_path=log.name, message='About to spawn'))
+    data_resp = dict(version=VERSION, log_path=log.name, message='About to spawn')
     if isdir('/opt/local/bin'):
         LOG.info('Detected MacPorts. Setting PATH.')
         data_resp['macports'] = True
