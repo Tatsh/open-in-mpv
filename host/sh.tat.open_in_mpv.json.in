@@ -4,6 +4,6 @@
   "path": "@BIN_PATH@/open-in-mpv",
   "type": "stdio",
   "allowed_origins": [
-    "chrome-extension://ihiaopinemhbiihjadilnldeoocgbame/"
+    "chrome-extension://ggijpepdpiehgbiknmfpfbhcalffjlbj/"
   ]
 }
