@@ -14,7 +14,7 @@ video page or link, choose `Open in mpv` and view the video with mpv.
 
 ## Installation
 
-First, install the extension. Quit your browser.
+First, [install the extension](https://chrome.google.com/webstore/detail/open-in-mpv/ggijpepdpiehgbiknmfpfbhcalffjlbj/). Quit your browser.
 
 Follow [Google's instructions](https://developer.chrome.com/extensions/nativeMessaging#native-messaging-host-location)
 to install the `sh.tat.open_in_mpv.json.in` file (remove the `.in` ending). You
