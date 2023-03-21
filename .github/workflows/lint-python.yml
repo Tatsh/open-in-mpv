@@ -14,11 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7, 3.8, 3.9, '3.10']
+        python-version: [3.8, 3.9, '3.10']
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
@@ -26,10 +26,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install mypy pylint pylint-quotes
     - name: Lint with mypy
-      run: |
-        mypy host/open-in-mpv
-        mypy host/test-open
+      run: mypy host/open-in-mpv host/test-open
     - name: Lint with Pylint
-      run: |
-        pylint host/open-in-mpv
-        pylint host/test-open
+      run: pylint host/open-in-mpv host/test-open

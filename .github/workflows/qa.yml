@@ -15,14 +15,14 @@ jobs:
     steps:
     - name: install deps
       run: sudo apt-get install -y jq
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Use Node.js
       uses: actions/setup-node@v3
       with:
         node-version: 16
     - run: yarn
     - name: ESLint
-      run: npx eslint src/
+      run: yarn eslint src/
     - name: Shellcheck install.sh
       run: shellcheck host/install.sh
     - name: check JSON files
