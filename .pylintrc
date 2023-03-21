@@ -1,9 +1,8 @@
 [GENERAL]
-disable=consider-using-f-string,
-        invalid-name,
+disable=invalid-name,
         missing-docstring,
         missing-module-docstring,
         missing-function-docstring,
         too-many-statements,
-        ungrouped-imports,
-        unspecified-encoding
+        unspecified-encoding,
+        use-dict-literal
