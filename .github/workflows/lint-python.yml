@@ -26,6 +26,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install mypy pylint pylint-quotes
     - name: Lint with mypy
-      run: mypy host/open-in-mpv host/test-open
+      run: |
+        mypy host/open-in-mpv
+        mypy host/test-open
     - name: Lint with Pylint
       run: pylint host/open-in-mpv host/test-open
