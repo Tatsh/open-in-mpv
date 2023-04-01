@@ -1,0 +1,7 @@
+{
+    "name": "open-in-mpv",
+    "description": "Open a video using mpv",
+    "path": "@BIN_PATH@",
+    "type": "stdio",
+    "allowed_extensions": ["{43e6f3ef-84a0-55f4-b9dd-d879106a24a9}"]
+ }
