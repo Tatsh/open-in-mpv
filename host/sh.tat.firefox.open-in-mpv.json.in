@@ -1,5 +1,5 @@
 {
-    "name": "open-in-mpv",
+    "name": "sh.tat.open-in-mpv",
     "description": "Open a video using mpv",
     "path": "@BIN_PATH@",
     "type": "stdio",
