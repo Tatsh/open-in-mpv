@@ -22,7 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 from functools import lru_cache
-from os.path import dirname, exists, expanduser, isdir, join as path_join
+from os.path import dirname, exists, expanduser, expandvars, isdir, join as path_join
 from typing import Any, Callable, Dict, Mapping, TextIO
 import json
 import logging
@@ -38,6 +38,8 @@ import sys
 def get_log_path() -> str:
     if platform.mac_ver()[0]:
         return expanduser('~/Library/Logs')
+    if platform.win32_ver()[0]:
+        return expandvars("%LOCALDATA%\open-in-mpv")
     return expanduser('~/.local/share/open-in-mpv')
 
 
@@ -45,6 +47,8 @@ def get_log_path() -> str:
 def get_socket_path() -> str:
     if platform.mac_ver()[0]:
         return expanduser('~/Library/Caches/open-in-mpv.sock')
+    if platform.win32_ver()[0]:
+        return expandvars("%LOCALDATA%\open-in-mpv\open-in-mpv.sock")
     return expanduser('~/.cache/open-in-mpv.sock')
 
 
