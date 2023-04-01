@@ -39,7 +39,7 @@ def get_log_path() -> str:
     if platform.mac_ver()[0]:
         return expanduser('~/Library/Logs')
     if platform.win32_ver()[0]:
-        return expandvars("%LOCALDATA%\\open-in-mpv")
+        return expandvars(r"%LOCALDATA%\open-in-mpv")
     return expanduser('~/.local/share/open-in-mpv')
 
 
@@ -48,7 +48,7 @@ def get_socket_path() -> str:
     if platform.mac_ver()[0]:
         return expanduser('~/Library/Caches/open-in-mpv.sock')
     if platform.win32_ver()[0]:
-        return expandvars("%LOCALDATA%\\open-in-mpv\open-in-mpv.sock")
+        return expandvars(r"%LOCALDATA%\open-in-mpv\open-in-mpv.sock")
     return expanduser('~/.cache/open-in-mpv.sock')
 
 
