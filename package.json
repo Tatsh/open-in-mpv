@@ -5,7 +5,7 @@
   },
   "description": "Chrome extension to open a URL with mpv.",
   "devDependencies": {
-    "@types/chrome": "^0.0.234",
+    "@types/chrome": "^0.0.235",
     "eslint": "^8.39.0"
   },
   "homepage": "https://github.com/Tatsh/open-in-mpv#readme",
