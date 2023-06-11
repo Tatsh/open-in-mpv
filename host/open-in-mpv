@@ -93,16 +93,19 @@ def spawn(func: Callable[[], Any]) -> None:
     os._exit(os.EX_OK)  # pylint: disable=protected-access
 
 
-def mpv_and_cleanup(url: str, new_env: Mapping[str, str],
-                    log: TextIO) -> Callable[[], None]:
+def mpv_and_cleanup(url: str,
+                    new_env: Mapping[str, str],
+                    log: TextIO,
+                    debug: bool = False) -> Callable[[], None]:
     def cb() -> None:
         sp.check_call((
             'mpv',
-            '--quiet',
+            '--gpu-api=opengl',
             '--player-operation-mode=pseudo-gui',
+            '--quiet',
             f'--input-ipc-server={MPV_SOCKET}',
             url,
-        ),
+        ) + (f'--log-file={log.name}',) if debug else (),
                       env=new_env,
                       stderr=log,
                       stdout=log)
@@ -111,13 +114,15 @@ def mpv_and_cleanup(url: str, new_env: Mapping[str, str],
     return cb
 
 
-def spawn_init(url: str, log: TextIO, new_env: Mapping[str, str]) -> None:
+def spawn_init(url: str, log: TextIO, new_env: Mapping[str, str], debug: bool = False) -> None:
     LOG.debug('Spawning initial instance')
-    spawn(mpv_and_cleanup(url, new_env, log))
+    spawn(mpv_and_cleanup(url, new_env, log, debug))
 
 
-def get_callback(url: str, log: TextIO,
-                 new_env: Mapping[str, str]) -> Callable[[], None]:
+def get_callback(url: str,
+                 log: TextIO,
+                 new_env: Mapping[str, str],
+                 debug: bool = False) -> Callable[[], None]:
     def callback() -> None:
         LOG.debug('Sending loadfile command')
         s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -126,16 +131,14 @@ def get_callback(url: str, log: TextIO,
             s.connect(MPV_SOCKET)
             s.settimeout(None)
             LOG.debug('Connected to socket')
-            s.send(
-                json.dumps(dict(command=['loadfile', url])).encode(
-                    errors='strict') + b'\n')
+            s.send(json.dumps(dict(command=['loadfile', url])).encode(errors='strict') + b'\n')
         except socket.error:
             LOG.exception('Connection refused')
             try:
                 os.remove(MPV_SOCKET)
             except OSError:
                 pass
-            spawn_init(url, log, new_env)
+            spawn_init(url, log, new_env, debug)
 
     return callback
 
@@ -149,9 +152,7 @@ def real_main(log: TextIO) -> int:
     message = json.loads(stdin_buffer.read(req_len).decode())
     LOG.debug('Message contents (%d): %s', req_len, message)
     if 'init' in message:
-        resp = json.dumps(
-            dict(version=VERSION, logPath=log.name,
-                 socketPath=MPV_SOCKET)).encode()
+        resp = json.dumps(dict(version=VERSION, logPath=log.name, socketPath=MPV_SOCKET)).encode()
         size = struct.pack('@i', len(resp))
         stdout_buffer = sys.stdout.buffer
         stdout_buffer.write(size)
@@ -164,15 +165,14 @@ def real_main(log: TextIO) -> int:
         LOG.exception('No URL was given')
         print(json.dumps(dict(message='Missing URL!')))
         return 1
-    if message.get('debug', False):
+    is_debug = message.get('debug', False)
+    if is_debug:
         LOG.setLevel(logging.DEBUG)
         LOG.info('Debug mode enabled.')
     single: bool = message.get('single', True)
     # MacPorts
     new_env = os.environ.copy()
-    data_resp: Dict[str, Any] = dict(version=VERSION,
-                                            log_path=log.name,
-                                            message='About to spawn')
+    data_resp: Dict[str, Any] = dict(version=VERSION, log_path=log.name, message='About to spawn')
     if isdir('/opt/local/bin'):
         LOG.info('Detected MacPorts. Setting PATH.')
         data_resp['macports'] = True
@@ -180,6 +180,10 @@ def real_main(log: TextIO) -> int:
         new_env['PATH'] = '/opt/local/bin' if not old_path else ':'.join(
             ('/opt/local/bin', old_path))
     data_resp['env'] = new_env
+    if is_debug:
+        LOG.debug('Environment:')
+        for k, v in new_env.items():
+            LOG.debug(f'  {k}={v}')
     LOG.debug('About to spawn')
     resp = json.dumps(data_resp).encode()
     size = struct.pack('@i', len(resp))
@@ -187,9 +191,9 @@ def real_main(log: TextIO) -> int:
     stdout_buffer.write(size)
     stdout_buffer.write(resp)
     if exists(MPV_SOCKET) and single:
-        spawn(get_callback(url, log, new_env))
+        spawn(get_callback(url, log, new_env, is_debug))
     else:
-        spawn_init(url, log, new_env)
+        spawn_init(url, log, new_env, is_debug)
     LOG.debug('mpv should open soon')
     LOG.debug('Exiting with status 0')
     return 0
