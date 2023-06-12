@@ -31,5 +31,5 @@
     "qa": "eslint --report-unused-disable-directives src && yarn mypy && yarn pylint && yarn check-spelling && yarn check-formatting",
     "test": "poetry run open-in-mpv-test 'https://www.youtube.com/watch?v=5rB7zgPlC5M'"
   },
-  "version": "0.0.6"
+  "version": "0.1.0"
 }
