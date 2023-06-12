@@ -5,43 +5,49 @@
 
 ![Context menu item](context-item.png)
 
-This browser extension displays a context menu item _Open in mpv_ for links.
-When clicked it will pass the URL of the link to mpv (which must be `PATH`).
+This browser extension displays a context menu item _Open in mpv_ for links. When clicked it will
+pass the URL of the link to mpv (which must be `PATH`).
 
-If you have `youtube-dl` installed and in `PATH`, then mpv will try to use it
-to resolve URLs it cannot handle. This means you can right-click on any YouTube
-video page or link, choose `Open in mpv` and view the video with mpv.
+If you have yt-dlp installed and in `PATH`, then mpv will try to use it to resolve URLs it cannot
+handle. This means you can right-click on any YouTube video page or link, choose `Open in mpv` and
+view the video with mpv.
 
 ## Installation
 
-First, [install the extension](https://chrome.google.com/webstore/detail/open-in-mpv/ggijpepdpiehgbiknmfpfbhcalffjlbj/). Quit your browser.
+First, [install the extension](https://chrome.google.com/webstore/detail/open-in-mpv/ggijpepdpiehgbiknmfpfbhcalffjlbj/).
+Quit your browser.
 
-Follow [Google's instructions](https://developer.chrome.com/extensions/nativeMessaging#native-messaging-host-location)
-to install the `sh.tat.open_in_mpv.json.in` file (remove the `.in` ending). You
-need to modify it, changing `@BINPATH@` to fit your system.
+There are many ways to perform the next step. Below is the most basic, assuming you have Pip
+installed. Before running the commands below, quit your browser.
 
-An example script `open-in-mpv` is provided but you do not have to use it.
+Gentoo users can simply install `media-video/open-in-mpv` from
+[my overlay](https://github.com/Tatsh/tatsh-overlay).
 
-## An example installation for Linux
-
-<!-- cspell: disable -->
-
-```sh
-killall chrome
-sudo mkdir -p /etc/chromium/native-messaging-hosts/
-sudo cp sh.tat.open_in_mpv.json.in /etc/chromium/native-messaging-hosts/sh.tat.open_in_mpv.json
-mkdir -p ~/.local/bin
-cp open-in-mpv ~/.local/bin/
+```shell
+pip install --user open-in-mpv
+open-in-mpv-install --user
 ```
 
-<!-- cspell: enable -->
+The above will install the native host JSON file to supported Chromium-based browsers whose paths are
+known, but only if the browser has created the directories before. If you want to force the
+installation you can pass `--force`.
 
-For this case, `@BINPATH@` should be `/home/username/.local/bin` in
-`/etc/chromium/native-messaging-hosts/sh.tat.open_in_mpv.json`. `~/.local/bin`
-must be in PATH, including from X's point of view, usually sourced in via
-`~/.xprofile` or similar.
+See `open-in-mpv-install --help` for more options. Linux users can pass the `--system` option to
+install the native host part of the extension system-wide.
+
+## Uninstallation
+
+```shell
+open-in-mpv-uninstall
+pip remove --user open-in-mpv
+```
+
+Uninstall the extension from your browser.
 
 ## Known issues
 
-At this time, Windows is not supported by the `open-in-mpv` Python script. It
-may work, but it is not supported.
+**Linux**: mpv is launched with `--gpu-api=opengl` because with Vulkan it starts but fails to open a
+window.
+
+At this time, Windows is not supported by the `open-in-mpv` Python script. It may work, but it is
+not supported.
