@@ -1,7 +1,6 @@
 # Open in mpv
 
 [![QA](https://github.com/Tatsh/open-in-mpv/workflows/QA/badge.svg)](https://github.com/Tatsh/open-in-mpv/actions?query=workflow%3AQA)
-[![Lint Python](https://github.com/Tatsh/open-in-mpv/workflows/Lint%20python/badge.svg)](https://github.com/Tatsh/open-in-mpv/actions?query=workflow%3A%22Lint+python%22)
 
 ![Context menu item](context-item.png)
 
