@@ -183,7 +183,7 @@ def real_main(log: TextIO) -> int:
     if is_debug:
         LOG.debug('Environment:')
         for k, v in new_env.items():
-            LOG.debug(f'  {k}={v}')
+            LOG.debug('  %s=%s' % (k, v))
     LOG.debug('About to spawn')
     resp = json.dumps(data_resp).encode()
     size = struct.pack('@i', len(resp))
