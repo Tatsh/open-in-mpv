@@ -1,0 +1,34 @@
+[tool.poetry]
+authors = ["Andrew Udvare <audvare@gmail.com>"]
+description = "Host-side of the extension to open any link or page URL in mpv via the browser context menu."
+license = "MIT"
+name = "open-in-mpv"
+readme = "README.md"
+include = ["misc/sh.tat.firefox.open-in-mpv.json.in", "misc/sh.tat.open_in_mpv.json.in"]
+version = "0.1.0"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+loguru = "^0.7.0"
+click = "^8.1.3"
+psutil = "^5.9.5"
+pyxdg = "^0.28"
+requests = "^2.31.0"
+whichcraft = "^0.6.1"
+
+[tool.poetry.group.dev.dependencies]
+isort = "^5.12.0"
+mypy = "^1.3.0"
+pylint = "^2.17.4"
+pylint-quotes = "^0.2.3"
+yapf = "^0.33.0"
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core"]
+
+[tool.poetry.scripts]
+open-in-mpv = "open_in_mpv:open_in_mpv"
+open-in-mpv-test = "open_in_mpv:test_open"
+open-in-mpv-install = "open_in_mpv:install"
+open-in-mpv-uninstall = "open_in_mpv:uninstall"

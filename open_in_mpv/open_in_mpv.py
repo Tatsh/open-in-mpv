@@ -1,64 +1,37 @@
-#!/usr/bin/env python3
-
-# This file is part of open-in-mpv.
-#
-# Copyright 2020 Andrew Udvare
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
+# SPDX-License-Identifier: MIT
 from functools import lru_cache
 from os.path import dirname, exists, expanduser, isdir, join as path_join
-from typing import Any, Callable, Dict, Mapping, TextIO
+from typing import Any, Callable, Mapping, TextIO
 import json
-import logging
 import os
 import platform
 import socket
 import struct
 import subprocess as sp
 import sys
+import click
+import xdg.BaseDirectory
+
+from loguru import logger
 
 
 @lru_cache()
 def get_log_path() -> str:
     if platform.mac_ver()[0]:
         return expanduser('~/Library/Logs')
-    return expanduser('~/.local/share/open-in-mpv')
+    return xdg.BaseDirectory.save_state_path('open-in-mpv')
 
 
 @lru_cache()
 def get_socket_path() -> str:
     if platform.mac_ver()[0]:
         return expanduser('~/Library/Caches/open-in-mpv.sock')
-    return expanduser('~/.cache/open-in-mpv.sock')
+    return path_join(xdg.BaseDirectory.get_runtime_dir(), 'open-in-mpv.sock')
 
 
-LOG = logging.getLogger('open-in-mpv')
 LOG_PATH = get_log_path()
 MPV_SOCKET = get_socket_path()
 VERSION = 'v0.0.6'
-
-
-def makedirs(path: str) -> None:
-    try:
-        os.makedirs(path)
-    except OSError:
-        pass
 
 
 def spawn(func: Callable[[], Any]) -> None:
@@ -73,22 +46,22 @@ def spawn(func: Callable[[], Any]) -> None:
             # parent process, return and keep running
             return
     except OSError as exc:
-        LOG.exception('Fork #1 failed: %s (%s)', exc.errno, exc.strerror)
+        logger.exception('Fork #1 failed: %s (%s)', exc.errno, exc.strerror)
         sys.exit(1)
     os.setsid()
     # do second fork
-    LOG.debug('Second fork')
+    logger.debug('Second fork')
     try:
         pid = os.fork()
         if pid > 0:
             # exit from second parent
             sys.exit(0)
     except OSError as exc:
-        LOG.exception('Fork #2 failed: %s (%s)', exc.errno, exc.strerror)
+        logger.exception('Fork #2 failed: %s (%s)', exc.errno, exc.strerror)
         sys.exit(1)
-    LOG.debug('Calling callback')
+    logger.debug('Calling callback')
     func()
-    LOG.debug('Callback returned')
+    logger.debug('Callback returned')
     # Exit without calling cleanup handlers
     os._exit(os.EX_OK)  # pylint: disable=protected-access
 
@@ -97,7 +70,7 @@ def mpv_and_cleanup(url: str,
                     new_env: Mapping[str, str],
                     log: TextIO,
                     debug: bool = False) -> Callable[[], None]:
-    def cb() -> None:
+    def callback() -> None:
         sp.check_call((
             'mpv',
             '--gpu-api=opengl',
@@ -105,17 +78,17 @@ def mpv_and_cleanup(url: str,
             '--quiet',
             f'--input-ipc-server={MPV_SOCKET}',
             url,
-        ) + (f'--log-file={log.name}',) if debug else (),
+        ) + ((f'--log-file={log.name}',) if debug else ()),
                       env=new_env,
                       stderr=log,
                       stdout=log)
         os.remove(MPV_SOCKET)
 
-    return cb
+    return callback
 
 
 def spawn_init(url: str, log: TextIO, new_env: Mapping[str, str], debug: bool = False) -> None:
-    LOG.debug('Spawning initial instance')
+    logger.debug('Spawning initial instance')
     spawn(mpv_and_cleanup(url, new_env, log, debug))
 
 
@@ -124,16 +97,16 @@ def get_callback(url: str,
                  new_env: Mapping[str, str],
                  debug: bool = False) -> Callable[[], None]:
     def callback() -> None:
-        LOG.debug('Sending loadfile command')
-        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        s.settimeout(2)
+        logger.debug('Sending loadfile command')
+        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        sock.settimeout(2)
         try:
-            s.connect(MPV_SOCKET)
-            s.settimeout(None)
-            LOG.debug('Connected to socket')
-            s.send(json.dumps(dict(command=['loadfile', url])).encode(errors='strict') + b'\n')
+            sock.connect(MPV_SOCKET)
+            sock.settimeout(None)
+            logger.debug('Connected to socket')
+            sock.send(json.dumps(dict(command=['loadfile', url])).encode(errors='strict') + b'\n')
         except socket.error:
-            LOG.exception('Connection refused')
+            logger.exception('Connection refused')
             try:
                 os.remove(MPV_SOCKET)
             except OSError:
@@ -144,13 +117,11 @@ def get_callback(url: str,
 
 
 def real_main(log: TextIO) -> int:
-    makedirs(dirname(MPV_SOCKET))
-    LOG.setLevel(logging.ERROR)
-    LOG.addHandler(logging.StreamHandler(log))
+    os.makedirs(dirname(MPV_SOCKET), exist_ok=True)
     stdin_buffer = sys.stdin.buffer
     req_len = struct.unpack('@i', stdin_buffer.read(4))[0]
     message = json.loads(stdin_buffer.read(req_len).decode())
-    LOG.debug('Message contents (%d): %s', req_len, message)
+    logger.debug(f'Message contents ({req_len}): {message}')
     if 'init' in message:
         resp = json.dumps(dict(version=VERSION, logPath=log.name, socketPath=MPV_SOCKET)).encode()
         size = struct.pack('@i', len(resp))
@@ -162,29 +133,28 @@ def real_main(log: TextIO) -> int:
     try:
         url: str = message['url']
     except KeyError:
-        LOG.exception('No URL was given')
+        logger.exception('No URL was given')
         print(json.dumps(dict(message='Missing URL!')))
         return 1
     is_debug = message.get('debug', False)
     if is_debug:
-        LOG.setLevel(logging.DEBUG)
-        LOG.info('Debug mode enabled.')
+        logger.info('Debug mode enabled.')
     single: bool = message.get('single', True)
     # MacPorts
     new_env = os.environ.copy()
-    data_resp: Dict[str, Any] = dict(version=VERSION, log_path=log.name, message='About to spawn')
+    data_resp: dict[str, Any] = dict(version=VERSION, log_path=log.name, message='About to spawn')
     if isdir('/opt/local/bin'):
-        LOG.info('Detected MacPorts. Setting PATH.')
+        logger.info('Detected MacPorts. Setting PATH.')
         data_resp['macports'] = True
         old_path = os.environ.get('PATH')
         new_env['PATH'] = '/opt/local/bin' if not old_path else ':'.join(
             ('/opt/local/bin', old_path))
     data_resp['env'] = new_env
     if is_debug:
-        LOG.debug('Environment:')
-        for k, v in new_env.items():
-            LOG.debug('  %s=%s' % (k, v))
-    LOG.debug('About to spawn')
+        logger.debug('Environment:')
+        for k, value in new_env.items():
+            logger.debug(f'  {k}={value}')
+    logger.debug('About to spawn')
     resp = json.dumps(data_resp).encode()
     size = struct.pack('@i', len(resp))
     stdout_buffer = sys.stdout.buffer
@@ -194,25 +164,25 @@ def real_main(log: TextIO) -> int:
         spawn(get_callback(url, log, new_env, is_debug))
     else:
         spawn_init(url, log, new_env, is_debug)
-    LOG.debug('mpv should open soon')
-    LOG.debug('Exiting with status 0')
+    logger.debug('mpv should open soon')
+    logger.debug('Exiting with status 0')
     return 0
 
 
-def main() -> int:
-    if '--version' in sys.argv or '-V' in sys.argv:
-        print(VERSION)
-        return 0
-    if '--help' in sys.argv or '-h' in sys.argv:
-        print(('This script is intended to be used with the '
-               'Chrome extension. There is no CLI interface for general use.'),
-              file=sys.stderr)
-        return 0
-    makedirs(LOG_PATH)
+class CustomHelp(click.Command):
+    def format_help(self, ctx: click.Context, formatter: click.formatting.HelpFormatter) -> None:
+        click.echo('This script is intended to be used with the '
+                   'Chrome extension. There is no CLI interface for general use.')
+        super().format_help(ctx, formatter)
+
+
+@click.command(cls=CustomHelp, context_settings=dict(allow_extra_args=True))
+@click.option('-V', '--version', help='Display version.', is_flag=True)
+def main(version: bool = False) -> None:
+    if version:
+        click.echo(VERSION)
+        return
+    os.makedirs(LOG_PATH, exist_ok=True)
     out_log_path = path_join(LOG_PATH, 'open-in-mpv.log')
     with open(out_log_path, 'a+') as log:
-        return real_main(log)
-
-
-if __name__ == '__main__':
-    sys.exit(main())
+        real_main(log)
