@@ -1,32 +1,32 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
 name: QA
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11']
     steps:
-    - name: install deps
-      run: sudo apt-get install -y jq
-    - uses: actions/checkout@v3
-    - name: Use Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 16
-    - run: yarn
-    - name: ESLint
-      run: yarn eslint src/
-    - name: Shellcheck install.sh
-      run: shellcheck host/install.sh
-    - name: check JSON files
-      run: |
-        jq . package.json >/dev/null
-        jq . .eslintrc.json >/dev/null
-        jq . host/sh.tat.open_in_mpv.json.in >/dev/null
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install
+      - run: yarn
+      - name: QA
+        run: yarn qa
