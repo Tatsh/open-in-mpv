@@ -4,7 +4,6 @@ description = "Host-side of the extension to open any link or page URL in mpv vi
 license = "MIT"
 name = "open-in-mpv"
 readme = "README.md"
-include = ["misc/sh.tat.firefox.open-in-mpv.json.in", "misc/sh.tat.open_in_mpv.json.in"]
 version = "0.1.0"
 
 [tool.poetry.dependencies]

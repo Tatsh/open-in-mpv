@@ -33,6 +33,7 @@ flabel
 fstr
 fullrows
 genindex
+geteuid
 getslice
 hkcu
 hsplit
