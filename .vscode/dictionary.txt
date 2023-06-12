@@ -126,10 +126,12 @@ udvare
 unexpectedru
 unichr
 unidecode
+uninstallation
 urllib
 valign
 virtualenvs
 vsplit
+vulkan
 webui
 whichcraft
 writeautomaticsub
