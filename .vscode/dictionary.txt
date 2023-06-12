@@ -52,6 +52,7 @@ levelname
 levelno
 loguru
 lunchy
+macports
 maxdepth
 metaclass
 mkdir
@@ -82,6 +83,7 @@ prss
 pstate
 psutil
 ptrackers
+pycache
 pylint
 pytest
 pyxdg
@@ -100,6 +102,7 @@ rutorrent
 selfpromo
 setenv
 setsettings
+setsid
 setslice
 setuptools
 shortcode
@@ -110,6 +113,7 @@ speedlistul
 sponsorblock
 standarderror
 status_forcelist
+strerror
 subclassing
 subtitleslangs
 tablefmt
@@ -132,6 +136,7 @@ valign
 virtualenvs
 vsplit
 vulkan
+webextensions
 webui
 whichcraft
 writeautomaticsub
