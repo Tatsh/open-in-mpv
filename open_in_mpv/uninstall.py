@@ -10,7 +10,7 @@ from .constants import (IS_LINUX, IS_MAC, JSON_FILENAME, MAC_HOSTS_DIRS, SYSTEM_
                         USER_HOSTS_DIRS)
 
 
-def remove_from_all(directories: Sequence[str]):
+def remove_from_all(directories: Sequence[str]) -> None:
     for directory in directories:
         path = Path(directory) / JSON_FILENAME
         logger.debug(f'Deleting {path}')

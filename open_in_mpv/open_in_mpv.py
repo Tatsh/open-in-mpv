@@ -9,10 +9,10 @@ import socket
 import struct
 import subprocess as sp
 import sys
-import click
-import xdg.BaseDirectory
 
 from loguru import logger
+import click
+import xdg.BaseDirectory
 
 
 @lru_cache()

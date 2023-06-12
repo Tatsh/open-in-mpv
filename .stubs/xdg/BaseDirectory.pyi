@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: MIT
 from typing import Final
 
-
 def save_state_path(*resource: str) -> str:
     ...
 
