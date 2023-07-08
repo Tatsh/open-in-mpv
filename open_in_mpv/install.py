@@ -1,12 +1,12 @@
 # SPDX-License-Identifier: MIT
 from copy import deepcopy
 from pathlib import Path
+from shutil import which
 from typing import Any, Sequence
 import json
 import os
 
 from loguru import logger
-from whichcraft import which
 import click
 
 from .constants import (HOST_DATA, IS_LINUX, IS_MAC, JSON_FILENAME, MAC_HOSTS_DIRS,
@@ -41,8 +41,7 @@ def main(system: bool = False, user: bool = False, force: bool = False) -> None:
         click.echo('Need an action.', err=True)
         raise click.Abort()
     host_data = deepcopy(HOST_DATA)
-    full_path = which('open-in-mpv')
-    if not full_path:
+    if not (full_path := which('open-in-mpv')):
         click.echo('open-in-mpv not found in PATH.', err=True)
         raise click.Abort()
     host_data['path'] = full_path

@@ -1,8 +1,10 @@
 {
-  "author": "Andrew Udvare <audvare@gmail.com>",
   "bugs": {
     "url": "https://github.com/Tatsh/open-in-mpv/issues"
   },
+  "contributors": [
+    "Andrew Udvare <audvare@gmail.com>"
+  ],
   "description": "Chrome extension to open a URL with mpv.",
   "devDependencies": {
     "@types/chrome": "^0.0.239",
@@ -23,9 +25,9 @@
     "url": "git+https://github.com/Tatsh/open-in-mpv.git"
   },
   "scripts": {
-    "check-formatting": "prettier -c './**/*.cfg' './**/*.ini' './**/*.md' './**/*.toml' './**/*.yml' ./.prettierrc ./.style.yapf && poetry run isort . --check && poetry run yapf -rd open_in_mpv .stubs test",
+    "check-formatting": "prettier -c  '.*/**/*.json' '.*/**/*.y*ml' './**/*.md' './**/*.toml' './**/*.y*ml' ./.prettierrc  && poetry run isort . --check && poetry run yapf -rd open_in_mpv .stubs tests",
     "check-spelling": "cspell --no-progress './**/*'  './**/.*'",
-    "format": "prettier -w './**/*.cfg' './**/*.ini' './**/*.md' './**/*.toml' './**/*.yml' ./.prettierrc ./.style.yapf && poetry run isort . && poetry run yapf -ri open_in_mpv .stubs test",
+    "format": "prettier -w '.*/**/*.json' '.*/**/*.y*ml' './**/*.md' './**/*.toml' './**/*.y*ml' ./.prettierrc && poetry run isort . && poetry run yapf -ri open_in_mpv .stubs tests",
     "mypy": "poetry run mypy .",
     "pylint": "poetry run pylint open_in_mpv",
     "qa": "eslint --report-unused-disable-directives src && yarn mypy && yarn pylint && yarn check-spelling && yarn check-formatting",

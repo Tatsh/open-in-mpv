@@ -9,6 +9,7 @@ import socket
 import struct
 import subprocess as sp
 import sys
+import tempfile
 
 from loguru import logger
 import click
@@ -19,14 +20,22 @@ import xdg.BaseDirectory
 def get_log_path() -> str:
     if platform.mac_ver()[0]:
         return expanduser('~/Library/Logs')
-    return xdg.BaseDirectory.save_state_path('open-in-mpv')
+    try:
+        return xdg.BaseDirectory.save_state_path('open-in-mpv')
+    except KeyError:
+        with tempfile.TemporaryDirectory(prefix='open-in-mpv') as dir_:
+            return dir_
 
 
 @lru_cache()
 def get_socket_path() -> str:
     if platform.mac_ver()[0]:
         return expanduser('~/Library/Caches/open-in-mpv.sock')
-    return path_join(xdg.BaseDirectory.get_runtime_dir(), 'open-in-mpv.sock')
+    try:
+        return path_join(xdg.BaseDirectory.get_runtime_dir(), 'open-in-mpv.sock')
+    except KeyError:
+        with tempfile.NamedTemporaryFile(prefix='open-in-mpv', suffix='.sock') as socket_fp:
+            return socket_fp.name
 
 
 LOG_PATH = get_log_path()
@@ -36,13 +45,14 @@ VERSION = 'v0.0.6'
 
 def spawn(func: Callable[[], Any]) -> None:
     """See Stevens' "Advanced Programming in the UNIX Environment" for details
-    (ISBN 0201563177)
-    Credit: https://stackoverflow.com/a/6011298/374110
+    (ISBN 0201563177).
+
+    Credit: https://stackoverflow.com/a/6011298/374110.
+
     Takes a callable which will be called in the fork.
     """
     try:
-        pid = os.fork()
-        if pid > 0:
+        if os.fork() > 0:
             # parent process, return and keep running
             return
     except OSError as exc:
@@ -52,8 +62,7 @@ def spawn(func: Callable[[], Any]) -> None:
     # do second fork
     logger.debug('Second fork')
     try:
-        pid = os.fork()
-        if pid > 0:
+        if os.fork() > 0:
             # exit from second parent
             sys.exit(0)
     except OSError as exc:
@@ -117,6 +126,12 @@ def get_callback(url: str,
 
 
 def real_main(log: TextIO) -> int:
+    """
+    Actual entry point.
+
+    Standard input is read for a single unsigned integer (1 byte) that represents the length of the
+    message. Then the message is expected to be proceed.
+    """
     os.makedirs(dirname(MPV_SOCKET), exist_ok=True)
     stdin_buffer = sys.stdin.buffer
     req_len = struct.unpack('@i', stdin_buffer.read(4))[0]
@@ -136,8 +151,7 @@ def real_main(log: TextIO) -> int:
         logger.exception('No URL was given')
         print(json.dumps(dict(message='Missing URL!')))
         return 1
-    is_debug = message.get('debug', False)
-    if is_debug:
+    if (is_debug := message.get('debug', False)):
         logger.info('Debug mode enabled.')
     single: bool = message.get('single', True)
     # MacPorts

@@ -24,9 +24,14 @@ dedented
 delslice
 dets
 distutils
+docparams
 docstrings
+docutils
 ecda
+elif
+endregion
 epub
+esbonio
 excinfo
 execfile
 flabel
@@ -65,6 +70,7 @@ mypy
 needmessage
 netrc
 nistp
+numpy
 objectdb
 offtopic
 oneshot
@@ -138,7 +144,6 @@ vsplit
 vulkan
 webextensions
 webui
-whichcraft
 writeautomaticsub
 writeinfojson
 writesubtitles
