@@ -9,7 +9,7 @@
   "devDependencies": {
     "@types/chrome": "^0.0.241",
     "cspell": "^6.31.2",
-    "eslint": "^8.45.0",
+    "eslint": "^8.46.0",
     "prettier-plugin-ini": "^1.1.0",
     "prettier-plugin-toml": "^0.3.1"
   },
