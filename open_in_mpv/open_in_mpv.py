@@ -22,7 +22,7 @@ def get_log_path() -> str:
     if IS_MAC:
         return expanduser('~/Library/Logs')
     if IS_WIN:
-        return expandvars(r"%LOCALDATA%\open-in-mpv")
+        return expandvars(r'%LOCALDATA%\open-in-mpv')
     try:
         return xdg.BaseDirectory.save_state_path('open-in-mpv')
     except KeyError:
@@ -35,7 +35,7 @@ def get_socket_path() -> str:
     if IS_MAC:
         return expanduser('~/Library/Caches/open-in-mpv.sock')
     if IS_WIN:
-         return expandvars(r"\\.\pipe\open-in-mpv")
+        return expandvars(r'\\.\pipe\open-in-mpv')
     try:
         return path_join(xdg.BaseDirectory.get_runtime_dir(), 'open-in-mpv.sock')
     except KeyError:
@@ -49,20 +49,19 @@ VERSION = 'v0.1.7'
 
 
 def environment(response: Dict[str, Any], debugging: bool) -> Dict[str, Any]:
-     env: Dict[str, Any] = os.environ.copy()
-     if isdir('/opt/local/bin'):
+    env: Dict[str, Any] = os.environ.copy()
+    if isdir('/opt/local/bin'):
         logger.info('Detected MacPorts. Setting PATH.')
         response['macports'] = True
         old_path = os.environ.get('PATH')
-        env['PATH'] = '/opt/local/bin' if not old_path else ':'.join(
-            ('/opt/local/bin', old_path))
+        env['PATH'] = '/opt/local/bin' if not old_path else ':'.join(('/opt/local/bin', old_path))
 
-     if debugging:
+    if debugging:
         logger.debug('Environment:')
         for k, value in env.items():
             logger.debug(f'  {k}={value}')
 
-     return env
+    return env
 
 def response(response: Dict[str, Any]) -> None:
     resp = json.dumps(response).encode()
@@ -201,9 +200,9 @@ def real_main(log: TextIO) -> int:
         spawn_init(url, log, data_resp['env'], is_debug)
     logger.debug('mpv should open soon')
     logger.debug('Exiting with status 0')
-    if (temp_log := fallbacks.get('log', None) != None):
+    if ((temp_log := fallbacks.get('log', None)) is not None):
         temp_log.cleanup()
-    if (temp_socket := fallbacks.get('socket', None) != None):
+    if ((temp_socket := fallbacks.get('socket', None)) is not None):
         temp_socket.close()
 
     return 0
