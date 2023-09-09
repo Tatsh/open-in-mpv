@@ -85,6 +85,8 @@ def request(buffer: BinaryIO) -> Dict[str, Any]:
     return ret
 
 def cleanup() -> None:
+    global temp_dir, temp_file
+
     if temp_dir is not None:
         temp_dir.cleanup()
 
