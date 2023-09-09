@@ -202,10 +202,10 @@ def real_main(log: TextIO) -> int:
         spawn_init(url, log, data_resp['env'], is_debug)
     logger.debug('mpv should open soon')
     logger.debug('Exiting with status 0')
-    if fallbacks['log'] is not None:
-        fallbacks['log'].cleanup()
-    if fallbacks['socket'] is not None:
-        fallbacks['socket'].close()
+    if FALLBACKS['log'] is not None:
+        FALLBACKS['log'].cleanup()
+    if FALLBACKS['socket'] is not None:
+        FALLBACKS['socket'].close()
     return 0
 
 
