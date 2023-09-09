@@ -28,7 +28,7 @@ def get_log_path() -> str:
     except KeyError:
         global fallbacks
         fallbacks['log'] = tempfile.TemporaryDirectory(prefix='open-in-mpv')
-        return fallbacks['log'].name
+        return str(fallbacks['log'].name)
 
 @lru_cache()
 def get_socket_path() -> str:
@@ -41,7 +41,7 @@ def get_socket_path() -> str:
     except KeyError:
         global fallbacks
         fallbacks['socket'] = tempfile.NamedTemporaryFile(prefix='open-in-mpv', suffix='.sock')
-        return fallbacks['socket'].name
+        return str(fallbacks['socket'].name)
 
 LOG_PATH = get_log_path()
 MPV_SOCKET = get_socket_path()
