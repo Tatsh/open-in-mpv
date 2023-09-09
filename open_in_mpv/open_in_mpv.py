@@ -26,7 +26,7 @@ def get_log_path() -> str:
     if IS_MAC:
         return expanduser('~/Library/Logs')
     if IS_WIN:
-        return expandvars(r'%LOCALDATA%\open-in-mpv')
+        return expandvars(r'%LOCALDATA%\open-in-mpv') # cspell:disable-line
     try:
         return xdg.BaseDirectory.save_state_path('open-in-mpv')
     except KeyError:
