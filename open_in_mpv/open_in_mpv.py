@@ -15,7 +15,10 @@ from loguru import logger
 import click
 import xdg.BaseDirectory
 
-fallbacks: Final[Dict[str, Any]] = {}
+fallbacks: Final[Dict[str, Any]] = {
+    'log': None,
+    'socket': None
+}
 
 @lru_cache()
 def get_log_path() -> str:
@@ -26,7 +29,6 @@ def get_log_path() -> str:
     try:
         return xdg.BaseDirectory.save_state_path('open-in-mpv')
     except KeyError:
-        global fallbacks
         fallbacks['log'] = tempfile.TemporaryDirectory(prefix='open-in-mpv')
         return str(fallbacks['log'].name)
 
@@ -39,7 +41,6 @@ def get_socket_path() -> str:
     try:
         return path_join(xdg.BaseDirectory.get_runtime_dir(), 'open-in-mpv.sock')
     except KeyError:
-        global fallbacks
         fallbacks['socket'] = tempfile.NamedTemporaryFile(prefix='open-in-mpv', suffix='.sock')
         return str(fallbacks['socket'].name)
 
@@ -48,11 +49,11 @@ MPV_SOCKET = get_socket_path()
 VERSION = 'v0.1.7'
 
 
-def environment(response: Dict[str, Any], debugging: bool) -> Dict[str, Any]:
+def environment(data_resp: Dict[str, Any], debugging: bool) -> Dict[str, Any]:
     env: Dict[str, Any] = os.environ.copy()
     if isdir('/opt/local/bin'):
         logger.info('Detected MacPorts. Setting PATH.')
-        response['macports'] = True
+        data_resp['macports'] = True
         old_path = os.environ.get('PATH')
         env['PATH'] = '/opt/local/bin' if not old_path else ':'.join(('/opt/local/bin', old_path))
 
@@ -63,8 +64,8 @@ def environment(response: Dict[str, Any], debugging: bool) -> Dict[str, Any]:
 
     return env
 
-def response(response: Dict[str, Any]) -> None:
-    resp = json.dumps(response).encode()
+def response(data: Dict[str, Any]) -> None:
+    resp = json.dumps(data).encode()
     size = struct.pack('@i', len(resp))
     stdout_buffer: BinaryIO = sys.stdout.buffer
     stdout_buffer.write(size)
@@ -200,11 +201,10 @@ def real_main(log: TextIO) -> int:
         spawn_init(url, log, data_resp['env'], is_debug)
     logger.debug('mpv should open soon')
     logger.debug('Exiting with status 0')
-    if ((temp_log := fallbacks.get('log', None)) is not None):
-        temp_log.cleanup()
-    if ((temp_socket := fallbacks.get('socket', None)) is not None):
-        temp_socket.close()
-
+    if fallbacks['log'] is not None:
+        fallbacks['log'].cleanup()
+    if fallbacks['socket'] is not None:
+        fallbacks['socket'].close()
     return 0
 
 
