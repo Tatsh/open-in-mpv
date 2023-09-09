@@ -30,11 +30,11 @@ try:
     import xdg.BaseDirectory
 
     USER_HOSTS_DIRS.extend([
-         f'{xdg.BaseDirectory.xdg_config_home}/BraveSoftware/Brave-Browser/NativeMessagingHosts',
-         f'{xdg.BaseDirectory.xdg_config_home}/chromium/NativeMessagingHosts',
-         f'{xdg.BaseDirectory.xdg_config_home}/google-chrome-beta/NativeMessagingHosts',
-         f'{xdg.BaseDirectory.xdg_config_home}/google-chrome-canary/NativeMessagingHosts',
-         f'{xdg.BaseDirectory.xdg_config_home}/google-chrome/NativeMessagingHosts'])
+        f'{xdg.BaseDirectory.xdg_config_home}/BraveSoftware/Brave-Browser/NativeMessagingHosts',
+        f'{xdg.BaseDirectory.xdg_config_home}/chromium/NativeMessagingHosts',
+        f'{xdg.BaseDirectory.xdg_config_home}/google-chrome-beta/NativeMessagingHosts',
+        f'{xdg.BaseDirectory.xdg_config_home}/google-chrome-canary/NativeMessagingHosts',
+        f'{xdg.BaseDirectory.xdg_config_home}/google-chrome/NativeMessagingHosts'])
 except ImportError:
     pass
 
