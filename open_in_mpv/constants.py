@@ -1,8 +1,6 @@
-from typing import Sequence
+from typing import Final, List, Sequence
 import os
 import platform
-
-import xdg.BaseDirectory
 
 __all__ = ('HOST_DATA', 'HOST_DATA_FIREFOX', 'IS_LINUX', 'IS_MAC', 'IS_WIN', 'JSON_FILENAME',
            'MAC_HOSTS_DIRS', 'SYSTEM_HOSTS_DIRS', 'USER_CHROME_HOSTS_REG_PATH_WIN',
@@ -25,12 +23,20 @@ MAC_HOSTS_DIRS = (f'{HOME}/Library/Application Support/Chromium/NativeMessagingH
 SYSTEM_HOSTS_DIRS = ('/etc/chromium/native-messaging-hosts',
                      '/etc/opt/chrome/native-messaging-hosts',
                      '/etc/opt/edge/native-messaging-hosts')
-USER_HOSTS_DIRS = (
-    f'{xdg.BaseDirectory.xdg_config_home}/BraveSoftware/Brave-Browser/NativeMessagingHosts',
-    f'{xdg.BaseDirectory.xdg_config_home}/chromium/NativeMessagingHosts',
-    f'{xdg.BaseDirectory.xdg_config_home}/google-chrome-beta/NativeMessagingHosts',
-    f'{xdg.BaseDirectory.xdg_config_home}/google-chrome-canary/NativeMessagingHosts',
-    f'{xdg.BaseDirectory.xdg_config_home}/google-chrome/NativeMessagingHosts')
+
+USER_HOSTS_DIRS: Final[List[str]] = []
+
+try:
+    import xdg.BaseDirectory
+
+    USER_HOSTS_DIRS.extend([
+         f'{xdg.BaseDirectory.xdg_config_home}/BraveSoftware/Brave-Browser/NativeMessagingHosts',
+         f'{xdg.BaseDirectory.xdg_config_home}/chromium/NativeMessagingHosts',
+         f'{xdg.BaseDirectory.xdg_config_home}/google-chrome-beta/NativeMessagingHosts',
+         f'{xdg.BaseDirectory.xdg_config_home}/google-chrome-canary/NativeMessagingHosts',
+         f'{xdg.BaseDirectory.xdg_config_home}/google-chrome/NativeMessagingHosts'])
+except ImportError:
+    pass
 
 COMMON_HOST_DATA: dict[str, str | None] = {
     'description': 'Opens a URL in mpv (for use with extension).',
