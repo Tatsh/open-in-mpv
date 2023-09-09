@@ -16,8 +16,7 @@ import xdg.BaseDirectory
 
 from .constants import IS_MAC, IS_WIN
 
-
-fallbacks: Final[Dict[str, Any]] = {
+FALLBACKS: Final[Dict[str, Any]] = {
     'log': None,
     'socket': None
 }
@@ -31,8 +30,8 @@ def get_log_path() -> str:
     try:
         return xdg.BaseDirectory.save_state_path('open-in-mpv')
     except KeyError:
-        fallbacks['log'] = tempfile.TemporaryDirectory(prefix='open-in-mpv')
-        return str(fallbacks['log'].name)
+        FALLBACKS['log'] = tempfile.TemporaryDirectory(prefix='open-in-mpv')
+        return str(FALLBACKS['log'].name)
 
 @lru_cache()
 def get_socket_path() -> str:
@@ -43,8 +42,8 @@ def get_socket_path() -> str:
     try:
         return path_join(xdg.BaseDirectory.get_runtime_dir(), 'open-in-mpv.sock')
     except KeyError:
-        fallbacks['socket'] = tempfile.NamedTemporaryFile(prefix='open-in-mpv', suffix='.sock')
-        return str(fallbacks['socket'].name)
+        FALLBACKS['socket'] = tempfile.NamedTemporaryFile(prefix='open-in-mpv', suffix='.sock') # pylint: disable=R1732
+        return str(FALLBACKS['socket'].name)
 
 LOG_PATH = get_log_path()
 MPV_SOCKET = get_socket_path()
@@ -57,7 +56,7 @@ def environment(data_resp: Dict[str, Any], debugging: bool) -> Dict[str, Any]:
         logger.info('Detected MacPorts. Setting PATH.')
         data_resp['macports'] = True
         old_path = os.environ.get('PATH')
-        env['PATH'] = '/opt/local/bin' if not old_path else ':'.join(('/opt/local/bin', old_path))
+        env['PATH'] = '/opt/local/bin' if not old_path else ':'.join(('/opt/local/bin', old_path)) # pylint: disable=R1732
 
     if debugging:
         logger.debug('Environment:')
@@ -181,7 +180,7 @@ def real_main(log: TextIO) -> int:
         log.close()
         return 0
 
-    if ((url := message.get('url', None)) is None):
+    if ((url := message.get('url', None)) is None): # pylint: disable=C0325
         logger.exception('No URL was given')
         print(json.dumps(dict(message='Missing URL!')))
         return 1
