@@ -181,7 +181,7 @@ def real_main(log: TextIO) -> int:
         log.close()
         return 0
 
-    if (url := message.get('url', None) is None):
+    if ((url := message.get('url', None)) is None):
         logger.exception('No URL was given')
         print(json.dumps(dict(message='Missing URL!')))
         return 1
