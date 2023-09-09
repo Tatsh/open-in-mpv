@@ -3,6 +3,7 @@ from .constants import IS_MAC, IS_WIN
 from functools import lru_cache
 from os.path import dirname, exists, expanduser, expandvars, isdir, join as path_join
 from typing import Any, BinaryIO, Dict, Callable, Mapping, TextIO
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 import json
 import os
 import socket
@@ -15,12 +16,35 @@ from loguru import logger
 import click
 import xdg.BaseDirectory
 
+class Fallback:
+    _dir: TemporaryDirectory # type: ignore
+    _file: NamedTemporaryFile # type: ignore
+
+    def __init__(self) -> None:
+        self._dir = tempfile.TemporaryDirectory(prefix='open-in-mpv')
+        self._file = tempfile.NamedTemporaryFile(prefix='open-in-mpv', suffix='.sock')
+
+    @property
+    def log_path(self) -> str:
+        return self._dir.name
+
+    @property
+    def log_file(self) -> str:
+        return self._file.name
+
+    def cleanup(self) -> None:
+        self._dir.cleanup()
+        self._file.close()
+
+
+
 # Globals used for the temporary directory fallback.
-temp_dir = None
-temp_file = None
+fallback_paths: Any
 
 @lru_cache()
 def get_log_path() -> str:
+    global fallback_paths
+
     if IS_MAC:
         return expanduser('~/Library/Logs')
     if IS_WIN:
@@ -28,12 +52,13 @@ def get_log_path() -> str:
     try:
         return xdg.BaseDirectory.save_state_path('open-in-mpv')
     except KeyError:
-        temp_dir = tempfile.TemporaryDirectory(prefix='open-in-mpv')
-        return temp_dir.name
-
+        fallback_paths = Fallback()
+        return fallback_paths.log_path
 
 @lru_cache()
 def get_socket_path() -> str:
+    global fallback_paths
+
     if IS_MAC:
         return expanduser('~/Library/Caches/open-in-mpv.sock')
     if IS_WIN:
@@ -41,9 +66,11 @@ def get_socket_path() -> str:
     try:
         return path_join(xdg.BaseDirectory.get_runtime_dir(), 'open-in-mpv.sock')
     except KeyError:
-        temp_file = tempfile.NamedTemporaryFile(prefix='open-in-mpv', suffix='.sock')
-        return temp_file.name
+        if fallback_paths is not None:
+            return fallback_paths.log_file
 
+        fallback_paths = Fallback()
+        return fallback_paths.log_file
 
 LOG_PATH = get_log_path()
 MPV_SOCKET = get_socket_path()
@@ -83,16 +110,6 @@ def request(buffer: BinaryIO) -> Dict[str, Any]:
     ret['debug'] = message.get('debug', False)
     ret['single'] = message.get('single', True)
     return ret
-
-def cleanup() -> None:
-    global temp_dir, temp_file
-
-    if temp_dir is not None:
-        temp_dir.cleanup()
-
-    if temp_file is not None:
-        temp_file.cleanup()
-
 
 def spawn(func: Callable[[], Any]) -> None:
     """See Stevens' "Advanced Programming in the UNIX Environment" for details
@@ -213,7 +230,8 @@ def real_main(log: TextIO) -> int:
         spawn_init(url, log, data_resp['env'], is_debug)
     logger.debug('mpv should open soon')
     logger.debug('Exiting with status 0')
-    cleanup()
+    if fallback_paths is not None:
+        fallback_paths.cleanup()
     return 0
 
 
