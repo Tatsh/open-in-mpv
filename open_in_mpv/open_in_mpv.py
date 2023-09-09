@@ -30,7 +30,7 @@ def get_log_path() -> str:
     try:
         return xdg.BaseDirectory.save_state_path('open-in-mpv')
     except KeyError:
-        FALLBACKS['log'] = tempfile.TemporaryDirectory(prefix='open-in-mpv')
+        FALLBACKS['log'] = tempfile.TemporaryDirectory(prefix='open-in-mpv') # pylint: disable=R1732
         return str(FALLBACKS['log'].name)
 
 @lru_cache()
@@ -56,7 +56,7 @@ def environment(data_resp: Dict[str, Any], debugging: bool) -> Dict[str, Any]:
         logger.info('Detected MacPorts. Setting PATH.')
         data_resp['macports'] = True
         old_path = os.environ.get('PATH')
-        env['PATH'] = '/opt/local/bin' if not old_path else ':'.join(('/opt/local/bin', old_path)) # pylint: disable=R1732
+        env['PATH'] = '/opt/local/bin' if not old_path else ':'.join(('/opt/local/bin', old_path))
 
     if debugging:
         logger.debug('Environment:')
