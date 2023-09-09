@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: MIT
-from .constants import IS_MAC, IS_WIN
 from functools import lru_cache
 from os.path import dirname, exists, expanduser, expandvars, isdir, join as path_join
 from typing import Any, Final, BinaryIO, Dict, Callable, Mapping, TextIO
@@ -14,6 +13,9 @@ import tempfile
 from loguru import logger
 import click
 import xdg.BaseDirectory
+
+from .constants import IS_MAC, IS_WIN
+
 
 fallbacks: Final[Dict[str, Any]] = {
     'log': None,
@@ -179,7 +181,7 @@ def real_main(log: TextIO) -> int:
         log.close()
         return 0
 
-    if (url := message.get('url', None) == None):
+    if (url := message.get('url', None) is None):
         logger.exception('No URL was given')
         print(json.dumps(dict(message='Missing URL!')))
         return 1
