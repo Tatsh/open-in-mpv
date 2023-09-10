@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Final, Sequence
 import os
 import platform
 
@@ -8,9 +8,9 @@ __all__ = ('HOST_DATA', 'HOST_DATA_FIREFOX', 'IS_LINUX', 'IS_MAC', 'IS_WIN', 'JS
            'MAC_HOSTS_DIRS', 'SYSTEM_HOSTS_DIRS', 'USER_CHROME_HOSTS_REG_PATH_WIN',
            'USER_HOSTS_DIRS')
 
-IS_MAC = bool(platform.mac_ver()[0])
-IS_WIN = bool(platform.win32_ver()[0])
-IS_LINUX = not IS_MAC and not IS_WIN
+IS_MAC: Final[bool] = bool(platform.mac_ver()[0])
+IS_WIN: Final[bool] = bool(platform.win32_ver()[0])
+IS_LINUX: Final[bool] = not IS_MAC and not IS_WIN
 
 JSON_FILENAME = 'sh.tat.open_in_mpv.json'
 HOME = os.environ.get('HOME', '')
@@ -21,6 +21,8 @@ MAC_HOSTS_DIRS = (f'{HOME}/Library/Application Support/Chromium/NativeMessagingH
                   f'{HOME}/Library/Application Support/Google/Chrome Beta/NativeMessagingHosts',
                   f'{HOME}/Library/Application Support/Google/Chrome Canary/NativeMessagingHosts',
                   f'{HOME}/Library/Application Support/Google/Chrome/NativeMessagingHosts')
+
+MAC_BIN_PATH: Final[str] = '/opt/local/bin'
 
 SYSTEM_HOSTS_DIRS = ('/etc/chromium/native-messaging-hosts',
                      '/etc/opt/chrome/native-messaging-hosts',

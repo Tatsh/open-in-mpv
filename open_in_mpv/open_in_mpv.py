@@ -14,7 +14,7 @@ from loguru import logger
 import click
 import xdg.BaseDirectory
 
-from .constants import IS_MAC, IS_WIN
+from .constants import IS_MAC, IS_WIN, MAC_BIN_PATH
 
 FALLBACKS: Final[dict[str, Any]] = {
     'log': None,
@@ -52,11 +52,11 @@ VERSION = 'v0.1.7'
 
 def environment(data_resp: dict[str, Any], debugging: bool) -> dict[str, Any]:
     env: dict[str, Any] = os.environ.copy()
-    if isdir('/opt/local/bin'):
+    if isdir(MAC_BIN_PATH):
         logger.info('Detected MacPorts. Setting PATH.')
         data_resp['macports'] = True
         old_path = os.environ.get('PATH')
-        env['PATH'] = '/opt/local/bin' if not old_path else ':'.join('/opt/local/bin', old_path)
+        env['PATH'] = MAC_BIN_PATH if not old_path else ':'.join(MAC_BIN_PATH, old_path)
     if debugging:
         logger.debug('Environment:')
         for k, value in env.items():
