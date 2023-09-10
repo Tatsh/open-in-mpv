@@ -14,12 +14,13 @@ from loguru import logger
 import click
 import xdg.BaseDirectory
 
-from .constants import IS_MAC, IS_WIN, MAC_BIN_PATH
+from .constants import IS_MAC, IS_WIN, MACPORTS_BIN_PATH
 
 FALLBACKS: Final[dict[str, Any]] = {
     'log': None,
     'socket': None
 }
+
 
 @lru_cache()
 def get_log_path() -> str:
@@ -32,6 +33,7 @@ def get_log_path() -> str:
     except KeyError:
         FALLBACKS['log'] = tempfile.TemporaryDirectory(prefix='open-in-mpv') # pylint: disable=R1732
         return str(FALLBACKS['log'].name)
+
 
 @lru_cache()
 def get_socket_path() -> str:
@@ -52,11 +54,11 @@ VERSION = 'v0.1.7'
 
 def environment(data_resp: dict[str, Any], debugging: bool) -> dict[str, Any]:
     env: dict[str, Any] = os.environ.copy()
-    if isdir(MAC_BIN_PATH):
+    if isdir(MACPORTS_BIN_PATH):
         logger.info('Detected MacPorts. Setting PATH.')
         data_resp['macports'] = True
         old_path = os.environ.get('PATH')
-        env['PATH'] = MAC_BIN_PATH if not old_path else ':'.join(MAC_BIN_PATH, old_path)
+        env['PATH'] = MACPORTS_BIN_PATH if not old_path else ':'.join(MACPORTS_BIN_PATH, old_path)
     if debugging:
         logger.debug('Environment:')
         for k, value in env.items():
@@ -64,12 +66,14 @@ def environment(data_resp: dict[str, Any], debugging: bool) -> dict[str, Any]:
 
     return env
 
+
 def response(data: dict[str, Any]) -> None:
     resp = json.dumps(data).encode()
     size = struct.pack('@i', len(resp))
     stdout_buffer: BinaryIO = sys.stdout.buffer
     stdout_buffer.write(size)
     stdout_buffer.write(resp)
+
 
 def request(buffer: BinaryIO) -> dict[str, Any]:
     req_len = struct.unpack('@i', buffer.read(4))[0]
@@ -82,6 +86,7 @@ def request(buffer: BinaryIO) -> dict[str, Any]:
         'single': message.get('single')
     }
 
+
 def remove_socket() -> bool:
     if FALLBACKS['socket']:
         FALLBACKS['socket'].close()
@@ -93,6 +98,7 @@ def remove_socket() -> bool:
         return False
 
     return True
+
 
 def spawn(func: Callable[[], Any]) -> None:
     """See Stevens' "Advanced Programming in the UNIX Environment" for details
@@ -190,7 +196,7 @@ def real_main(log: TextIO) -> int:
         log.close()
         return 0
 
-    if ((url := message.get('url', None)) is None): # pylint: disable=C0325
+    if (url := message.get('url', None) is None):
         logger.exception('No URL was given')
         print(json.dumps(dict(message='Missing URL!')))
         return 1
@@ -207,9 +213,9 @@ def real_main(log: TextIO) -> int:
     response(data_resp)
 
     if exists(MPV_SOCKET) and single:
-        spawn(get_callback(url, log, data_resp['env'], is_debug))
+        spawn(get_callback(url, log, data_resp['env'], is_debug)) # type: ignore
     else:
-        spawn_init(url, log, data_resp['env'], is_debug)
+        spawn_init(url, log, data_resp['env'], is_debug) # type: ignore
     logger.debug('mpv should open soon')
     logger.debug('Exiting with status 0')
     if FALLBACKS['log']:

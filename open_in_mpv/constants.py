@@ -17,17 +17,18 @@ HOME: Final[str] = os.environ.get('HOME', '')
 
 USER_CHROME_HOSTS_REG_PATH_WIN: Final[str] = 'HKCU:\\Software\\Google\\Chrome\\NativeMessagingHosts'
 
-MAC_HOSTS_DIRS: Final[tuple[str, str, str, str]] = (f'{HOME}/Library/Application Support/Chromium/NativeMessagingHosts',
-                  f'{HOME}/Library/Application Support/Google/Chrome Beta/NativeMessagingHosts',
-                  f'{HOME}/Library/Application Support/Google/Chrome Canary/NativeMessagingHosts',
-                  f'{HOME}/Library/Application Support/Google/Chrome/NativeMessagingHosts')
+MAC_HOSTS_DIRS: Final[tuple[str, ...]] = (
+    f'{HOME}/Library/Application Support/Chromium/NativeMessagingHosts',
+    f'{HOME}/Library/Application Support/Google/Chrome Beta/NativeMessagingHosts',
+    f'{HOME}/Library/Application Support/Google/Chrome Canary/NativeMessagingHosts',
+    f'{HOME}/Library/Application Support/Google/Chrome/NativeMessagingHosts')
 
-MAC_BIN_PATH: Final[str] = '/opt/local/bin'
+MACPORTS_BIN_PATH: Final[str] = '/opt/local/bin'
 
 SYSTEM_HOSTS_DIRS: Final[tuple[str, str, str]] = ('/etc/chromium/native-messaging-hosts',
                      '/etc/opt/chrome/native-messaging-hosts',
                      '/etc/opt/edge/native-messaging-hosts')
-USER_HOSTS_DIRS: Final[tuple[str, str, str, str, str]] = (
+USER_HOSTS_DIRS: Final[tuple[str, ...]] = (
     f'{xdg.BaseDirectory.xdg_config_home}/BraveSoftware/Brave-Browser/NativeMessagingHosts',
     f'{xdg.BaseDirectory.xdg_config_home}/chromium/NativeMessagingHosts',
     f'{xdg.BaseDirectory.xdg_config_home}/google-chrome-beta/NativeMessagingHosts',
