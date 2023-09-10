@@ -142,7 +142,8 @@ def mpv_and_cleanup(url: str,
                       env=new_env,
                       stderr=log,
                       stdout=log)
-        remove_socket()
+        if not remove_socket():
+            logger.error('Failed to remove socket file.')
 
     return callback
 
@@ -167,7 +168,8 @@ def get_callback(url: str,
             sock.send(json.dumps(dict(command=['loadfile', url])).encode(errors='strict') + b'\n')
         except socket.error:
             logger.exception('Connection refused')
-            remove_socket()
+            if not remove_socket():
+                logger.error('Failed to remove socket file')
             spawn_init(url, log, new_env, debug)
 
     return callback
@@ -212,8 +214,6 @@ def real_main(log: TextIO) -> int:
     logger.debug('Exiting with status 0')
     if FALLBACKS['log']:
         FALLBACKS['log'].cleanup()
-    if FALLBACKS['socket']:
-        FALLBACKS['socket'].close()
     return 0
 
 
