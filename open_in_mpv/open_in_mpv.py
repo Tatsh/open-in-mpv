@@ -82,6 +82,18 @@ def request(buffer: BinaryIO) -> dict[str, Any]:
         'single': message.get('single')
     }
 
+def remove_socket() -> bool:
+    if FALLBACKS['socket']:
+        FALLBACKS['socket'].close()
+        return True
+
+    try:
+        os.remove(MPV_SOCKET)
+    except OSError:
+        return False
+
+    return True
+
 def spawn(func: Callable[[], Any]) -> None:
     """See Stevens' "Advanced Programming in the UNIX Environment" for details
     (ISBN 0201563177).
@@ -130,7 +142,7 @@ def mpv_and_cleanup(url: str,
                       env=new_env,
                       stderr=log,
                       stdout=log)
-        os.remove(MPV_SOCKET)
+        remove_socket()
 
     return callback
 
@@ -155,10 +167,7 @@ def get_callback(url: str,
             sock.send(json.dumps(dict(command=['loadfile', url])).encode(errors='strict') + b'\n')
         except socket.error:
             logger.exception('Connection refused')
-            try:
-                os.remove(MPV_SOCKET)
-            except OSError:
-                pass
+            remove_socket()
             spawn_init(url, log, new_env, debug)
 
     return callback
