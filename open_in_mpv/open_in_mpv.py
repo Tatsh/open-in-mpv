@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT
 from functools import lru_cache
 from os.path import dirname, exists, expanduser, expandvars, isdir, join as path_join
-from typing import Any, Final, BinaryIO, Dict, Callable, Mapping, TextIO
+from typing import Any, Final, BinaryIO, Callable, Mapping, TextIO
 import json
 import os
 import socket
@@ -16,7 +16,7 @@ import xdg.BaseDirectory
 
 from .constants import IS_MAC, IS_WIN
 
-FALLBACKS: Final[Dict[str, Any]] = {
+FALLBACKS: Final[dict[str, Any]] = {
     'log': None,
     'socket': None
 }
@@ -50,14 +50,13 @@ MPV_SOCKET = get_socket_path()
 VERSION = 'v0.1.7'
 
 
-def environment(data_resp: Dict[str, Any], debugging: bool) -> Dict[str, Any]:
-    env: Dict[str, Any] = os.environ.copy()
+def environment(data_resp: dict[str, Any], debugging: bool) -> dict[str, Any]:
+    env: dict[str, Any] = os.environ.copy()
     if isdir('/opt/local/bin'):
         logger.info('Detected MacPorts. Setting PATH.')
         data_resp['macports'] = True
         old_path = os.environ.get('PATH')
-        env['PATH'] = '/opt/local/bin' if not old_path else ':'.join(('/opt/local/bin', old_path))
-
+        env['PATH'] = '/opt/local/bin' if not old_path else ':'.join('/opt/local/bin', old_path)
     if debugging:
         logger.debug('Environment:')
         for k, value in env.items():
@@ -65,23 +64,23 @@ def environment(data_resp: Dict[str, Any], debugging: bool) -> Dict[str, Any]:
 
     return env
 
-def response(data: Dict[str, Any]) -> None:
+def response(data: dict[str, Any]) -> None:
     resp = json.dumps(data).encode()
     size = struct.pack('@i', len(resp))
     stdout_buffer: BinaryIO = sys.stdout.buffer
     stdout_buffer.write(size)
     stdout_buffer.write(resp)
 
-def request(buffer: BinaryIO) -> Dict[str, Any]:
-    ret: Dict[str, Any] = {}
+def request(buffer: BinaryIO) -> dict[str, Any]:
     req_len = struct.unpack('@i', buffer.read(4))[0]
     message = json.loads(buffer.read(req_len).decode())
     logger.debug('Message contents (%d): %s', req_len, message)
-    ret['init'] = 'init' in message
-    ret['url'] = message.get('url', None)
-    ret['debug'] = message.get('debug', False)
-    ret['single'] = message.get('single', True)
-    return ret
+    return {
+        'init': 'init' in message,
+        'url': message.get('url', None),
+        'debug': message.get('debug', False),
+        'single': message.get('single')
+    }
 
 def spawn(func: Callable[[], Any]) -> None:
     """See Stevens' "Advanced Programming in the UNIX Environment" for details
@@ -173,7 +172,7 @@ def real_main(log: TextIO) -> int:
     message. Then the message is expected to be proceed.
     """
     os.makedirs(dirname(MPV_SOCKET), exist_ok=True)
-    message: Dict[str, Any] = request(sys.stdin.buffer)
+    message: dict[str, Any] = request(sys.stdin.buffer)
 
     if message['init']:
         response(dict(version=VERSION, logPath=log.name, socketPath=MPV_SOCKET))
@@ -191,7 +190,7 @@ def real_main(log: TextIO) -> int:
     single: bool = message.get('single', True)
 
     # MacPorts
-    data_resp: Dict[str, Any] = dict(version=VERSION, log_path=log.name, message='About to spawn')
+    data_resp: dict[str, Any] = dict(version=VERSION, log_path=log.name, message='About to spawn')
     data_resp['env'] = environment(data_resp, is_debug)
     logger.debug('About to spawn')
     response(data_resp)
@@ -202,9 +201,9 @@ def real_main(log: TextIO) -> int:
         spawn_init(url, log, data_resp['env'], is_debug)
     logger.debug('mpv should open soon')
     logger.debug('Exiting with status 0')
-    if FALLBACKS['log'] is not None:
+    if FALLBACKS['log']:
         FALLBACKS['log'].cleanup()
-    if FALLBACKS['socket'] is not None:
+    if FALLBACKS['socket']:
         FALLBACKS['socket'].close()
     return 0
 
