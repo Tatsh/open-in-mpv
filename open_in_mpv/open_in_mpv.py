@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT
 from functools import lru_cache
-from os.path import dirname, exists, expanduser,  expandvars, isdir, join as path_join
+from os.path import dirname, exists, expanduser, expandvars, isdir, join as path_join
 from typing import Any, BinaryIO, Callable, Final, Mapping, TextIO, cast
 import json
 import os
@@ -16,10 +16,7 @@ import xdg.BaseDirectory
 
 from .constants import IS_MAC, IS_WIN, MACPORTS_BIN_PATH
 
-FALLBACKS: Final[dict[str, Any]] = {
-    'log': None,
-    'socket': None
-}
+FALLBACKS: Final[dict[str, Any]] = {'log': None, 'socket': None}
 
 
 @lru_cache()
@@ -27,11 +24,11 @@ def get_log_path() -> str:
     if IS_MAC:
         return expanduser('~/Library/Logs')
     if IS_WIN:
-        return expandvars(r'%LOCALDATA%\open-in-mpv') # cspell:disable-line
+        return expandvars(r'%LOCALDATA%\open-in-mpv')  # cspell:disable-line
     try:
         return xdg.BaseDirectory.save_state_path('open-in-mpv')
     except KeyError:
-        FALLBACKS['log'] = tempfile.TemporaryDirectory(prefix='open-in-mpv') # pylint: disable=R1732
+        FALLBACKS['log'] = tempfile.TemporaryDirectory(prefix='open-in-mpv')  # pylint: disable=R1732
         return str(FALLBACKS['log'].name)
 
 
@@ -44,8 +41,9 @@ def get_socket_path() -> str:
     try:
         return path_join(xdg.BaseDirectory.get_runtime_dir(), 'open-in-mpv.sock')
     except KeyError:
-        FALLBACKS['socket'] = tempfile.NamedTemporaryFile(prefix='open-in-mpv', suffix='.sock') # pylint: disable=R1732
+        FALLBACKS['socket'] = tempfile.NamedTemporaryFile(prefix='open-in-mpv', suffix='.sock')  # pylint: disable=R1732
         return str(FALLBACKS['socket'].name)
+
 
 LOG_PATH = get_log_path()
 MPV_SOCKET = get_socket_path()
@@ -147,6 +145,7 @@ def mpv_and_cleanup(url: str,
                       stdout=log)
         if not remove_socket():
             logger.error('Failed to remove socket file.')
+
     return callback
 
 
@@ -173,6 +172,7 @@ def get_callback(url: str,
             if not remove_socket():
                 logger.error('Failed to remove socket file')
             spawn_init(url, log, new_env, debug)
+
     return callback
 
 
