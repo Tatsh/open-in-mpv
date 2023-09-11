@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT
 from functools import lru_cache
 from os.path import dirname, exists, expanduser, expandvars, isdir, join as path_join
-from typing import Any, Final, BinaryIO, Callable, cast, Mapping, TextIO
+from typing import Any, Final, BinaryIO, Callable, Mapping, TextIO, cast
 import json
 import os
 import socket
