@@ -26,8 +26,8 @@ MAC_HOSTS_DIRS: Final[tuple[str, ...]] = (
 MACPORTS_BIN_PATH: Final[str] = '/opt/local/bin'
 
 SYSTEM_HOSTS_DIRS: Final[tuple[str, str, str]] = ('/etc/chromium/native-messaging-hosts',
-                     '/etc/opt/chrome/native-messaging-hosts',
-                     '/etc/opt/edge/native-messaging-hosts')
+                                                  '/etc/opt/chrome/native-messaging-hosts',
+                                                  '/etc/opt/edge/native-messaging-hosts')
 USER_HOSTS_DIRS: Final[tuple[str, ...]] = (
     f'{xdg.BaseDirectory.xdg_config_home}/BraveSoftware/Brave-Browser/NativeMessagingHosts',
     f'{xdg.BaseDirectory.xdg_config_home}/chromium/NativeMessagingHosts',
