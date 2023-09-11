@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT
 from functools import lru_cache
 from os.path import dirname, exists, expanduser, expandvars, isdir, join as path_join
-from typing import Any, Final, BinaryIO, Callable, Mapping, TextIO
+from typing import Any, Final, BinaryIO, Callable, cast, Mapping, TextIO
 import json
 import os
 import socket
@@ -58,7 +58,7 @@ def environment(data_resp: dict[str, Any], debugging: bool) -> dict[str, Any]:
         logger.info('Detected MacPorts. Setting PATH.')
         data_resp['macports'] = True
         old_path = os.environ.get('PATH')
-        env['PATH'] = MACPORTS_BIN_PATH if not old_path else ':'.join(MACPORTS_BIN_PATH, old_path)
+        env['PATH'] = MACPORTS_BIN_PATH if not old_path else ':'.join((MACPORTS_BIN_PATH, old_path))
     if debugging:
         logger.debug('Environment:')
         for k, value in env.items():
@@ -91,7 +91,6 @@ def remove_socket() -> bool:
     if FALLBACKS['socket']:
         FALLBACKS['socket'].close()
         return True
-
     try:
         os.remove(MPV_SOCKET)
     except OSError:
@@ -190,32 +189,26 @@ def real_main(log: TextIO) -> int:
     """
     os.makedirs(dirname(MPV_SOCKET), exist_ok=True)
     message: dict[str, Any] = request(sys.stdin.buffer)
-
     if message['init']:
         response(dict(version=VERSION, logPath=log.name, socketPath=MPV_SOCKET))
         log.close()
         return 0
-
     if (url := message.get('url', None) is None):
         logger.exception('No URL was given')
         print(json.dumps(dict(message='Missing URL!')))
         return 1
-
     if (is_debug := message.get('debug', False)):
         logger.info('Debug mode enabled.')
-
     single: bool = message.get('single', True)
-
     # MacPorts
     data_resp: dict[str, Any] = dict(version=VERSION, log_path=log.name, message='About to spawn')
     data_resp['env'] = environment(data_resp, is_debug)
     logger.debug('About to spawn')
     response(data_resp)
-
     if exists(MPV_SOCKET) and single:
-        spawn(get_callback(url, log, data_resp['env'], is_debug)) # type: ignore
+        spawn(get_callback(cast(str, url), log, data_resp['env'], is_debug))
     else:
-        spawn_init(url, log, data_resp['env'], is_debug) # type: ignore
+        spawn_init(cast(str, url), log, data_resp['env'], is_debug)
     logger.debug('mpv should open soon')
     logger.debug('Exiting with status 0')
     if FALLBACKS['log']:
