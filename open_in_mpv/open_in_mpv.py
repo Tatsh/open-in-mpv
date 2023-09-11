@@ -63,7 +63,6 @@ def environment(data_resp: dict[str, Any], debugging: bool) -> dict[str, Any]:
         logger.debug('Environment:')
         for k, value in env.items():
             logger.debug(f'  {k}={value}')
-
     return env
 
 
@@ -95,7 +94,6 @@ def remove_socket() -> bool:
         os.remove(MPV_SOCKET)
     except OSError:
         return False
-
     return True
 
 
@@ -149,7 +147,6 @@ def mpv_and_cleanup(url: str,
                       stdout=log)
         if not remove_socket():
             logger.error('Failed to remove socket file.')
-
     return callback
 
 
@@ -176,7 +173,6 @@ def get_callback(url: str,
             if not remove_socket():
                 logger.error('Failed to remove socket file')
             spawn_init(url, log, new_env, debug)
-
     return callback
 
 
