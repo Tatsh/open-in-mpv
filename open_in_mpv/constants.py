@@ -21,7 +21,8 @@ MAC_HOSTS_DIRS: Final[tuple[str, ...]] = (
     f'{HOME}/Library/Application Support/Chromium/NativeMessagingHosts',
     f'{HOME}/Library/Application Support/Google/Chrome Beta/NativeMessagingHosts',
     f'{HOME}/Library/Application Support/Google/Chrome Canary/NativeMessagingHosts',
-    f'{HOME}/Library/Application Support/Google/Chrome/NativeMessagingHosts')
+    f'{HOME}/Library/Application Support/Google/Chrome/NativeMessagingHosts',
+    f'{HOME}/Library/Application Support/Mozilla/NativeMessagingHosts/')
 
 MACPORTS_BIN_PATH: Final[str] = '/opt/local/bin'
 
@@ -33,7 +34,8 @@ USER_HOSTS_DIRS: Final[tuple[str, ...]] = (
     f'{xdg.BaseDirectory.xdg_config_home}/chromium/NativeMessagingHosts',
     f'{xdg.BaseDirectory.xdg_config_home}/google-chrome-beta/NativeMessagingHosts',
     f'{xdg.BaseDirectory.xdg_config_home}/google-chrome-canary/NativeMessagingHosts',
-    f'{xdg.BaseDirectory.xdg_config_home}/google-chrome/NativeMessagingHosts')
+    f'{xdg.BaseDirectory.xdg_config_home}/google-chrome/NativeMessagingHosts',
+    f'{xdg.BaseDirectory.xdg_config_home}/.mozilla/native-messaging-hosts/')
 
 COMMON_HOST_DATA: Final[dict[str, str | None]] = {
     'description': 'Opens a URL in mpv (for use with extension).',
