@@ -4,11 +4,13 @@ from os.path import dirname, exists, expanduser, expandvars, isdir, join as path
 from typing import Any, BinaryIO, Callable, Final, Mapping, TextIO, cast
 import json
 import os
+import random
 import socket
 import struct
 import subprocess as sp
 import sys
 import tempfile
+import time
 
 from loguru import logger
 import click
@@ -16,7 +18,22 @@ import xdg.BaseDirectory
 
 from .constants import IS_MAC, IS_WIN, MACPORTS_BIN_PATH
 
+try:
+    from win32file import GENERIC_READ, GENERIC_WRITE, OPEN_EXISTING, CreateFile, WriteFile
+    from win32pipe import PIPE_READMODE_MESSAGE, SetNamedPipeHandleState  # cspell:disable-line
+    import pywintypes  # cspell:disable-line
+except ImportError:
+    if IS_WIN:
+        logger.error('Failed to resolve pywin32. Exiting...') # cspell:disable-line
+        os._exit(os.EX_SOFTWARE) # pylint: disable=protected-access
+
+
 FALLBACKS: Final[dict[str, Any]] = {'log': None, 'socket': None}
+CALLBACKS: dict[str, Callable[[str, bool, TextIO, Mapping[str, str]], Any]] = {}
+
+
+def callback(f: Callable[[str, bool, TextIO, Mapping[str, str]], Any]) -> None:
+    CALLBACKS[f.__name__] = f
 
 
 @lru_cache()
@@ -95,6 +112,68 @@ def remove_socket() -> bool:
     return True
 
 
+def mpv_executable() -> str:
+    return 'mpv.exe' if IS_WIN else 'mpv'
+
+
+@callback
+def mpv_launch(url: str, debug: bool, log: TextIO, new_env: Mapping[str, str]) -> None:
+    sp.check_call((
+        mpv_executable(),
+        '--gpu-api=opengl',
+        '--player-operation-mode=pseudo-gui',
+        '--quiet',
+        f'--input-ipc-server={MPV_SOCKET}',
+        url,
+    ) + ((f'--log-file={log.name}',) if debug else ()),
+                    env=new_env,
+                    stderr=log,
+                    stdout=log)
+    if not remove_socket():
+        logger.error('Failed to remove socket file.')
+
+
+@callback
+def mpv_launch_socket(url: str, debug: bool, log: TextIO, new_env: Mapping[str, str]) -> None:
+    if IS_WIN:
+        try:
+            handle = CreateFile(MPV_SOCKET, GENERIC_READ | GENERIC_WRITE,
+                                0, None, OPEN_EXISTING, 0, None)
+
+            #cspell:disable-next-line
+            if (res :=  SetNamedPipeHandleState(handle, PIPE_READMODE_MESSAGE, None, None)) == 0:
+                logger.debug(f'SetNamedPipeHandleState return code: {res}')
+                CALLBACKS['mpv_and_cleanup'](url, debug, log, new_env)
+                return
+
+            WriteFile(handle, json.dumps(dict(command=['loadfile', url],
+                                              request_id=random.randint(0x01, 0x7fffffff))
+                                              ).encode(errors='strict') + b'\n')
+        except pywintypes.error as e: # cspell:disable-line
+            match e.args[0]:
+                case 2:
+                    logger.debug('Pipe not found, retrying in a second')
+                    time.sleep(1)
+                    CALLBACKS['mpv_launch_socket'](url, debug, log, new_env)
+                case 109:
+                    logger.debug('Broken pipe')
+                    CALLBACKS['mpv_and_cleanup'](url, debug, log, new_env)
+    else:
+        logger.debug('Sending loadfile command')
+        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        sock.settimeout(2)
+        try:
+            sock.connect(MPV_SOCKET)
+            sock.settimeout(None)
+            logger.debug('Connected to socket')
+            sock.send(json.dumps(dict(command=['loadfile', url])).encode(errors='strict') + b'\n')
+        except socket.error:
+            logger.exception('Connection refused')
+            if not remove_socket():
+                logger.error('Failed to remove socket file')
+            CALLBACKS['mpv_and_cleanup'](url, debug, log, new_env)
+
+
 def spawn(func: Callable[[], Any]) -> None:
     """See Stevens' "Advanced Programming in the UNIX Environment" for details
     (ISBN 0201563177).
@@ -127,54 +206,6 @@ def spawn(func: Callable[[], Any]) -> None:
     os._exit(os.EX_OK)  # pylint: disable=protected-access
 
 
-def mpv_and_cleanup(url: str,
-                    new_env: Mapping[str, str],
-                    log: TextIO,
-                    debug: bool = False) -> Callable[[], None]:
-    def callback() -> None:
-        sp.check_call((
-            'mpv',
-            '--gpu-api=opengl',
-            '--player-operation-mode=pseudo-gui',
-            '--quiet',
-            f'--input-ipc-server={MPV_SOCKET}',
-            url,
-        ) + ((f'--log-file={log.name}',) if debug else ()),
-                      env=new_env,
-                      stderr=log,
-                      stdout=log)
-        if not remove_socket():
-            logger.error('Failed to remove socket file.')
-
-    return callback
-
-
-def spawn_init(url: str, log: TextIO, new_env: Mapping[str, str], debug: bool = False) -> None:
-    logger.debug('Spawning initial instance')
-    spawn(mpv_and_cleanup(url, new_env, log, debug))
-
-
-def get_callback(url: str,
-                 log: TextIO,
-                 new_env: Mapping[str, str],
-                 debug: bool = False) -> Callable[[], None]:
-    def callback() -> None:
-        logger.debug('Sending loadfile command')
-        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        sock.settimeout(2)
-        try:
-            sock.connect(MPV_SOCKET)
-            sock.settimeout(None)
-            logger.debug('Connected to socket')
-            sock.send(json.dumps(dict(command=['loadfile', url])).encode(errors='strict') + b'\n')
-        except socket.error:
-            logger.exception('Connection refused')
-            if not remove_socket():
-                logger.error('Failed to remove socket file')
-            spawn_init(url, log, new_env, debug)
-
-    return callback
-
 
 def real_main(log: TextIO) -> int:
     """
@@ -202,9 +233,10 @@ def real_main(log: TextIO) -> int:
     logger.debug('About to spawn')
     response(data_resp)
     if exists(MPV_SOCKET) and single:
-        spawn(get_callback(cast(str, url), log, data_resp['env'], is_debug))
+        spawn(CALLBACKS['mpv_launch_socket'](cast(str, url), is_debug, log, data_resp['env']))
     else:
-        spawn_init(cast(str, url), log, data_resp['env'], is_debug)
+        logger.debug('Spawning initial instance')
+        spawn(CALLBACKS['mpv_and_cleanup'](cast(str, url), is_debug, log, data_resp['env']))
     logger.debug('mpv should open soon')
     logger.debug('Exiting with status 0')
     if FALLBACKS['log']:

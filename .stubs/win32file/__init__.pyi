@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: MIT
+# Author: movrsi
+from typing import Final
+
+from pywintypes import PyHANDLE
+
+GENERIC_READ: Final[int] = ...
+GENERIC_WRITE: Final[int] = ...
+OPEN_EXISTING: Final[int] = ...
+
+def CreateFile(filename: str, desiredAccess: int, shareMode: int, attributes: int | None, #pylint disable=C0103
+               createDisposition: int, flagsAndAttributes: int, hTemplateFile: int | None) -> PyHANDLE:
+    ...
+
+def WriteFile(handle: PyHANDLE, data: str | bytes) -> tuple[int, int]:
+    ...
