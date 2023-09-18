@@ -14,6 +14,8 @@ IS_LINUX: Final[bool] = not IS_MAC and not IS_WIN
 
 JSON_FILENAME: Final[str] = 'sh.tat.open_in_mpv.json'
 HOME: Final[str] = os.environ.get('HOME', '')
+MPV_EXEC: Final[str] = 'mpv.exe' if IS_WIN else 'mpv'
+
 
 USER_CHROME_HOSTS_REG_PATH_WIN: Final[str] = 'HKCU:\\Software\\Google\\Chrome\\NativeMessagingHosts'
 

@@ -62,6 +62,7 @@ maxdepth
 metaclass
 mkdir
 modindex
+movrsi
 mpegts
 msvs
 multirpc
@@ -92,6 +93,7 @@ ptrackers
 pycache
 pylint
 pytest
+pywintypes
 pyxdg
 ratelimit
 ratelimit
