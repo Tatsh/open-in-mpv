@@ -11,12 +11,11 @@ import subprocess as sp
 import sys
 import time
 
-from loguru import logger
 import click
 
 from .constants import IS_WIN, MACPORTS_BIN_PATH, MPV_EXEC
 from .io import Io
-from .typing import Mpv, MpvParameters
+from .typing import Mpv, MpvParameters, ResponseError, ResponseInit, ResponseSpawn
 from .version import VERSION
 
 try:
@@ -25,7 +24,6 @@ try:
     import pywintypes
 except ImportError:
     if IS_WIN:
-        logger.error('Failed to resolve pywin32. Exiting...')
         sys.exit(os.EX_SOFTWARE)
 
 
@@ -37,21 +35,21 @@ def callback(func: Mpv) -> Callable[[], Any]:
     return wrapper
 
 
-def environment(data_resp: dict[str, Any], debugging: bool) -> dict[str, Any]:
+def environment(data_resp: dict[str, Any], debugging: bool, io: Io) -> dict[str, Any]:
     env: dict[str, Any] = os.environ.copy()
     if isdir(MACPORTS_BIN_PATH):
-        logger.info('Detected MacPorts. Setting PATH.')
+        io.logging.info('Detected MacPorts. Setting PATH.')
         data_resp['macports'] = True
         old_path = os.environ.get('PATH')
         env['PATH'] = MACPORTS_BIN_PATH if not old_path else ':'.join((MACPORTS_BIN_PATH, old_path))
     if debugging:
-        logger.debug('Environment:')
+        io.logging.debug('Environment:')
         for k, value in env.items():
-            logger.debug(f'  {k}={value}')
+            io.logging.debug(f'  {k}={value}')
     return env
 
 
-def response(data: dict[str, Any]) -> None:
+def response(data: dict[str, str]) -> None:
     resp = json.dumps(data).encode()
     size = struct.pack('@i', len(resp))
     stdout_buffer: BinaryIO = sys.stdout.buffer
@@ -59,10 +57,10 @@ def response(data: dict[str, Any]) -> None:
     stdout_buffer.write(resp)
 
 
-def request(buffer: BinaryIO) -> dict[str, Any]:
+def request(buffer: BinaryIO, io: Io) -> dict[str, Any]:
     req_len = struct.unpack('@i', buffer.read(4))[0]
     message = json.loads(buffer.read(req_len).decode())
-    logger.debug('Message contents (%d): %s', req_len, message)
+    io.logging.debug('Message contents (%d): %s', req_len, message)
     return {
         'init': 'init' in message,
         'url': message.get('url', None),
@@ -94,10 +92,9 @@ def mpv_launch_socket(**kwargs: Unpack[MpvParameters]) -> None:
     kwargs['io'].logging.debug('Sending loadfile command')
     if IS_WIN:
         try:
-            logger.debug('open-in-mpv running on Windows.')
+            kwargs['io'].logging.debug('open-in-mpv running on Windows.')
             handle = CreateFile(kwargs['io'].socket_path, GENERIC_READ | GENERIC_WRITE,
                                 0, None, OPEN_EXISTING, 0, None)
-            #cspell:disable-next-line
             if (res :=  SetNamedPipeHandleState(handle, PIPE_READMODE_MESSAGE, None, None)) == 0:
                 kwargs['io'].logging.debug(f'SetNamedPipeHandleState return code: {res}')
                 spawn(mpv_launch(**kwargs), kwargs['io'])
@@ -123,7 +120,7 @@ def mpv_launch_socket(**kwargs: Unpack[MpvParameters]) -> None:
             kwargs['io'].logging.debug('Connected to socket')
             sock.send(json.dumps(dict(command=['loadfile', kwargs['url']])).encode(errors='strict') + b'\n')
         except socket.error:
-            logger.exception('Connection refused')
+            kwargs['io'].logging.exception('Connection refused')
             if not kwargs['io'].remove_socket():
                 kwargs['io'].logging.error('Failed to remove socket file')
             spawn(mpv_launch(**kwargs), kwargs['io'])
@@ -178,26 +175,25 @@ def main(version: bool = False) -> int:
     if not io.socket_exists:
         io.logging.error('Failed to create socket file!')
         return 1
-    message: dict[str, Any] = request(sys.stdin.buffer)
+    message: dict[str, Any] = request(sys.stdin.buffer, io)
     if message['init']:
-        response(dict(version=VERSION, logPath=io.log_path, socketPath=io.socket_path))
+        response(ResponseInit(version=VERSION, logPath=io.log_path, socketPath=io.socket_path))
         return 0
     if (url := message.get('url', None) is None):
         io.logging.exception('No URL was given')
-        print(json.dumps(dict(message='Missing URL!')))
+        print(json.dumps(ResponseError(message='Missing URL!')))
         return 1
     if (is_debug := message.get('debug', False)):
         io.logging.info('Debug mode enabled.')
     single: bool = message.get('single', True)
     # MacPorts
-    data_resp: dict[str, Any] = dict(version=VERSION, log_path=io.log_path, message='About to spawn')
-    data_resp['env'] = environment(data_resp, is_debug)
+    data_resp: dict[str, Any] = ResponseSpawn(version=VERSION, log_path=io.log_path, message='About to spawn')
+    data_resp['env'] = environment(data_resp, is_debug, io)
     io.logging.debug('About to spawn')
     response(data_resp)
     if io.socket_exists and single:
         spawn(mpv_launch_socket(**MpvParameters(url=url, io=io, debug=is_debug, environment=data_resp['env'])), io)
     else:
         spawn(mpv_launch(**MpvParameters(url=url, io=io, debug=is_debug, environment=data_resp['env'])), io)
-    io.logging.debug('mpv should open soon')
-    io.logging.debug('Exiting with status 0')
+    io.logging.debug('open-in-mpv successfully launched mpv - exiting with status 0')
     return 0
