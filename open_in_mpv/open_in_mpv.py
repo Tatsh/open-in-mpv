@@ -60,7 +60,7 @@ def response(data: dict[str, str]) -> None:
 def request(buffer: BinaryIO, io: Io) -> dict[str, Any]:
     req_len = struct.unpack('@i', buffer.read(4))[0]
     message = json.loads(buffer.read(req_len).decode())
-    io.logging.debug('Message contents (%d): %s', req_len, message)
+    io.logging.debug(f'Message contents ({req_len}): {message}')
     return {
         'init': 'init' in message,
         'url': message.get('url', None),
