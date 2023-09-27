@@ -189,13 +189,12 @@ def real_main(log: TextIO) -> int:
         response(dict(version=VERSION, logPath=log.name, socketPath=MPV_SOCKET))
         log.close()
         return 0
-    if (url := message.get('url', None) is None):
+    if (url := message.get('url', None)) is None:
         logger.exception('No URL was given')
         print(json.dumps(dict(message='Missing URL!')))
         return 1
     if 'https' not in url:
-        logger.exception('The url appears to not have a secure connection.')
-        print(json.dumps(dict(message='Security Exception!')))
+        print(json.dumps(dict(message='Security blocked unsecure connection.')))
         return 1
     if (is_debug := message.get('debug', False)):
         logger.info('Debug mode enabled.')
