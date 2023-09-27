@@ -193,6 +193,10 @@ def real_main(log: TextIO) -> int:
         logger.exception('No URL was given')
         print(json.dumps(dict(message='Missing URL!')))
         return 1
+    if 'https' not in url:
+        logger.exception('The url appears to not have a secure connection.')
+        print(json.dumps(dict(message='Security Exception!')))
+        return 1
     if (is_debug := message.get('debug', False)):
         logger.info('Debug mode enabled.')
     single: bool = message.get('single', True)
