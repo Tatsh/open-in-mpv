@@ -7,7 +7,7 @@
   ],
   "description": "Chrome extension to open a URL with mpv.",
   "devDependencies": {
-    "@types/chrome": "^0.0.249",
+    "@types/chrome": "^0.0.251",
     "cspell": "^7.3.8",
     "eslint": "^8.53.0",
     "prettier-plugin-ini": "^1.1.0",
