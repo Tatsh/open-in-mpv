@@ -10,7 +10,7 @@
     "@types/chrome": "^0.0.268",
     "cspell": "^8.8.1",
     "eslint": "^9.3.0",
-    "prettier-plugin-ini": "^1.1.0",
+    "prettier-plugin-ini": "^1.2.0",
     "prettier-plugin-toml": "^0.3.5"
   },
   "homepage": "https://github.com/Tatsh/open-in-mpv",
