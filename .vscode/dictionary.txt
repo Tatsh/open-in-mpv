@@ -91,6 +91,7 @@ paren
 parseable
 pipx
 plabel
+platformdirs
 popen
 postprocessors
 prss
@@ -103,7 +104,6 @@ pylint
 pyright
 pytest
 pythonwarnings
-pyxdg
 ratelimit
 ratelimit
 rcfile

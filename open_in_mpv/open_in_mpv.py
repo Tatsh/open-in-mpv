@@ -1,7 +1,5 @@
 # SPDX-License-Identifier: MIT
 from collections.abc import Callable, Mapping
-from functools import lru_cache
-from os.path import expandvars
 from pathlib import Path
 from typing import Any, BinaryIO, Final, TextIO, cast, override
 import json
@@ -11,47 +9,17 @@ import socket
 import struct
 import subprocess as sp
 import sys
-import tempfile
 
+from platformdirs import user_log_path, user_runtime_path
 import click
-import xdg.BaseDirectory
 
-from .constants import IS_MAC, IS_WIN, MACPORTS_BIN_PATH
+from .constants import MACPORTS_BIN_PATH
 
 FALLBACKS: Final[dict[str, Any]] = {'log': None, 'socket': None}
-logger = logging.getLogger(__name__)
-
-
-@lru_cache
-def get_log_path() -> Path:
-    if IS_MAC:
-        return Path('~/Library/Logs').expanduser()
-    if IS_WIN:
-        return Path(expandvars(r'%LOCALDATA%\open-in-mpv'))
-    try:
-        return Path(xdg.BaseDirectory.save_state_path('open-in-mpv'))
-    except KeyError:
-        FALLBACKS['log'] = tempfile.TemporaryDirectory(prefix='open-in-mpv')
-        return Path(FALLBACKS['log'].name)
-
-
-@lru_cache
-def get_socket_path() -> Path:
-    if IS_MAC:
-        return Path('~/Library/Caches/open-in-mpv.sock').expanduser()
-    if IS_WIN:
-        return Path(expandvars(r'\\.\pipe\open-in-mpv'))
-    try:
-        return Path(xdg.BaseDirectory.get_runtime_dir()) / 'open-in-mpv.sock'
-    except KeyError:
-        with tempfile.NamedTemporaryFile(prefix='open-in-mpv', suffix='.sock', delete=False) as tf:
-            FALLBACKS['socket'] = tf
-            return Path(FALLBACKS['socket'].name)
-
-
-LOG_PATH = get_log_path()
-MPV_SOCKET = get_socket_path()
+LOG_PATH = user_log_path('open-in-mpv')
+MPV_SOCKET = user_runtime_path('open-in-mpv') / 'open-in-mpv.sock'
 VERSION = 'v0.1.7'
+logger = logging.getLogger(__name__)
 
 
 def environment(data_resp: dict[str, Any], *, debugging: bool) -> dict[str, Any]:

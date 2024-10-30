@@ -3,7 +3,7 @@ from typing import Final
 import os
 import platform
 
-import xdg.BaseDirectory
+from platformdirs import user_config_dir
 
 __all__ = ('HOST_DATA', 'HOST_DATA_FIREFOX', 'IS_LINUX', 'IS_MAC', 'IS_WIN', 'JSON_FILENAME',
            'MAC_HOSTS_DIRS', 'SYSTEM_HOSTS_DIRS', 'USER_CHROME_HOSTS_REG_PATH_WIN',
@@ -16,14 +16,14 @@ IS_LINUX: Final[bool] = not IS_MAC and not IS_WIN
 JSON_FILENAME: Final[str] = 'sh.tat.open_in_mpv.json'
 HOME: Final[str] = os.environ.get('HOME', '')
 
-USER_CHROME_HOSTS_REG_PATH_WIN: Final[str] = 'HKCU:\\Software\\Google\\Chrome\\NativeMessagingHosts'
+USER_CHROME_HOSTS_REG_PATH_WIN: Final[str] = r'HKCU:\Software\Google\Chrome\NativeMessagingHosts'
 
 MAC_HOSTS_DIRS: Final[tuple[str, ...]] = (
     f'{HOME}/Library/Application Support/Chromium/NativeMessagingHosts',
     f'{HOME}/Library/Application Support/Google/Chrome Beta/NativeMessagingHosts',
     f'{HOME}/Library/Application Support/Google/Chrome Canary/NativeMessagingHosts',
     f'{HOME}/Library/Application Support/Google/Chrome/NativeMessagingHosts',
-    f'{HOME}/Library/Application Support/Mozilla/NativeMessagingHosts/')
+    f'{HOME}/Library/Application Support/Mozilla/NativeMessagingHosts')
 
 MACPORTS_BIN_PATH: Final[str] = '/opt/local/bin'
 
@@ -31,12 +31,12 @@ SYSTEM_HOSTS_DIRS: Final[tuple[str, str, str]] = ('/etc/chromium/native-messagin
                                                   '/etc/opt/chrome/native-messaging-hosts',
                                                   '/etc/opt/edge/native-messaging-hosts')
 USER_HOSTS_DIRS: Final[tuple[str, ...]] = (
-    f'{xdg.BaseDirectory.xdg_config_home}/BraveSoftware/Brave-Browser/NativeMessagingHosts',
-    f'{xdg.BaseDirectory.xdg_config_home}/chromium/NativeMessagingHosts',
-    f'{xdg.BaseDirectory.xdg_config_home}/google-chrome-beta/NativeMessagingHosts',
-    f'{xdg.BaseDirectory.xdg_config_home}/google-chrome-canary/NativeMessagingHosts',
-    f'{xdg.BaseDirectory.xdg_config_home}/google-chrome/NativeMessagingHosts',
-    f'{xdg.BaseDirectory.xdg_config_home}/.mozilla/native-messaging-hosts/')
+    f'{user_config_dir()}/BraveSoftware/Brave-Browser/NativeMessagingHosts',
+    f'{user_config_dir()}/chromium/NativeMessagingHosts',
+    f'{user_config_dir()}/google-chrome-beta/NativeMessagingHosts',
+    f'{user_config_dir()}/google-chrome-canary/NativeMessagingHosts',
+    f'{user_config_dir()}/google-chrome/NativeMessagingHosts',
+    f'{user_config_dir()}/.mozilla/native-messaging-hosts')
 
 COMMON_HOST_DATA: Final[dict[str, str | None]] = {
     'description': 'Opens a URL in mpv (for use with extension).',
