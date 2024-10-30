@@ -11,7 +11,7 @@
     "cspell": "^8.15.4",
     "eslint": "^9.13.0",
     "prettier-plugin-ini": "^1.3.0",
-    "prettier-plugin-toml": "^0.3.5"
+    "prettier-plugin-toml": "^2.0.1"
   },
   "homepage": "https://github.com/Tatsh/open-in-mpv",
   "keywords": [
@@ -25,12 +25,12 @@
     "url": "git+https://github.com/Tatsh/open-in-mpv.git"
   },
   "scripts": {
-    "check-formatting": "prettier -c  '.*/**/*.json' '.*/**/*.y*ml' './**/*.md' './**/*.toml' './**/*.y*ml' ./.prettierrc  && poetry run isort . --check && poetry run yapf -rd open_in_mpv .stubs tests",
+    "check-formatting": "prettier -c  '.*/**/*.json' '.*/**/*.y*ml' './**/*.md' './**/*.toml' './**/*.y*ml' ./.prettierrc  && poetry run yapf -rd open_in_mpv .stubs tests",
     "check-spelling": "cspell --no-progress './**/*'  './**/.*'",
-    "format": "prettier -w '.*/**/*.json' '.*/**/*.y*ml' './**/*.md' './**/*.toml' './**/*.y*ml' ./.prettierrc && poetry run isort . && poetry run yapf -ri open_in_mpv .stubs tests",
+    "format": "prettier -w '.*/**/*.json' '.*/**/*.y*ml' './**/*.md' './**/*.toml' './**/*.y*ml' ./.prettierrc && poetry run yapf -ri open_in_mpv .stubs tests",
     "mypy": "poetry run mypy .",
-    "pylint": "poetry run pylint open_in_mpv",
-    "qa": "eslint --report-unused-disable-directives src && yarn mypy && yarn pylint && yarn check-spelling && yarn check-formatting",
+    "qa": "eslint --report-unused-disable-directives src && yarn mypy && yarn ruff && yarn check-spelling && yarn check-formatting",
+    "ruff": "poetry run ruff check .",
     "test": "poetry run open-in-mpv-test 'https://www.youtube.com/watch?v=5rB7zgPlC5M'"
   },
   "version": "0.1.0"

@@ -55,6 +55,7 @@ kwallet
 labelsize
 levelname
 levelno
+localdata
 loguru
 lunchy
 macports

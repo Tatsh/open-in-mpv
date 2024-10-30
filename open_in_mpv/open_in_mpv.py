@@ -2,6 +2,7 @@
 from functools import lru_cache
 from os.path import dirname, exists, expanduser, expandvars, isdir, join as path_join
 from typing import Any, BinaryIO, Callable, Final, Mapping, TextIO, cast
+import logging
 import json
 import os
 import socket
@@ -10,13 +11,13 @@ import subprocess as sp
 import sys
 import tempfile
 
-from loguru import logger
 import click
 import xdg.BaseDirectory
 
 from .constants import IS_MAC, IS_WIN, MACPORTS_BIN_PATH
 
 FALLBACKS: Final[dict[str, Any]] = {'log': None, 'socket': None}
+logger = logging.getLogger(__name__)
 
 
 @lru_cache()
@@ -24,7 +25,7 @@ def get_log_path() -> str:
     if IS_MAC:
         return expanduser('~/Library/Logs')
     if IS_WIN:
-        return expandvars(r'%LOCALDATA%\open-in-mpv')  # cspell:disable-line
+        return expandvars(r'%LOCALDATA%\open-in-mpv')
     try:
         return xdg.BaseDirectory.save_state_path('open-in-mpv')
     except KeyError:
@@ -75,7 +76,7 @@ def response(data: dict[str, Any]) -> None:
 def request(buffer: BinaryIO) -> dict[str, Any]:
     req_len = struct.unpack('@i', buffer.read(4))[0]
     message = json.loads(buffer.read(req_len).decode())
-    logger.debug('Message contents (%d): %s', req_len, message)
+    logger.debug('Message contents (%d): %s.', req_len, message)
     return {
         'init': 'init' in message,
         'url': message.get('url', None),
@@ -108,21 +109,21 @@ def spawn(func: Callable[[], Any]) -> None:
             # parent process, return and keep running
             return
     except OSError as exc:
-        logger.exception('Fork #1 failed: %s (%s)', exc.errno, exc.strerror)
+        logger.exception('Fork #1 failed: %s (%s).', exc.errno, exc.strerror)
         sys.exit(1)
     os.setsid()
     # do second fork
-    logger.debug('Second fork')
+    logger.debug('Second fork.')
     try:
         if os.fork() > 0:
             # exit from second parent
             sys.exit(0)
     except OSError as exc:
-        logger.exception('Fork #2 failed: %s (%s)', exc.errno, exc.strerror)
+        logger.exception('Fork #2 failed: %s (%s).', exc.errno, exc.strerror)
         sys.exit(1)
-    logger.debug('Calling callback')
+    logger.debug('Calling callback.')
     func()
-    logger.debug('Callback returned')
+    logger.debug('Callback returned.')
     # Exit without calling cleanup handlers
     os._exit(os.EX_OK)  # pylint: disable=protected-access
 
@@ -150,7 +151,7 @@ def mpv_and_cleanup(url: str,
 
 
 def spawn_init(url: str, log: TextIO, new_env: Mapping[str, str], debug: bool = False) -> None:
-    logger.debug('Spawning initial instance')
+    logger.debug('Spawning initial instance.')
     spawn(mpv_and_cleanup(url, new_env, log, debug))
 
 
@@ -159,18 +160,18 @@ def get_callback(url: str,
                  new_env: Mapping[str, str],
                  debug: bool = False) -> Callable[[], None]:
     def callback() -> None:
-        logger.debug('Sending loadfile command')
+        logger.debug('Sending loadfile command.')
         sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         sock.settimeout(2)
         try:
             sock.connect(MPV_SOCKET)
             sock.settimeout(None)
-            logger.debug('Connected to socket')
+            logger.debug('Connected to socket.')
             sock.send(json.dumps(dict(command=['loadfile', url])).encode(errors='strict') + b'\n')
         except socket.error:
-            logger.exception('Connection refused')
+            logger.exception('Connection refused.')
             if not remove_socket():
-                logger.error('Failed to remove socket file')
+                logger.error('Failed to remove socket file.')
             spawn_init(url, log, new_env, debug)
 
     return callback
@@ -190,7 +191,7 @@ def real_main(log: TextIO) -> int:
         log.close()
         return 0
     if (url := message.get('url', None)) is None:
-        logger.exception('No URL was given')
+        logger.exception('No URL was given.')
         print(json.dumps(dict(message='Missing URL!')))
         return 1
     if 'https' not in url:
@@ -200,16 +201,16 @@ def real_main(log: TextIO) -> int:
         logger.info('Debug mode enabled.')
     single: bool = message.get('single', True)
     # MacPorts
-    data_resp: dict[str, Any] = dict(version=VERSION, log_path=log.name, message='About to spawn')
+    data_resp: dict[str, Any] = dict(version=VERSION, log_path=log.name, message='About to spawn.')
     data_resp['env'] = environment(data_resp, is_debug)
-    logger.debug('About to spawn')
+    logger.debug('About to spawn.')
     response(data_resp)
     if exists(MPV_SOCKET) and single:
         spawn(get_callback(cast(str, url), log, data_resp['env'], is_debug))
     else:
         spawn_init(cast(str, url), log, data_resp['env'], is_debug)
-    logger.debug('mpv should open soon')
-    logger.debug('Exiting with status 0')
+    logger.debug('mpv should open soon.')
+    logger.debug('Exiting with status 0.')
     if FALLBACKS['log']:
         FALLBACKS['log'].cleanup()
     return 0
@@ -224,7 +225,9 @@ class CustomHelp(click.Command):
 
 @click.command(cls=CustomHelp, context_settings=dict(allow_extra_args=True))
 @click.option('-V', '--version', help='Display version.', is_flag=True)
-def main(version: bool = False) -> None:
+@click.option('-d', '--debug', help='Enable debug logging.', is_flag=True)
+def main(*, debug: bool = False, version: bool = False) -> None:
+    logging.basicConfig(level=logging.DEBUG if debug else logging.INFO)
     if version:
         click.echo(VERSION)
         return

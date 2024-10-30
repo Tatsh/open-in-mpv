@@ -4,18 +4,20 @@ from pathlib import Path
 from shutil import which
 from typing import Any, Sequence
 import json
+import logging
 import os
 
-from loguru import logger
 import click
 
 from .constants import (HOST_DATA, IS_LINUX, IS_MAC, JSON_FILENAME, MAC_HOSTS_DIRS,
                         SYSTEM_HOSTS_DIRS, USER_HOSTS_DIRS)
 
+log = logging.getLogger(__name__)
+
 
 def write_json(host_data: Any, directory: str) -> None:
     with open(Path(directory) / JSON_FILENAME, 'w+') as f:
-        logger.debug(f'Writing to {f.name}')
+        log.debug('Writing to %s.', f.name)
         json.dump(host_data, f, indent=2, sort_keys=True, allow_nan=False)
         f.write('\n')
 
@@ -30,13 +32,19 @@ def write_json_files(host_data: Any, directories: Sequence[str], force: bool = F
 
 
 @click.command(epilog='Please fully exit your browser(s) to ensure successful installation.')
+@click.option('-d', '--debug', help='Enable debug logging.', is_flag=True)
 @click.option('-f',
               '--force',
               is_flag=True,
               help='Install user native host JSON files even if the path does not yet exist.')
 @click.option('-s', '--system', is_flag=True, help='Install system native host JSON files.')
 @click.option('-u', '--user', is_flag=True, help='Install user native host JSON files.')
-def main(system: bool = False, user: bool = False, force: bool = False) -> None:
+def main(*,
+         system: bool = False,
+         user: bool = False,
+         force: bool = False,
+         debug: bool = False) -> None:
+    logging.basicConfig(level=logging.DEBUG if debug else logging.INFO)
     if not system and not user:
         click.echo('Need an action.', err=True)
         raise click.Abort()

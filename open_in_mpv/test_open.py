@@ -4,7 +4,6 @@ from struct import pack
 import json
 import subprocess as sp
 
-from loguru import logger
 import click
 
 
@@ -13,7 +12,7 @@ import click
 def main(url: str) -> None:
     if not (full_path := which('open-in-mpv')):
         raise click.Abort()
-    logger.debug(f'open-in-mpv path: {full_path}')
+    click.echo(f'open-in-mpv path: {full_path}', err=True)
     open_in_mpv_args = (full_path, 'chrome://nothing')
     data = json.dumps({'init': True})
     with sp.Popen(open_in_mpv_args, stdin=sp.PIPE, stdout=sp.PIPE) as proc0:
