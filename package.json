@@ -59,7 +59,7 @@
     "gen-docs": "poetry run sphinx-build -T -E -b html -d docs/_build/doctrees -D language=en docs docs/_build/html",
     "gen-manpage": "poetry run sphinx-build -T -E -b man -d docs/_build/doctrees -D language=en docs man",
     "mypy": "env PYTHONWARNINGS=ignore poetry run mypy",
-    "qa": "yarn mypy . && yarn pyright . && yarn ruff . && yarn check-formatting && yarn check-spelling",
+    "qa": "yarn mypy . && poetry run yarn pyright . && yarn ruff . && yarn check-formatting && yarn check-spelling",
     "ruff": "poetry run ruff check",
     "ruff:fix": "poetry run ruff check --fix",
     "test": "poetry run pytest",
