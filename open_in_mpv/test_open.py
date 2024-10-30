@@ -11,7 +11,7 @@ import click
 @click.argument('url')
 def main(url: str) -> None:
     if not (full_path := which('open-in-mpv')):
-        raise click.Abort()
+        raise click.Abort
     click.echo(f'open-in-mpv path: {full_path}', err=True)
     open_in_mpv_args = (full_path, 'chrome://nothing')
     data = json.dumps({'init': True})
@@ -23,4 +23,4 @@ def main(url: str) -> None:
         proc.communicate(input=pack('@i', len(data)) + data.encode())
         proc.wait()
     if proc0.returncode != 0 or proc.returncode != 0:
-        raise click.Abort()
+        raise click.Abort

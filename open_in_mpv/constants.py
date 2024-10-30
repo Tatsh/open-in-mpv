@@ -1,4 +1,5 @@
-from typing import Final, Sequence
+from collections.abc import Sequence
+from typing import Final
 import os
 import platform
 
@@ -44,7 +45,6 @@ COMMON_HOST_DATA: Final[dict[str, str | None]] = {
 }
 HOST_DATA: Final[dict[str, str | None | Sequence[str]]] = {
     **COMMON_HOST_DATA,
-    # cspell:disable-next-line
     'allowed_origins': ['chrome-extension://ggijpepdpiehgbiknmfpfbhcalffjlbj/'],
     'name': 'sh.tat.open_in_mpv',
 }

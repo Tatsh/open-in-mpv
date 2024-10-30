@@ -1,29 +1,23 @@
-# Compiled
-# *.com
 *.class
 *.dll
+*.egg-info/
 *.exe
+*.kate-swp
 *.o
-*.so
 *.pyc
 *.pyo
-__pycache__/
-*.egg-info/
-
-# Backups
-*~
+*.so
 *.swp*
-*.kate-swp
-
-# OS generated files
-.directory
+*~
 .DS_Store
 .DS_Store?
-._*
 .Spotlight-V100/
 .Trashes/
-Thumbs.db
-
-/node_modules/
+._*
+.directory
 /.mypy_cache/
 /dist/
+/docs/_build/
+/node_modules/
+Thumbs.db
+__pycache__/

@@ -17,15 +17,19 @@ colenabled
 colorder
 colwidth
 concat
+conftest
 contextlib
 contextmanager
 cookiesfrombrowser
+datatable
+datatables
 dedented
 delslice
 dets
 distutils
 docparams
 docstrings
+doctrees
 docutils
 ecda
 elif
@@ -37,9 +41,11 @@ execfile
 flabel
 fstr
 fullrows
+furb
 genindex
 geteuid
 getslice
+ggijpepdpiehgbiknmfpfbhcalffjlbj
 hkcu
 hsplit
 htmlcov
@@ -47,6 +53,7 @@ idiv
 ignoreerrors
 infojson
 inlinevar
+intersphinx
 isort
 itertools
 khtml
@@ -91,8 +98,11 @@ pstate
 psutil
 ptrackers
 pycache
+pydocstyle
 pylint
+pyright
 pytest
+pythonwarnings
 pyxdg
 ratelimit
 ratelimit
@@ -117,6 +127,7 @@ sindex
 speedintitle
 speedlistdl
 speedlistul
+sphinxcontrib
 sponsorblock
 standarderror
 status_forcelist
@@ -127,10 +138,12 @@ tablefmt
 tadd
 tatsh
 tbody
+testpaths
 timedelta
 timeformat
 tkinter
 toctree
+tomlkit
 tryfirst
 typecheck
 udvare
@@ -153,3 +166,4 @@ xirvik
 xrange
 xreadlines
 yapf
+yapfignore

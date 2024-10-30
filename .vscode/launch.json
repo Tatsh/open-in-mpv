@@ -9,7 +9,7 @@
       "name": "Pytest",
       "program": "~/.virtualenvs/{{cookiecutter.directory_name}}/bin/pytest",
       "request": "launch",
-      "type": "python"
+      "type": "debugpy"
     }
   ],
   "version": "0.2.0"

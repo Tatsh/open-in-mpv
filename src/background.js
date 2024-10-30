@@ -33,24 +33,22 @@ chrome.runtime.onInstalled.addListener(() =>
     contexts: ['audio', 'link', 'page', 'video'],
     id: 'open-in-mpv-menu',
     title: 'Open in mpv',
-  })
+  }),
 );
-chrome.contextMenus.onClicked.addListener(message => {
-    if (typeof message === 'undefined') {
+chrome.contextMenus.onClicked.addListener((message) => {
+  if (typeof message === 'undefined') {
+    console.error(chrome.runtime.lastError);
+    return;
+  }
+  chrome.storage.local.get((/** @type StorageItems | null | undefined */ items) => {
+    if (typeof items === 'undefined') {
       console.error(chrome.runtime.lastError);
       return;
     }
-    chrome.storage.local.get((
-      /** @type StorageItems | null | undefined */ items
-    ) => {
-      if (typeof items === 'undefined') {
-        console.error(chrome.runtime.lastError);
-        return;
-      }
-      chrome.runtime.sendNativeMessage('sh.tat.open_in_mpv', {
-        debug: items.debugFlag,
-        single: items.singleFlag,
-        url: message.linkUrl || message.srcUrl || message.pageUrl,
-      });
+    chrome.runtime.sendNativeMessage('sh.tat.open_in_mpv', {
+      debug: items.debugFlag,
+      single: items.singleFlag,
+      url: message.linkUrl || message.srcUrl || message.pageUrl,
     });
-  })
+  });
+});

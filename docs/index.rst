@@ -1,14 +1,17 @@
 open-in-mpv
-=======================================================
-.. automodule:: open_in_mpv.open_in_mpv
-   :members:
+===========
+.. click:: open_in_mpv.open_in_mpv:main
+   :prog: open-in-mpv
+   :nested: full
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+.. click:: open_in_mpv.install:main
+   :prog: open-in-mpv-install
+   :nested: full
 
-Indices and tables
-==================
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. click:: open_in_mpv.uninstall:main
+   :prog: open-in-mpv-uninstall
+   :nested: full
+
+.. click:: open_in_mpv.test_open:main
+   :prog: open-in-mpv-test
+   :nested: full

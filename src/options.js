@@ -53,7 +53,7 @@ const socket = qs('#socket');
 /** @type HTMLElement */
 const version = qs('#version');
 const WAIT_TIME = 5000;
-form.addEventListener('submit', event => {
+form.addEventListener('submit', (event) => {
   event.preventDefault();
   const data = {};
   for (const key of Object.keys(checkboxFields)) {
@@ -67,16 +67,14 @@ form.addEventListener('submit', event => {
   });
   return false;
 });
-document.querySelectorAll('.fw-bold').forEach(el => {
+document.querySelectorAll('.fw-bold').forEach((el) => {
   el.addEventListener('mousedown', async () => {
     const result = await navigator.permissions.query({
       name: /** @type PermissionName */ 'clipboard-write',
     });
     if (result.state === 'granted' || result.state === 'prompt') {
       try {
-        await navigator.clipboard.writeText(
-          el.querySelector('.font-monospace').innerText.trim()
-        );
+        await navigator.clipboard.writeText(el.querySelector('.font-monospace').innerText.trim());
         /** @type HTMLSpanElement */
         const copied = el.querySelector('.copied');
         copied.classList.remove('d-none');
@@ -89,14 +87,13 @@ document.querySelectorAll('.fw-bold').forEach(el => {
     }
   });
 });
-chrome.storage.local.get(items => {
+chrome.storage.local.get((items) => {
   if (typeof items === 'undefined') {
     console.error(chrome.runtime.lastError);
     return;
   }
   for (const key of Object.keys(checkboxFields)) {
-    checkboxFields[key].checked =
-      typeof items[key] !== 'undefined' ? items[key] : defaults[key];
+    checkboxFields[key].checked = typeof items[key] !== 'undefined' ? items[key] : defaults[key];
   }
 });
 chrome.runtime.sendNativeMessage(
@@ -112,5 +109,5 @@ chrome.runtime.sendNativeMessage(
     logFile.innerText = resp.logPath;
     socket.innerText = resp.socketPath;
     version.innerText = resp.version;
-  }
+  },
 );
