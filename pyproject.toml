@@ -21,7 +21,7 @@ version = "0.1.0"
 [tool.poetry.dependencies]
 python = ">=3.12,<4"
 click = ">=8.0,<8.1.4"
-psutil = "^5.9.5"
+psutil = ">=5.9.5,<7.0.0"
 pyxdg = "^0.28"
 
 [tool.poetry.group.dev]
