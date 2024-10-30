@@ -3,12 +3,10 @@ build:
   os: ubuntu-22.04
   tools:
     python: '3.12'
-formats:
-  - epub
 python:
   install:
-    - method: pip
-      path: .
+    - path: .
+    - requirements: .rtfd-requirements.txt
 sphinx:
   configuration: docs/conf.py
   fail_on_warning: true

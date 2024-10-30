@@ -114,6 +114,7 @@ reqtimeout
 restrictfilenames
 ropeproject
 rstcheck
+rtfd
 rtorrent
 rutorrent
 selfpromo
