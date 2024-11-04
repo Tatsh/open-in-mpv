@@ -542,10 +542,10 @@
   dependencies:
     "@taplo/core" "^0.1.0"
 
-"@types/chrome@^0.0.279":
-  version "0.0.279"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.279.tgz#18d902ba8bb2c23bc003484322901c6873ccfc64"
-  integrity sha512-wl0IxQ2OQiMazPZM5LimHQ7Jwd72/O8UvvzyptplXT2S4eUqXH5C0n8S+v8PtKhyX89p0igCPpNy3Bwksyk57g==
+"@types/chrome@^0.0.280":
+  version "0.0.280"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.280.tgz#7ef46940c1aa78947508c2371993a301df8c4115"
+  integrity sha512-AotSmZrL9bcZDDmSI1D9dE7PGbhOur5L0cKxXd7IqbVizQWCY4gcvupPUVsQ4FfDj3V2tt/iOpomT9EY0s+w1g==
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"
