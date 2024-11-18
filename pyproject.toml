@@ -30,7 +30,7 @@ optional = true
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.13.0"
 ruff = "^0.7.1"
-yapf = "^0.40.2"
+yapf = ">=0.40.2,<0.44.0"
 
 [tool.poetry.group.docs]
 optional = true
