@@ -5,7 +5,7 @@
   "contributors": ["Andrew Udvare <audvare@gmail.com>"],
   "description": "Chrome extension to open a URL with mpv.",
   "devDependencies": {
-    "@types/chrome": "^0.0.283",
+    "@types/chrome": "^0.0.284",
     "cspell": "^8.16.0",
     "eslint": "^9.15.0",
     "markdownlint-cli2": "^0.15.0",
