@@ -8,7 +8,7 @@
     "@types/chrome": "^0.0.287",
     "cspell": "^8.17.1",
     "eslint": "^9.17.0",
-    "markdownlint-cli2": "^0.17.0",
+    "markdownlint-cli2": "^0.17.1",
     "prettier": "^3.4.2",
     "prettier-plugin-ini": "^1.3.0",
     "prettier-plugin-sort-json": "^4.0.0",
