@@ -543,10 +543,10 @@
   dependencies:
     "@taplo/core" "^0.1.0"
 
-"@types/chrome@^0.0.287":
-  version "0.0.287"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.287.tgz#239969b1195b441836d2137125543b5241c41157"
-  integrity sha512-wWhBNPNXZHwycHKNYnexUcpSbrihVZu++0rdp6GEk5ZgAglenLx+RwdEouh6FrHS0XQiOxSd62yaujM1OoQlZQ==
+"@types/chrome@^0.0.289":
+  version "0.0.289"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.289.tgz#c44e156fdd7e535b56aa5ca2ee73b09387846665"
+  integrity sha512-JQifH2d4TFeIZ+ySBSQxCd4D+J6W0jIAyQipAzG1up4O7WApTYrBqnmpNbMqFR5f70wJ1FE6+axqtpfTtPzy/g==
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"
