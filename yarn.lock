@@ -1971,10 +1971,10 @@ punycode@^2.1.0:
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.3.0.tgz#f67fa67c94da8f4d0cfff981aee4118064199b8f"
   integrity sha512-rRV+zQD8tVFys26lAGR9WUuS4iUAngJScM+ZRSKtvl5tKeZ2t5bvdNFdNHBW9FWR4guGHlgmsZ1G7BSm2wTbuA==
 
-pyright@^1.1.391:
-  version "1.1.391"
-  resolved "https://registry.yarnpkg.com/pyright/-/pyright-1.1.391.tgz#ed49b454dbc1be3ceb5cfbc41eff0f6e6b0d75a6"
-  integrity sha512-3enWmLlS02oyiGR/A7yaGk4FD2v+CRshJ+kS8pRezJWlW3En4FUUMRKmfChHeVGaxUctj3hceT+PG8FYZSDz8A==
+pyright@^1.1.392:
+  version "1.1.392"
+  resolved "https://registry.yarnpkg.com/pyright/-/pyright-1.1.392.tgz#3a753b7ff16cb4c53e04bbaeb2fc0d7aefb2d84c"
+  integrity sha512-ilLW65Qh7h+PxxDY5M7REv8fPw2of9RRlTLEKUJnovxD9pVoImf1Q8h4nUoHNkxOLTurvTRA/HGcZhwAB9L5IA==
   optionalDependencies:
     fsevents "~2.3.3"
 
