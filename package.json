@@ -7,7 +7,7 @@
   "devDependencies": {
     "@types/chrome": "^0.0.300",
     "cspell": "^8.17.3",
-    "eslint": "^9.19.0",
+    "eslint": "^9.20.1",
     "markdownlint-cli2": "^0.17.2",
     "prettier": "^3.4.2",
     "prettier-plugin-ini": "^1.3.0",
