@@ -43,7 +43,7 @@ restructuredtext-lint = "^1.4.0"
 sphinx = ">=7.2.6,<9.0.0"
 sphinx-click = "^6.0.0"
 sphinx-datatables = "^0.2.1"
-sphinx-immaterial = "^0.12.4"
+sphinx-immaterial = ">=0.12.4,<0.14.0"
 tomlkit = "^0.13.2"
 
 [tool.poetry.group.tests]
