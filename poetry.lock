@@ -1124,13 +1124,13 @@ docs = ["sphinx-copybutton", "sphinx-toolbox", "sphinxcontrib-jquery"]
 
 [[package]]
 name = "sphinx-immaterial"
-version = "0.13.1"
+version = "0.13.2"
 description = "Adaptation of mkdocs-material theme for the Sphinx documentation system"
 optional = false
 python-versions = ">=3.10"
 groups = ["docs"]
 files = [
-    {file = "sphinx_immaterial-0.13.1-py3-none-any.whl", hash = "sha256:45e8d8504a7a908b8fc6cfa585109f73fb02bc91792e92cae7775320bf816e25"},
+    {file = "sphinx_immaterial-0.13.2-py3-none-any.whl", hash = "sha256:bd1f14ee3285b74b25804fd3ba15df5b87317a6ec787b7179e5559c7a018fce4"},
 ]
 
 [package.dependencies]
@@ -1139,7 +1139,7 @@ markupsafe = "*"
 pydantic = ">=2.4"
 pydantic-extra-types = "*"
 requests = "*"
-sphinx = ">=4.5"
+sphinx = ">=6"
 typing-extensions = "*"
 
 [package.extras]
