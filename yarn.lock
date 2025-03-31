@@ -566,10 +566,10 @@
   dependencies:
     "@taplo/core" "^0.1.0"
 
-"@types/chrome@^0.0.310":
-  version "0.0.310"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.310.tgz#d0bf997684b5bd3ea1166abf231b55ae2ac33a51"
-  integrity sha512-2+C6NKe4DxGbT6v8noDOx5APEUtSxRL0Rzm2TVGYFkPi1fO36hiN9W1QIuGI93rdM34Qy4d+7orA+vXRZk5rjA==
+"@types/chrome@^0.0.313":
+  version "0.0.313"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.313.tgz#86487f51072c181a12495ae3e63a6701ade1a296"
+  integrity sha512-9R5T7gTaYZhkxlu+Ho4wk9FL+y/werWQY2yjGWSqCuiTsqS7nL/BE5UMTP6rU7J+oIG2FRKqrEycHhJATeltVA==
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"
