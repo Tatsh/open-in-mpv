@@ -1,74 +1,74 @@
-[tool.poetry]
-authors = ["Andrew Udvare <audvare@gmail.com>"]
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core"]
+
+[project]
 classifiers = [
-  "Development Status :: 4 - Beta",
+  "Development Status :: 2 - Pre-Alpha",
   "Intended Audience :: Developers",
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Typing :: Typed",
 ]
 description = "Host-side of the extension to open any link or page URL in mpv via the browser context menu."
-documentation = "https://tatsh.github.io/open-in-mpv/"
-keywords = ["multimedia"]
-include = ["man"]
+dynamic = ["dependencies", "requires-python"]
+keywords = ["audio", "browser extension", "multimedia", "mpv", "video"]
 license = "MIT"
 name = "open-in-mpv"
 readme = "README.md"
-repository = "https://github.com/Tatsh/open-in-mpv"
 version = "0.1.0"
 
-[tool.poetry.dependencies]
-python = ">=3.12,<4"
-click = ">=8.0,<8.1.9"
-platformdirs = "^4.3.6"
-psutil = ">=5.9.5,<8.0.0"
+[[project.authors]]
+email = "audvare@gmail.com"
+name = "Andrew Udvare"
 
-[tool.poetry.group.dev]
-optional = true
+[project.optional-dependencies]
+erdantic = ["erdantic<2.0"]
 
-[tool.poetry.group.dev.dependencies]
-mypy = "^1.13.0"
-ruff = ">=0.7.1,<0.12.0"
-yapf = ">=0.40.2,<0.44.0"
+[project.scripts]
+open-in-mpv = "open_in_mpv.main:main"
 
-[tool.poetry.group.docs]
-optional = true
+[project.urls]
+Issues = "https://github.com/Tatsh/open-in-mpv/issues"
+documentation = "https://open-in-mpv.readthedocs.org"
+homepage = "https://tatsh.github.io/open-in-mpv/"
+repository = "https://github.com/Tatsh/open-in-mpv"
 
-[tool.poetry.group.docs.dependencies]
-doc8 = "^1.1.1"
-docutils = "^0.21.2"
-esbonio = "^0.16.5"
-restructuredtext-lint = "^1.4.0"
-sphinx = ">=7.2.6,<9.0.0"
-sphinx-click = "^6.0.0"
-sphinx-datatables = "^0.2.1"
-sphinx-immaterial = ">=0.12.4,<0.14.0"
-tomlkit = "^0.13.2"
+[tool]
 
-[tool.poetry.group.tests]
-optional = true
+[tool.commitizen]
+tag_format = "v$version"
+version_files = [
+  ".wiswa.jsonnet",
+  "CITATION.cff",
+  "README.md",
+  "package.json",
+  "open_in_mpv/__init__.py",
+]
+version_provider = "pep621"
 
-[tool.poetry.group.tests.dependencies]
-coveralls = "^3.3.1"
-mock = "^5.1.0"
-pytest = "^8.3.3"
-pytest-cov = ">=4.1,<6.0"
-pytest-mock = "^3.12.0"
-
-[tool.poetry.scripts]
-open-in-mpv = "open_in_mpv:open_in_mpv"
-open-in-mpv-test = "open_in_mpv:test_open"
-open-in-mpv-install = "open_in_mpv:install"
-open-in-mpv-uninstall = "open_in_mpv:uninstall"
+[tool.coverage]
 
 [tool.coverage.report]
-omit = ["conftest.py", "tests/test_*.py"]
+exclude_also = ["if TYPE_CHECKING:"]
+omit = ["conftest.py", "tests.py", "tests/test_*.py", "__main__.py"]
 show_missing = true
 
 [tool.coverage.run]
 branch = true
-omit = ["conftest.py", "tests/test_*.py"]
+omit = ["conftest.py", "tests.py", "tests/test_*.py", "__main__.py"]
+
+[tool.djlint]
+max_line_length = 100
+no_line_after_yaml = true
+preserve_blank_lines = true
+preserve_leading_space = true
+profile = "jinja"
+use_gitignore = true
 
 [tool.doc8]
 max-line-length = 100
@@ -76,45 +76,102 @@ max-line-length = 100
 [tool.mypy]
 cache_dir = "~/.cache/mypy"
 explicit_package_bases = true
-mypy_path = ".stubs"
 platform = "linux"
-python_version = "3.12"
+python_version = "3.10"
 show_column_numbers = true
 strict = true
 strict_optional = true
 warn_unreachable = true
 
-[tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "config.env.pytest"
-django_find_project = false
-mock_use_standalone_module = true
-testpaths = ["tests"]
+[tool.poetry]
+include = ["man"]
+
+[tool.poetry.dependencies]
+click = "^8.1.8"
+platformdirs = "^4.3.6"
+psutil = "^7.0.0"
+python = ">=3.10,<3.14"
+typing-extensions = "^4.13.1"
+
+[tool.poetry.group]
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+commitizen = "^4.5.0"
+djlint = "^1.36.4"
+mypy = ">=1.12,<1.16"
+ruff = "^0.11.5"
+types-psutil = "^7.0.0.20250401"
+yapf = "^0.43.0"
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+autodoc-pydantic = "^2.2.0"
+doc8 = "^1.1.2"
+docutils = "^0.21.2"
+esbonio = "^0.16.5"
+numpydoc = "^1.8.0"
+restructuredtext-lint = "^1.4.0"
+sphinx = "<8.2.0"
+sphinx-click = "^6.0.0"
+sphinx-datatables = "^0.2.1"
+sphinx-hoverxref = "^1.4.2"
+sphinx-immaterial = "^0.13.4"
+
+[tool.poetry.group.docs.dependencies.enum-tools]
+extras = ["sphinx"]
+version = "^0.12.0"
+
+[tool.poetry.group.tests]
+optional = true
+
+[tool.poetry.group.tests.dependencies]
+mock = "^5.2.0"
+pytest = "^8.3.5"
+pytest-cov = "^6.1.1"
+pytest-mock = "^3.14.0"
+
+[tool.poetry.group.tests.dependencies.coveralls]
+python = "<3.13"
+version = "^4.0.1"
+
+[[tool.poetry.packages]]
+include = "open_in_mpv"
 
 [tool.pyright]
 deprecateTypingAliases = true
 enableExperimentalFeatures = true
 include = ["./open_in_mpv", "./tests"]
 pythonPlatform = "Linux"
-pythonVersion = "3.12"
+pythonVersion = "3.10"
 reportCallInDefaultInitializer = "warning"
 reportImplicitOverride = "warning"
 reportImportCycles = "error"
 reportMissingModuleSource = "error"
 reportPropertyTypeMismatch = "error"
 reportShadowedImports = "error"
-reportUninitializedInstanceVariable = "error"
 reportUnnecessaryTypeIgnoreComment = "none"
-stubPath = "./.stubs"
 typeCheckingMode = "off"
 useLibraryCodeForTypes = false
 
+[tool.pytest]
+
+[tool.pytest.ini_options]
+mock_use_standalone_module = true
+norecursedirs = ["node_modules"]
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+testpaths = ["tests"]
+
 [tool.ruff]
 cache-dir = "~/.cache/ruff"
-extend-exclude = []
 force-exclude = true
 line-length = 100
 namespace-packages = ["docs", "tests"]
-target-version = "py312"
+target-version = "py310"
 unsafe-fixes = true
 
 [tool.ruff.lint]
@@ -209,10 +266,11 @@ ignore = [
   "S101",
   "S404",
   "S603",
-  "T201",    # temporary
   "TD002",
   "TD003",
   "TD004",
+  "UP046",
+  "UP047",
 ]
 preview = true
 
@@ -279,7 +337,3 @@ use_tabs = false
 
 [tool.yapfignore]
 ignore_patterns = ["node_modules/**"]
-
-[build-system]
-build-backend = "poetry.core.masonry.api"
-requires = ["poetry-core"]

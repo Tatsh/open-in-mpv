@@ -2,15 +2,20 @@
   "configurations": [
     {
       "args": ["-x"],
+      "autoReload": {
+        "enable": true
+      },
       "console": "integratedTerminal",
       "env": {
         "_PYTEST_RAISE": "1"
       },
-      "name": "Pytest",
-      "program": "~/.virtualenvs/{{cookiecutter.directory_name}}/bin/pytest",
+      "justMyCode": false,
+      "module": "pytest",
+      "name": "Run tests",
       "request": "launch",
       "type": "debugpy"
     }
   ],
+  "inputs": [],
   "version": "0.2.0"
 }

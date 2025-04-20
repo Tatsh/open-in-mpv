@@ -1,7 +1,6 @@
-# SPDX-License-Identifier: MIT
 from collections.abc import Callable, Mapping
 from pathlib import Path
-from typing import Any, BinaryIO, Final, TextIO, cast, override
+from typing import Any, BinaryIO, TextIO, cast
 import json
 import logging
 import os
@@ -10,15 +9,13 @@ import struct
 import subprocess as sp
 import sys
 
-from platformdirs import user_log_path, user_runtime_path
+from typing_extensions import override
 import click
 
-from .constants import MACPORTS_BIN_PATH
+from open_in_mpv import __version__ as VERSION  # noqa: N812
+from open_in_mpv.constants import LOG_PATH, MACPORTS_BIN_PATH, MPV_SOCKET
 
-FALLBACKS: Final[dict[str, Any]] = {'log': None, 'socket': None}
-LOG_PATH = user_log_path('open-in-mpv')
-MPV_SOCKET = user_runtime_path('open-in-mpv') / 'open-in-mpv.sock'
-VERSION = 'v0.1.7'
+fallbacks: dict[str, Any] = {'log': None, 'socket': None}
 logger = logging.getLogger(__name__)
 
 
@@ -57,8 +54,8 @@ def request(buffer: BinaryIO) -> dict[str, Any]:
 
 
 def remove_socket() -> bool:
-    if FALLBACKS['socket']:
-        FALLBACKS['socket'].close()
+    if fallbacks['socket']:
+        fallbacks['socket'].close()
         return True
     try:
         Path(MPV_SOCKET).unlink()
@@ -164,11 +161,9 @@ def real_main(log: TextIO) -> int:
         log.close()
         return 0
     if (url := message.get('url')) is None:
-        logger.exception('No URL was given.')
-        print(json.dumps({'message': 'Missing URL!'}))
+        logger.error('No URL was given.')
         return 1
     if 'https' not in url:
-        print(json.dumps({'message': 'Insecure URLs (non-HTTPS) are blocked by default.'}))
         return 1
     if (is_debug := message.get('debug', False)):
         logger.info('Debug mode enabled.')
@@ -183,13 +178,13 @@ def real_main(log: TextIO) -> int:
     logger.debug('About to spawn.')
     response(data_resp)
     if Path(MPV_SOCKET).exists() and single:
-        spawn(get_callback(cast(str, url), log, data_resp['env'], debug=is_debug))
+        spawn(get_callback(cast('str', url), log, data_resp['env'], debug=is_debug))
     else:
-        spawn_init(cast(str, url), log, data_resp['env'], debug=is_debug)
+        spawn_init(cast('str', url), log, data_resp['env'], debug=is_debug)
     logger.debug('mpv should open soon.')
     logger.debug('Exiting with status 0.')
-    if FALLBACKS['log']:
-        FALLBACKS['log'].cleanup()
+    if fallbacks['log']:
+        fallbacks['log'].cleanup()
     return 0
 
 
@@ -201,7 +196,11 @@ class CustomHelp(click.Command):
         super().format_help(ctx, formatter)
 
 
-@click.command(cls=CustomHelp, context_settings={'allow_extra_args': True})
+@click.command(cls=CustomHelp,
+               context_settings={
+                   'allow_extra_args': True,
+                   'help_option_names': ('-h', '--help')
+               })
 @click.option('-V', '--version', help='Display version.', is_flag=True)
 @click.option('-d', '--debug', help='Enable debug logging.', is_flag=True)
 def main(*, debug: bool = False, version: bool = False) -> None:
@@ -209,7 +208,7 @@ def main(*, debug: bool = False, version: bool = False) -> None:
     if version:
         click.echo(VERSION)
         return
-    Path(LOG_PATH).mkdir(exist_ok=True)
-    out_log_path = Path(LOG_PATH) / 'open-in-mpv.log'
+    LOG_PATH.mkdir(exist_ok=True)
+    out_log_path = LOG_PATH / 'open-in-mpv.log'
     with Path(out_log_path).open('a+', encoding='utf-8') as log:
         real_main(log)
