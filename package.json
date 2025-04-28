@@ -53,7 +53,7 @@
   },
   "devDependencies": {
     "@prettier/plugin-xml": "^3.4.1",
-    "@types/chrome": "^0.0.315",
+    "@types/chrome": "^0.0.317",
     "cspell": "^8.19.3",
     "markdownlint-cli2": "^0.17.2",
     "prettier": "^3.5.3",

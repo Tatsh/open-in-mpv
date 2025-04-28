@@ -669,13 +669,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chrome@npm:^0.0.315":
-  version: 0.0.315
-  resolution: "@types/chrome@npm:0.0.315"
+"@types/chrome@npm:^0.0.317":
+  version: 0.0.317
+  resolution: "@types/chrome@npm:0.0.317"
   dependencies:
     "@types/filesystem": "npm:*"
     "@types/har-format": "npm:*"
-  checksum: 10c0/9f49b76201a48b8df195b1163fc1b32ccb83622fc025b02ef9404c9ecb6bd4553e610e61b13b8a474176c316b7bd88a71c180a69cdfe22181a17d548a04464b1
+  checksum: 10c0/aa6c199701aa4ec224332151e22489a8cf58e91c4ebe1ee157ddae98b472a84541ff5f98d4c65d853cdbfe5a95be03d560116524c27ff01d94734884079500ff
   languageName: node
   linkType: hard
 
@@ -2376,7 +2376,7 @@ __metadata:
   resolution: "open-in-mpv@workspace:."
   dependencies:
     "@prettier/plugin-xml": "npm:^3.4.1"
-    "@types/chrome": "npm:^0.0.315"
+    "@types/chrome": "npm:^0.0.317"
     cspell: "npm:^8.19.3"
     markdownlint-cli2: "npm:^0.17.2"
     prettier: "npm:^3.5.3"
