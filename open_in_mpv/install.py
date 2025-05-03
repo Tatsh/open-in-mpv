@@ -1,9 +1,10 @@
 # SPDX-License-Identifier: MIT
-from collections.abc import Sequence
+from __future__ import annotations
+
 from copy import deepcopy
 from pathlib import Path
 from shutil import which
-from typing import Any
+from typing import TYPE_CHECKING, Any
 import json
 import logging
 import os
@@ -19,6 +20,10 @@ from .constants import (
     SYSTEM_HOSTS_DIRS,
     USER_HOSTS_DIRS,
 )
+from .utils import setup_logging
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 log = logging.getLogger(__name__)
 
@@ -52,7 +57,7 @@ def main(*,
          user: bool = False,
          force: bool = False,
          debug: bool = False) -> None:
-    logging.basicConfig(level=logging.DEBUG if debug else logging.INFO)
+    setup_logging(debug=debug)
     if not system and not user:
         click.echo('Need an action.', err=True)
         raise click.Abort

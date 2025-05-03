@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import platform
 
@@ -48,5 +50,5 @@ HOST_DATA_FIREFOX = COMMON_HOST_DATA | {
     'name': 'sh.tat.open-in-mpv',
 }
 
-LOG_PATH = user_log_path('open-in-mpv')
-MPV_SOCKET = user_runtime_path('open-in-mpv') / 'open-in-mpv.sock'
+LOG_PATH = user_log_path('open-in-mpv', ensure_exists=True)
+MPV_SOCKET = user_runtime_path('open-in-mpv', ensure_exists=True) / 'open-in-mpv.sock'

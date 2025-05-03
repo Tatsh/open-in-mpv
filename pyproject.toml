@@ -26,11 +26,11 @@ version = "0.1.0"
 email = "audvare@gmail.com"
 name = "Andrew Udvare"
 
-[project.optional-dependencies]
-erdantic = ["erdantic<2.0"]
-
 [project.scripts]
 open-in-mpv = "open_in_mpv.main:main"
+open-in-mpv-install = "open_in_mpv.install:main"
+open-in-mpv-test = "open_in_mpv.test_open:main"
+open-in-mpv-uninstall = "open_in_mpv.uninstall:main"
 
 [project.urls]
 Issues = "https://github.com/Tatsh/open-in-mpv/issues"
@@ -88,6 +88,7 @@ include = ["man"]
 
 [tool.poetry.dependencies]
 click = "^8.1.8"
+colorlog = "^6.9.0"
 platformdirs = "^4.3.6"
 psutil = "^7.0.0"
 python = ">=3.10,<3.14"
@@ -116,6 +117,7 @@ docutils = "^0.21.2"
 esbonio = "^0.16.5"
 numpydoc = "^1.8.0"
 restructuredtext-lint = "^1.4.0"
+rstcheck = "^6.2.4"
 sphinx = "<8.2.0"
 sphinx-click = "^6.0.0"
 sphinx-datatables = "^0.2.1"
@@ -125,6 +127,10 @@ sphinx-immaterial = "^0.13.4"
 [tool.poetry.group.docs.dependencies.enum-tools]
 extras = ["sphinx"]
 version = "^0.12.0"
+
+[tool.poetry.group.docs.dependencies.erdantic]
+optional = true
+version = "<2.0"
 
 [tool.poetry.group.tests]
 optional = true
@@ -282,6 +288,8 @@ multiline-quotes = "double"
 case-sensitive = true
 combine-as-imports = true
 from-first = true
+required-imports = ["from __future__ import annotations"]
+section-order = ["future", "standard-library", "third-party", "local-folder"]
 
 [tool.ruff.lint.pep8-naming]
 extend-ignore-names = ["test_*"]

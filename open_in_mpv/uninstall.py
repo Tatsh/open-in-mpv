@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: MIT
-from collections.abc import Sequence
+from __future__ import annotations
+
 from pathlib import Path
+from typing import TYPE_CHECKING
 import logging
 
 import click
@@ -13,6 +15,10 @@ from .constants import (
     SYSTEM_HOSTS_DIRS,
     USER_HOSTS_DIRS,
 )
+from .utils import setup_logging
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 log = logging.getLogger(__name__)
 
@@ -30,7 +36,7 @@ def remove_from_all(directories: Sequence[str]) -> None:
 @click.command()
 @click.option('-d', '--debug', is_flag=True, help='Enable debug logging.')
 def main(*, debug: bool = False) -> None:
-    logging.basicConfig(level=logging.DEBUG if debug else logging.INFO)
+    setup_logging(debug=debug)
     if IS_LINUX:
         try:
             remove_from_all(SYSTEM_HOSTS_DIRS)

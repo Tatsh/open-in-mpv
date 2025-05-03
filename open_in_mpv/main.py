@@ -1,6 +1,7 @@
-from collections.abc import Callable, Mapping
+from __future__ import annotations
+
 from pathlib import Path
-from typing import Any, BinaryIO, TextIO, cast
+from typing import TYPE_CHECKING, Any, BinaryIO, TextIO, cast
 import json
 import logging
 import os
@@ -9,11 +10,15 @@ import struct
 import subprocess as sp
 import sys
 
+from open_in_mpv import __version__ as VERSION  # noqa: N812
+from open_in_mpv.constants import LOG_PATH, MACPORTS_BIN_PATH, MPV_SOCKET
 from typing_extensions import override
 import click
 
-from open_in_mpv import __version__ as VERSION  # noqa: N812
-from open_in_mpv.constants import LOG_PATH, MACPORTS_BIN_PATH, MPV_SOCKET
+from .utils import setup_logging
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Mapping
 
 fallbacks: dict[str, Any] = {'log': None, 'socket': None}
 logger = logging.getLogger(__name__)
@@ -157,7 +162,7 @@ def real_main(log: TextIO) -> int:
     Path(MPV_SOCKET).parent.mkdir(parents=True, exist_ok=True)
     message: dict[str, Any] = request(sys.stdin.buffer)
     if message['init']:
-        response({'version': VERSION, 'logPath': log.name, 'socketPath': MPV_SOCKET})
+        response({'version': VERSION, 'logPath': log.name, 'socketPath': str(MPV_SOCKET)})
         log.close()
         return 0
     if (url := message.get('url')) is None:
@@ -177,7 +182,7 @@ def real_main(log: TextIO) -> int:
     data_resp['env'] = environment(data_resp, debugging=is_debug)
     logger.debug('About to spawn.')
     response(data_resp)
-    if Path(MPV_SOCKET).exists() and single:
+    if MPV_SOCKET.exists() and single:
         spawn(get_callback(cast('str', url), log, data_resp['env'], debug=is_debug))
     else:
         spawn_init(cast('str', url), log, data_resp['env'], debug=is_debug)
@@ -204,11 +209,10 @@ class CustomHelp(click.Command):
 @click.option('-V', '--version', help='Display version.', is_flag=True)
 @click.option('-d', '--debug', help='Enable debug logging.', is_flag=True)
 def main(*, debug: bool = False, version: bool = False) -> None:
-    logging.basicConfig(level=logging.DEBUG if debug else logging.INFO)
+    setup_logging(debug=debug)
     if version:
         click.echo(VERSION)
         return
-    LOG_PATH.mkdir(exist_ok=True)
     out_log_path = LOG_PATH / 'open-in-mpv.log'
     with Path(out_log_path).open('a+', encoding='utf-8') as log:
         real_main(log)

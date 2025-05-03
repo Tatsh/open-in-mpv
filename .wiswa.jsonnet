@@ -16,6 +16,7 @@ local utils = import 'utils.libjsonnet';
     tool+: {
       poetry+: {
         dependencies+: {
+          colorlog: '^6.9.0',
           click: '^8.1.8',
           platformdirs: '^4.3.6',
           psutil: '^7.0.0',

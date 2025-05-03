@@ -13,6 +13,9 @@
     "editor.tabSize": 4
   },
   "cSpell.enabled": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "always"
+  },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnPaste": true,
   "editor.formatOnSave": true,

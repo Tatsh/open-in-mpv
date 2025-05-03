@@ -1,5 +1,7 @@
 autodoc
 codeowners
+colored
+colorlog
 commitizen
 conftest
 coveragerc
@@ -49,6 +51,7 @@ pyright
 pytest
 regen
 resp
+rstcheck
 schemafile
 setsid
 sphinxcontrib
