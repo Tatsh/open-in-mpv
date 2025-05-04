@@ -1,4 +1,6 @@
+*.crx
 *.log
+*.pem
 *~
 .*_cache/
 .coverage
