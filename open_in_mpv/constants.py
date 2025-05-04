@@ -42,7 +42,7 @@ COMMON_HOST_DATA = {
     'type': 'stdio'
 }
 HOST_DATA = COMMON_HOST_DATA | {
-    'allowed_origins': ['chrome-extension://ggijpepdpiehgbiknmfpfbhcalffjlbj/'],
+    'allowed_origins': ['chrome-extension://jlhcojdohadhkchjpjefbmagpiaedpgc/'],
     'name': 'sh.tat.open_in_mpv',
 }
 HOST_DATA_FIREFOX = COMMON_HOST_DATA | {

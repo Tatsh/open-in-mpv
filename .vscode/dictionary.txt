@@ -18,7 +18,6 @@ excinfo
 fontawesome
 furb
 geteuid
-ggijpepdpiehgbiknmfpfbhcalffjlbj
 globaltoc
 hkcu
 hoverxref
@@ -26,6 +25,7 @@ htmlcov
 intersphinx
 isort
 jinja
+jlhcojdohadhkchjpjefbmagpiaedpgc
 jsonnet
 jsonschema
 levelname
