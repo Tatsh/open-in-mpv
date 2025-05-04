@@ -20,7 +20,7 @@ keywords = ["audio", "browser extension", "multimedia", "mpv", "video"]
 license = "MIT"
 name = "open-in-mpv"
 readme = "README.md"
-version = "0.1.1"
+version = "0.1.2"
 
 [[project.authors]]
 email = "audvare@gmail.com"
