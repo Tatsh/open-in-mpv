@@ -14,7 +14,14 @@ local utils = import 'utils.libjsonnet';
   },
   package_json+: {
     devDependencies+: {
+      '@eslint/compat': '^1.2.9',
+      '@eslint/js': '^9.26.0',
       '@types/chrome': '^0.0.317',
+      cspell: '^8.19.3',
+      eslint: '^9.26.0',
+      'eslint-config': '^0.3.0',
+      'eslint-define-config': '^2.1.0',
+      globals: '^16.0.0',
     },
   },
   pyproject+: {

@@ -18,6 +18,8 @@ jobs:
         run: 'yarn mypy .'
       - name: 'Lint with Ruff'
         run: 'yarn ruff .'
+      - name: 'Lint with ESLint'
+        run: 'yarn eslint'
       - name: 'Check formatting'
         run: 'yarn check-formatting'
       - name: 'Check spelling'

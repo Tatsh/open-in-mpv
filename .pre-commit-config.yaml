@@ -95,6 +95,12 @@ repos:
         types_or:
           - 'python'
           - 'pyi'
+      - entry: 'yarn eslint --fix'
+        id: 'fix-eslint'
+        language: 'system'
+        name: 'run ESLint'
+        types_or:
+          - 'javascript'
       - entry: "yarn markdownlint-cli2 --fix '#node_modules'"
         id: 'fix-formatting-markdown'
         language: 'system'
