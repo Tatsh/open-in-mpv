@@ -33,6 +33,7 @@ def remove_from_all(directories: Iterable[str]) -> None:
 @click.command(context_settings={'help_option_names': ('-h', '--help')})
 @click.option('-d', '--debug', is_flag=True, help='Enable debug logging.')
 def main(*, debug: bool = False) -> None:
+    """Uninstall open-in-mpv Chrome extension files."""
     setup_logging(debug=debug)
     if IS_LINUX:
         try:

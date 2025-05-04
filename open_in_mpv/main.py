@@ -207,6 +207,7 @@ class CustomHelp(click.Command):
 @click.option('-V', '--version', help='Display version.', is_flag=True)
 @click.option('-d', '--debug', help='Enable debug logging.', is_flag=True)
 def main(*, debug: bool = False, version: bool = False) -> None:
+    """Open a URL in mpv."""
     setup_logging(debug=debug)
     if version:
         click.echo(VERSION)

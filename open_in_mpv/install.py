@@ -58,6 +58,7 @@ def main(*,
          user: bool = False,
          force: bool = False,
          debug: bool = False) -> None:
+    """Install open-in-mpv Chrome extension files."""
     setup_logging(debug=debug)
     if not system and not user:
         click.echo('Need an action.', err=True)

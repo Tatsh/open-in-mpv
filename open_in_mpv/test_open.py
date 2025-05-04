@@ -19,6 +19,7 @@ log = logging.getLogger(__name__)
 @click.argument('url')
 @click.option('-d', '--debug', help='Enable debug logging.', is_flag=True)
 def main(url: str, *, debug: bool = False) -> None:
+    """Test ``open-in-mpv`` command."""
     setup_logging(debug=debug)
     if not (full_path := which('open-in-mpv')):
         raise click.Abort
