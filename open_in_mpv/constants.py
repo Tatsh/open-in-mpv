@@ -53,7 +53,7 @@ HOST_DATA_FIREFOX = COMMON_HOST_DATA | {
 try:
     _LOG_DIR_PATH = user_log_path('open-in-mpv', ensure_exists=True)
     MPV_SOCKET = user_runtime_path('open-in-mpv', ensure_exists=True) / 'open-in-mpv.sock'
-except PermissionError:
+except PermissionError:  # pragma: no cover
     _LOG_DIR_PATH = user_log_path('open-in-mpv')
     MPV_SOCKET = user_runtime_path('open-in-mpv') / 'open-in-mpv.sock'
 LOG_PATH = _LOG_DIR_PATH / 'main.log'
