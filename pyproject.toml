@@ -48,6 +48,7 @@ version_files = [
   "README.md",
   "package.json",
   "open_in_mpv/__init__.py",
+  "src/manifest.json",
 ]
 version_provider = "pep621"
 
@@ -90,7 +91,6 @@ include = ["man"]
 click = "^8.1.8"
 colorlog = "^6.9.0"
 platformdirs = "^4.3.6"
-psutil = "^7.0.0"
 python = ">=3.10,<3.14"
 typing-extensions = "^4.13.1"
 
@@ -104,7 +104,6 @@ commitizen = "^4.5.0"
 djlint = "^1.36.4"
 mypy = ">=1.12,<1.16"
 ruff = "^0.11.7"
-types-psutil = "^7.0.0.20250401"
 yapf = "^0.43.0"
 
 [tool.poetry.group.docs]
@@ -117,7 +116,6 @@ docutils = "^0.21.2"
 esbonio = "^0.16.5"
 numpydoc = "^1.8.0"
 restructuredtext-lint = "^1.4.0"
-rstcheck = "^6.2.4"
 sphinx = "<8.2.0"
 sphinx-click = "^6.0.0"
 sphinx-datatables = "^0.2.1"

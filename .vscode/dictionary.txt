@@ -15,7 +15,6 @@ erdantic
 esbenp
 esbonio
 excinfo
-fallbacks
 fontawesome
 furb
 geteuid
@@ -32,6 +31,7 @@ jsonschema
 levelname
 lextudio
 libjsonnet
+linters
 macports
 mypy
 norecursedirs
@@ -41,7 +41,6 @@ opengl
 pipx
 platformdirs
 proc
-psutil
 pycache
 pydantic
 pydocstyle

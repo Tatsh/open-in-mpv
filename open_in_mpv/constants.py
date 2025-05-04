@@ -6,7 +6,7 @@ import platform
 from platformdirs import user_config_dir, user_log_path, user_runtime_path
 
 __all__ = ('HOST_DATA', 'HOST_DATA_FIREFOX', 'IS_LINUX', 'IS_MAC', 'IS_WIN', 'JSON_FILENAME',
-           'LOG_PATH', 'MAC_HOSTS_DIRS', 'MPV_SOCKET', 'SYSTEM_HOSTS_DIRS',
+           'LOG_PATH', 'MAC_HOSTS_DIRS', 'MPV_LOG_PATH', 'MPV_SOCKET', 'SYSTEM_HOSTS_DIRS',
            'USER_CHROME_HOSTS_REG_PATH_WIN', 'USER_HOSTS_DIRS')
 
 IS_MAC = bool(platform.mac_ver()[0])
@@ -50,5 +50,7 @@ HOST_DATA_FIREFOX = COMMON_HOST_DATA | {
     'name': 'sh.tat.open-in-mpv',
 }
 
-LOG_PATH = user_log_path('open-in-mpv', ensure_exists=True)
+_LOG_DIR_PATH = user_log_path('open-in-mpv', ensure_exists=True)
+LOG_PATH = _LOG_DIR_PATH / 'main.log'
+MPV_LOG_PATH = _LOG_DIR_PATH / 'mpv.log'
 MPV_SOCKET = user_runtime_path('open-in-mpv', ensure_exists=True) / 'open-in-mpv.sock'

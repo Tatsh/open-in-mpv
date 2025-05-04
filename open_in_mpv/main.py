@@ -1,17 +1,24 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, BinaryIO, TextIO, cast
+from shlex import quote
+from typing import TYPE_CHECKING, Any, BinaryIO, cast
 import json
 import logging
 import os
+import re
 import socket
 import struct
 import subprocess as sp
 import sys
 
 from open_in_mpv import __version__ as VERSION  # noqa: N812
-from open_in_mpv.constants import LOG_PATH, MACPORTS_BIN_PATH, MPV_SOCKET
+from open_in_mpv.constants import (
+    LOG_PATH,
+    MACPORTS_BIN_PATH,
+    MPV_LOG_PATH,
+    MPV_SOCKET,
+)
 from typing_extensions import override
 import click
 
@@ -20,7 +27,6 @@ from .utils import setup_logging
 if TYPE_CHECKING:
     from collections.abc import Callable, Mapping
 
-fallbacks: dict[str, Any] = {'log': None, 'socket': None}
 logger = logging.getLogger(__name__)
 
 
@@ -31,7 +37,7 @@ def environment(data_resp: dict[str, Any], *, debugging: bool) -> dict[str, Any]
         data_resp['macports'] = True
         old_path = os.environ.get('PATH')
         env['PATH'] = MACPORTS_BIN_PATH if not old_path else f'{MACPORTS_BIN_PATH}:{old_path}'
-    if debugging:
+    if debugging:  # pragma: no cover
         logger.debug('Environment:')
         for k, value in env.items():
             logger.debug('  %s=%s', k, value)
@@ -49,22 +55,19 @@ def response(data: dict[str, Any]) -> None:
 def request(buffer: BinaryIO) -> dict[str, Any]:
     req_len = struct.unpack('@i', buffer.read(4))[0]
     message = json.loads(buffer.read(req_len).decode())
-    logger.debug('Message contents (%d): %s.', req_len, message)
+    logger.debug('Message contents (%d): %s', req_len, message)
     return {
         'init': 'init' in message,
         'url': message.get('url', None),
         'debug': message.get('debug', False),
-        'single': message.get('single')
+        'single': message.get('single', True),
     }
 
 
 def remove_socket() -> bool:
-    if fallbacks['socket']:
-        fallbacks['socket'].close()
-        return True
     try:
-        Path(MPV_SOCKET).unlink()
-    except OSError:
+        Path(MPV_SOCKET).unlink(missing_ok=True)
+    except OSError:  # pragma: no cover
         return False
     return True
 
@@ -103,34 +106,32 @@ def spawn(func: Callable[[], Any]) -> None:
 
 def mpv_and_cleanup(url: str,
                     new_env: Mapping[str, str],
-                    log: TextIO,
                     *,
                     debug: bool = False) -> Callable[[], None]:
     def callback() -> None:
-        sp.check_call((
-            'mpv',
-            '--gpu-api=opengl',
-            '--player-operation-mode=pseudo-gui',
-            '--quiet',
-            f'--input-ipc-server={MPV_SOCKET}',
-            url,
-        ) + ((f'--log-file={log.name}',) if debug else ()),
-                      env=new_env,
-                      stderr=log,
-                      stdout=log)
-        if not remove_socket():
-            logger.error('Failed to remove socket file.')
+        with Path(MPV_LOG_PATH).open('a', encoding='utf-8') as log:
+            cmd = (
+                'mpv',
+                '--gpu-api=opengl',
+                '--player-operation-mode=pseudo-gui',
+                *(('--quiet',) if not debug else ('-v',)),
+                f'--input-ipc-server={MPV_SOCKET}',
+                url,
+            ) + ((f'--log-file={MPV_LOG_PATH}',) if debug else ())
+            logger.debug('Running: %s', ' '.join(quote(x) for x in cmd))
+            sp.run(cmd, env=new_env, stderr=log, stdout=log, check=True)
+        if not remove_socket():  # pragma: no cover
+            logger.warning('Failed to remove socket file.')
 
     return callback
 
 
-def spawn_init(url: str, log: TextIO, new_env: Mapping[str, str], *, debug: bool = False) -> None:
+def spawn_init(url: str, new_env: Mapping[str, str], *, debug: bool = False) -> None:
     logger.debug('Spawning initial instance.')
-    spawn(mpv_and_cleanup(url, new_env, log, debug=debug))
+    spawn(mpv_and_cleanup(url, new_env, debug=debug))
 
 
 def get_callback(url: str,
-                 log: TextIO,
                  new_env: Mapping[str, str],
                  *,
                  debug: bool = False) -> Callable[[], None]:
@@ -145,51 +146,48 @@ def get_callback(url: str,
             sock.send(json.dumps({'command': ['loadfile', url]}).encode(errors='strict') + b'\n')
         except OSError:
             logger.exception('Connection refused.')
-            if not remove_socket():
+            if not remove_socket():  # pragma: no cover
                 logger.exception('Failed to remove socket file.')
-            spawn_init(url, log, new_env, debug=debug)
+            spawn_init(url, new_env, debug=debug)
 
     return callback
 
 
-def real_main(log: TextIO) -> int:
+def real_main(*, debug: bool = False) -> int:
     """
     Actual entry point.
 
     Standard input is read for a single unsigned integer (1 byte) that represents the length of the
     message. Then the message is expected to be proceed.
     """
-    Path(MPV_SOCKET).parent.mkdir(parents=True, exist_ok=True)
     message: dict[str, Any] = request(sys.stdin.buffer)
     if message['init']:
-        response({'version': VERSION, 'logPath': log.name, 'socketPath': str(MPV_SOCKET)})
-        log.close()
+        response({'version': VERSION, 'logPath': str(LOG_PATH), 'socketPath': str(MPV_SOCKET)})
         return 0
     if (url := message.get('url')) is None:
         logger.error('No URL was given.')
         return 1
-    if 'https' not in url:
+    if not re.match(r'^https?://', url):
         return 1
-    if (is_debug := message.get('debug', False)):
+    if (is_debug := message.get('debug', False)):  # pragma: no cover
         logger.info('Debug mode enabled.')
     single: bool = message.get('single', True)
     # MacPorts
     data_resp: dict[str, Any] = {
         'version': VERSION,
-        'log_path': log.name,
+        'log_path': str(LOG_PATH),
         'message': 'About to spawn.'
     }
-    data_resp['env'] = environment(data_resp, debugging=is_debug)
+    data_resp['env'] = environment(data_resp, debugging=is_debug or debug)
     logger.debug('About to spawn.')
     response(data_resp)
     if MPV_SOCKET.exists() and single:
-        spawn(get_callback(cast('str', url), log, data_resp['env'], debug=is_debug))
+        logger.debug('Socket exists and single instance mode is enabled.')
+        spawn(get_callback(cast('str', url), data_resp['env'], debug=is_debug or debug))
     else:
-        spawn_init(cast('str', url), log, data_resp['env'], debug=is_debug)
+        spawn_init(cast('str', url), data_resp['env'], debug=is_debug or debug)
     logger.debug('mpv should open soon.')
     logger.debug('Exiting with status 0.')
-    if fallbacks['log']:
-        fallbacks['log'].cleanup()
     return 0
 
 
@@ -213,6 +211,5 @@ def main(*, debug: bool = False, version: bool = False) -> None:
     if version:
         click.echo(VERSION)
         return
-    out_log_path = LOG_PATH / 'open-in-mpv.log'
-    with Path(out_log_path).open('a+', encoding='utf-8') as log:
-        real_main(log)
+    if real_main(debug=debug) != 0:
+        raise click.Abort

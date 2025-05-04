@@ -12,21 +12,26 @@ local utils = import 'utils.libjsonnet';
   citation+: {
     'date-released': '2025-04-17',
   },
+  package_json+: {
+    devDependencies+: {
+      '@types/chrome': '^0.0.317',
+    },
+  },
   pyproject+: {
+    project+: {
+      scripts+: {
+        'open-in-mpv-install': 'open_in_mpv.install:main',
+        'open-in-mpv-test': 'open_in_mpv.test_open:main',
+        'open-in-mpv-uninstall': 'open_in_mpv.uninstall:main',
+      },
+    },
     tool+: {
+      commitizen+: {
+        version_files+: ['src/manifest.json'],
+      },
       poetry+: {
         dependencies+: {
-          colorlog: '^6.9.0',
-          click: '^8.1.8',
           platformdirs: '^4.3.6',
-          psutil: '^7.0.0',
-        },
-        group+: {
-          dev+: {
-            dependencies+: {
-              'types-psutil': '^7.0.0.20250401',
-            },
-          },
         },
       },
     },

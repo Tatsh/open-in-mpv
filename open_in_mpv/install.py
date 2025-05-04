@@ -37,14 +37,15 @@ def write_json(host_data: Any, directory: str) -> None:
 
 def write_json_files(host_data: Any, directories: Sequence[str], *, force: bool = False) -> None:
     for directory in directories:
-        if Path(directory).exists():
-            write_json(host_data, directory)
-        elif force:
+        if force:
             Path(directory).mkdir(parents=True, exist_ok=True)
             write_json(host_data, directory)
+        elif Path(directory).exists():
+            write_json(host_data, directory)
 
 
-@click.command(epilog='Please fully exit your browser(s) to ensure successful installation.')
+@click.command(epilog='Please fully exit your browser(s) to ensure successful installation.',
+               context_settings={'help_option_names': ('-h', '--help')})
 @click.option('-d', '--debug', help='Enable debug logging.', is_flag=True)
 @click.option('-f',
               '--force',
@@ -66,15 +67,15 @@ def main(*,
         click.echo('open-in-mpv not found in PATH.', err=True)
         raise click.Abort
     host_data['path'] = full_path
-    if IS_LINUX and system and os.geteuid() != 0:
-        click.echo('Run this as root.', err=True)
-        raise click.Abort
     if IS_LINUX:
         if system:
+            if os.geteuid() != 0:
+                click.echo('Run this as root.', err=True)
+                raise click.Abort
             for directory in SYSTEM_HOSTS_DIRS:
                 Path(directory).mkdir(exist_ok=True, parents=True)
                 write_json(host_data, directory)
-        if user:
+        else:
             write_json_files(host_data, USER_HOSTS_DIRS, force=force)
     if IS_MAC:
         write_json_files(host_data, MAC_HOSTS_DIRS, force=force)

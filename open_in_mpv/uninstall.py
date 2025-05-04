@@ -18,22 +18,19 @@ from .constants import (
 from .utils import setup_logging
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Iterable
 
 log = logging.getLogger(__name__)
 
 
-def remove_from_all(directories: Sequence[str]) -> None:
+def remove_from_all(directories: Iterable[str]) -> None:
     for directory in directories:
         path = Path(directory) / JSON_FILENAME
         log.debug('Deleting `%s`.', path)
-        try:
-            path.unlink()
-        except FileNotFoundError:
-            log.warning('Failed to delete %s because it does not exist.', path)
+        path.unlink(missing_ok=True)
 
 
-@click.command()
+@click.command(context_settings={'help_option_names': ('-h', '--help')})
 @click.option('-d', '--debug', is_flag=True, help='Enable debug logging.')
 def main(*, debug: bool = False) -> None:
     setup_logging(debug=debug)
