@@ -20,7 +20,6 @@ local utils = import 'utils.libjsonnet';
       cspell: '^8.19.3',
       eslint: '^9.26.0',
       'eslint-config': '^0.3.0',
-      'eslint-define-config': '^2.1.0',
       globals: '^16.0.0',
     },
   },

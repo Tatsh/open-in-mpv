@@ -2111,13 +2111,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-define-config@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "eslint-define-config@npm:2.1.0"
-  checksum: 10c0/034bd6bfbfec2db6c720a51815de6b072efeef7afbf99d90c23a1871f9cd741bb77f9d34e0bc2465262298c6110c5c45b704714d8575c6567fd2df963fb792ea
-  languageName: node
-  linkType: hard
-
 "eslint-scope@npm:^8.3.0":
   version: 8.3.0
   resolution: "eslint-scope@npm:8.3.0"
@@ -4319,7 +4312,6 @@ __metadata:
     cspell: "npm:^8.19.3"
     eslint: "npm:^9.26.0"
     eslint-config: "npm:^0.3.0"
-    eslint-define-config: "npm:^2.1.0"
     globals: "npm:^16.0.0"
     markdownlint-cli2: "npm:^0.17.2"
     prettier: "npm:^3.5.3"
