@@ -1,7 +1,3 @@
-local utils = import 'utils.libjsonnet';
-
-local utils = import 'utils.libjsonnet';
-
 (import 'defaults.libjsonnet') + {
   // Project-specific
   description: 'Host-side of the extension to open any link or page URL in mpv via the browser context menu.',
