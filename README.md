@@ -31,8 +31,7 @@ view the video with mpv.
 
 ## Installation
 
-First, [install the extension](https://chrome.google.com/webstore/detail/open-in-mpv/ggijpepdpiehgbiknmfpfbhcalffjlbj/).
-Quit your browser.
+First, [install the extension](https://github.com/Tatsh/open-in-mpv/releases). Quit your browser.
 
 There are many ways to perform the next step. Below is the most basic, assuming you have Pip
 installed. Before running the commands below, quit your browser.
