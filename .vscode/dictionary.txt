@@ -34,7 +34,9 @@ lextudio
 libjsonnet
 linters
 macports
+multiline
 mypy
+noninfringement
 norecursedirs
 numpy
 numpydoc
@@ -57,6 +59,7 @@ schemafile
 setsid
 sphinxcontrib
 strerror
+sublicense
 tatsh
 testpaths
 tryfirst
