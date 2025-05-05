@@ -34,19 +34,19 @@ view the video with mpv.
 First, [install the extension](https://github.com/Tatsh/open-in-mpv/releases). Quit your browser.
 
 There are many ways to perform the next step. Below is the most basic, assuming you have Pip
-installed. Before running the commands below, quit your browser.
+installed.
 
 Gentoo users can simply install `media-video/open-in-mpv` from
 [my overlay](https://github.com/Tatsh/tatsh-overlay).
 
 ```shell
 pip install --user open-in-mpv
-open-in-mpv-install --user
+open-in-mpv-install --user --force
 ```
 
-The above will install the native host JSON file to supported Chromium-based browsers whose paths are
-known, but only if the browser has created the directories before. If you want to force the
-installation you can pass `--force`.
+The above commands will install the native host JSON file to supported Chromium-based browsers
+whose paths are known for your OS. `--force` is used on first install to create the necessary paths
+if they do not exist.
 
 See `open-in-mpv-install --help` for more options. Linux users can pass the `--system` option to
 install the native host part of the extension system-wide.
