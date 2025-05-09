@@ -22,6 +22,7 @@ def main(url: str, *, debug: bool = False) -> None:
     """Test ``open-in-mpv`` command."""
     setup_logging(debug=debug)
     if not (full_path := which('open-in-mpv')):
+        log.debug('open-in-mpv not found in PATH.')
         raise click.Abort
     log.debug('open-in-mpv path: %s', full_path)
     open_in_mpv_args = (full_path, 'chrome://nothing', *(('-d',) if debug else ()))
