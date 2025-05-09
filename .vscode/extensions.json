@@ -6,6 +6,7 @@
     "christian-kohler.path-intellisense",
     "davidanson.vscode-markdownlint",
     "donjayamanne.githistory",
+    "donjayamanne.python-environment-manager",
     "dotjoshjohnson.xml",
     "eamodio.gitlens",
     "eeyore.yapf",
@@ -34,5 +35,6 @@
     "zainchen.json",
     "zengxingxin.sort-js-object-keys",
     "zeshuaro.vscode-python-poetry"
-  ]
+  ],
+  "unwantedRecommendations": ["ms-python.vscode-python-envs"]
 }
