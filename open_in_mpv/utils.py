@@ -25,10 +25,9 @@ def setup_logging(*,
             'default': {
                 '()': 'colorlog.ColoredFormatter',
                 'force_color': force_color,
-                'format': (
-                    '%(light_cyan)s%(asctime)s%(reset)s | %(log_color)s%(levelname)-8s%(reset)s | '
-                    '%(light_green)s%(name)s%(reset)s:%(light_red)s%(funcName)s%(reset)s:'
-                    '%(blue)s%(lineno)d%(reset)s - %(message)s'),
+                'format':
+                    '%(log_color)s%(levelname)-8s%(reset)s | %(light_green)s%(name)s%(reset)s:'
+                    '%(light_red)s%(funcName)s%(reset)s:%(blue)s%(lineno)d%(reset)s - %(message)s',
                 'no_color': no_color,
             },
             'file': {
