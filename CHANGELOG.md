@@ -7,4 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-[unreleased]: https://github.com/Tatsh/patreon-archiver/compare/v0.1.0...HEAD
+## 0.1.3
+
+### Fixed
+
+- Logging.
+
+[unreleased]: https://github.com/Tatsh/patreon-archiver/compare/v0.1.3...HEAD
