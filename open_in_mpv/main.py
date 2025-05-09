@@ -55,7 +55,6 @@ def response(data: dict[str, Any]) -> None:
 def request(buffer: BinaryIO) -> dict[str, Any]:
     req_len = struct.unpack('@i', buffer.read(4))[0]
     message = json.loads(buffer.read(req_len).decode())
-    logger.debug('Message contents (%d): %s', req_len, message)
     return {
         'init': 'init' in message,
         'url': message.get('url', None),
@@ -182,10 +181,9 @@ def main(chrome_url: str, message: BinaryIO, *, debug: bool = False) -> None:
     single: bool = input_json.get('single', True)
     setup_logging(debug=debug, no_color=True)
     logger.debug('Arguments: %s', ' '.join(quote(x) for x in sys.argv))
-    logger.debug('Message: %s', input_json)
-    logger.debug('Single instance mode %s.', 'enabled' if single else 'disabled')
-    if debug:  # pragma: no cover
-        logger.info('Debug mode enabled.')
+    logger.debug('Decoded message: %s', input_json)
+    logger.info('Single instance mode %s.', 'enabled' if single else 'disabled')
+    logger.info('Debug mode %s.', 'enabled' if debug else 'disabled')
     if input_json.get('init'):
         response({'logPath': str(LOG_PATH), 'socketPath': str(MPV_SOCKET), 'version': VERSION})
         return
