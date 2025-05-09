@@ -3,7 +3,7 @@
   description: 'Host-side of the extension to open any link or page URL in mpv via the browser context menu.',
   keywords: ['audio', 'browser extension', 'multimedia', 'mpv', 'video'],
   project_name: 'open-in-mpv',
-  version: '0.1.2',
+  version: '0.1.3',
   want_main: true,
   citation+: {
     'date-released': '2025-04-17',
