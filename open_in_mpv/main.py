@@ -153,44 +153,6 @@ def get_callback(url: str,
     return callback
 
 
-def real_main(*, debug: bool = False) -> int:
-    """
-    Actual entry point.
-
-    Standard input is read for a single unsigned integer (1 byte) that represents the length of the
-    message. Then the message is expected to be proceed.
-    """
-    message: dict[str, Any] = request(sys.stdin.buffer)
-    if message['init']:
-        response({'version': VERSION, 'logPath': str(LOG_PATH), 'socketPath': str(MPV_SOCKET)})
-        return 0
-    if (url := message.get('url')) is None:
-        logger.error('No URL was given.')
-        return 1
-    if not re.match(r'^https?://', url):
-        return 1
-    if (is_debug := message.get('debug', False)):  # pragma: no cover
-        logger.info('Debug mode enabled.')
-    single: bool = message.get('single', True)
-    # MacPorts
-    data_resp: dict[str, Any] = {
-        'version': VERSION,
-        'log_path': str(LOG_PATH),
-        'message': 'About to spawn.'
-    }
-    data_resp['env'] = environment(data_resp, debugging=is_debug or debug)
-    logger.debug('About to spawn.')
-    response(data_resp)
-    if MPV_SOCKET.exists() and single:
-        logger.debug('Socket exists and single instance mode is enabled.')
-        spawn(get_callback(cast('str', url), data_resp['env'], debug=is_debug or debug))
-    else:
-        spawn_init(cast('str', url), data_resp['env'], debug=is_debug or debug)
-    logger.debug('mpv should open soon.')
-    logger.debug('Exiting with status 0.')
-    return 0
-
-
 class CustomHelp(click.Command):
     @override
     def format_help(self, ctx: click.Context, formatter: click.formatting.HelpFormatter) -> None:
@@ -204,13 +166,47 @@ class CustomHelp(click.Command):
                    'allow_extra_args': True,
                    'help_option_names': ('-h', '--help')
                })
-@click.option('-V', '--version', help='Display version.', is_flag=True)
+@click.argument('chrome_url')
+@click.argument('message', type=click.File('rb'), default=sys.stdin.buffer)
 @click.option('-d', '--debug', help='Enable debug logging.', is_flag=True)
-def main(*, debug: bool = False, version: bool = False) -> None:
-    """Open a URL in mpv."""
-    setup_logging(debug=debug)
-    if version:
-        click.echo(VERSION)
+@click.version_option(VERSION, '-V', '--version', message='%(version)s')
+def main(chrome_url: str, message: BinaryIO, *, debug: bool = False) -> None:
+    """
+    Open a URL in mpv.
+
+    Standard input is read for a single unsigned integer (1 byte) that represents the length of the
+    message. Then the message (encoded in JSON) is expected to be proceed.
+    """
+    input_json = request(message)
+    debug = input_json.get('debug', debug)
+    single: bool = input_json.get('single', True)
+    setup_logging(debug=debug, no_color=True)
+    logger.debug('Arguments: %s', ' '.join(quote(x) for x in sys.argv))
+    logger.debug('Message: %s', input_json)
+    logger.debug('Single instance mode %s.', 'enabled' if single else 'disabled')
+    if debug:  # pragma: no cover
+        logger.info('Debug mode enabled.')
+    if input_json.get('init'):
+        response({'logPath': str(LOG_PATH), 'socketPath': str(MPV_SOCKET), 'version': VERSION})
         return
-    if real_main(debug=debug) != 0:
+    if (url := input_json.get('url')) is None:
+        logger.error('No URL was given.')
         raise click.Abort
+    if not re.match(r'^https?://', url):
+        logger.error('Invalid URL: %s', url)
+        raise click.Abort
+    data_resp: dict[str, Any] = {
+        'logPath': str(LOG_PATH),
+        'message': 'About to spawn.',
+        'version': VERSION
+    }
+    data_resp['env'] = environment(data_resp, debugging=debug)
+    logger.debug('About to spawn.')
+    response(data_resp)
+    if MPV_SOCKET.exists() and single:
+        logger.debug('Socket exists and single instance mode is enabled.')
+        spawn(get_callback(cast('str', url), data_resp['env'], debug=debug))
+    else:
+        spawn_init(cast('str', url), data_resp['env'], debug=debug)
+    logger.debug('mpv should open soon.')
+    logger.debug('Exiting with status 0.')
