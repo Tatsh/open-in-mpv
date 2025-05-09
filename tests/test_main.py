@@ -33,7 +33,7 @@ def test_main_shows_disclaimer(runner: CliRunner) -> None:
 
 
 def test_main_init(runner: CliRunner) -> None:
-    result = runner.invoke(main, input=b'\x0e\x00\x00\x00{"init": true}')
+    result = runner.invoke(main, ['chrome://aaa', '-'], input=b'\x0e\x00\x00\x00{"init": true}')
     assert result.exit_code == 0
     try:
         struct.unpack('@i', result.stdout_bytes[:4])
@@ -47,12 +47,12 @@ def test_main_init(runner: CliRunner) -> None:
 
 
 def test_main_no_url(runner: CliRunner) -> None:
-    result = runner.invoke(main, input=b'\x02\x00\x00\x00{}')
+    result = runner.invoke(main, ['chrome://aaa', '-'], input=b'\x02\x00\x00\x00{}')
     assert result.exit_code != 0
 
 
 def test_main_bad_url(runner: CliRunner) -> None:
-    result = runner.invoke(main, input=b'\x0e\x00\x00\x00{"url": "bad"}')
+    result = runner.invoke(main, ['chrome://aaa', '-'], input=b'\x0e\x00\x00\x00{"url": "bad"}')
     assert result.exit_code != 0
 
 
@@ -63,7 +63,8 @@ def test_main(runner: CliRunner, mocker: MockerFixture) -> None:
     mock_os.fork.side_effect = [1, 1]
     mock_os.environ.copy.return_value = {'PATH': '/usr/bin'}
     mocker.patch('open_in_mpv.main.sp.run')
-    result = runner.invoke(main, input=b'\x1e\x00\x00\x00{"url": "https://example.com"}')
+    result = runner.invoke(main, ['chrome://aaa', '-'],
+                           input=b'\x1e\x00\x00\x00{"url": "https://example.com"}')
     assert result.exit_code == 0
 
 
@@ -73,7 +74,8 @@ def test_main_os_fork_fail(runner: CliRunner, mocker: MockerFixture) -> None:
     mock_os = mocker.patch('open_in_mpv.main.os')
     mock_os.environ.copy.return_value = {'PATH': '/usr/bin'}
     mock_os.fork.side_effect = OSError
-    result = runner.invoke(main, input=b'\x1e\x00\x00\x00{"url": "https://example.com"}')
+    result = runner.invoke(main, ['chrome://aaa', '-'],
+                           input=b'\x1e\x00\x00\x00{"url": "https://example.com"}')
     assert result.exit_code == 1
 
 
@@ -83,7 +85,8 @@ def test_main_os_fork_fail_2(runner: CliRunner, mocker: MockerFixture) -> None:
     mock_os = mocker.patch('open_in_mpv.main.os')
     mock_os.environ.copy.return_value = {'PATH': '/usr/bin'}
     mock_os.fork.side_effect = [0, OSError]
-    result = runner.invoke(main, input=b'\x1e\x00\x00\x00{"url": "https://example.com"}')
+    result = runner.invoke(main, ['chrome://aaa', '-'],
+                           input=b'\x1e\x00\x00\x00{"url": "https://example.com"}')
     assert result.exit_code == 1
 
 
@@ -95,7 +98,8 @@ def test_main_os_fork_ok(runner: CliRunner, mocker: MockerFixture) -> None:
     mock_os.environ.copy.return_value = {'PATH': '/usr/bin'}
     mock_os.fork.side_effect = [0, 0]
     mocker.patch('open_in_mpv.main.sp.run')
-    result = runner.invoke(main, input=b'\x1e\x00\x00\x00{"url": "https://example.com"}')
+    result = runner.invoke(main, ['chrome://aaa', '-'],
+                           input=b'\x1e\x00\x00\x00{"url": "https://example.com"}')
     assert result.exit_code == 0
 
 
@@ -108,7 +112,8 @@ def test_main_socket_failure(runner: CliRunner, mocker: MockerFixture) -> None:
     mock_os.fork.side_effect = [1, 0, 0, 0]
     mock_socket.return_value.connect.side_effect = OSError
     mocker.patch('open_in_mpv.main.sp.run')
-    result = runner.invoke(main, input=b'\x1e\x00\x00\x00{"url": "https://example.com"}')
+    result = runner.invoke(main, ['chrome://aaa', '-'],
+                           input=b'\x1e\x00\x00\x00{"url": "https://example.com"}')
     assert result.exit_code == 0
 
 
@@ -122,7 +127,8 @@ def test_main_single_instance(runner: CliRunner, mocker: MockerFixture) -> None:
     mock_os.environ.copy.return_value = {'PATH': '/usr/bin'}
     mock_os.fork.side_effect = [0, 0, 1, 1]
     mocker.patch('open_in_mpv.main.sp.run')
-    result = runner.invoke(main, input=b'\x1e\x00\x00\x00{"url": "https://example.com"}')
+    result = runner.invoke(main, ['chrome://aaa', '-'],
+                           input=b'\x1e\x00\x00\x00{"url": "https://example.com"}')
     assert result.exit_code == 0
     assert mock_socket.return_value.connect.call_count == 1
     assert mock_socket.return_value.send.call_count == 1
@@ -138,7 +144,8 @@ def test_main_single_instance_connection_refused(runner: CliRunner, mocker: Mock
     mock_os.environ.copy.return_value = {'PATH': '/usr/bin'}
     mock_os.fork.side_effect = [0, 0, 0, 0]
     run = mocker.patch('open_in_mpv.main.sp.run')
-    result = runner.invoke(main, input=b'\x1e\x00\x00\x00{"url": "https://example.com"}')
+    result = runner.invoke(main, ['chrome://aaa', '-'],
+                           input=b'\x1e\x00\x00\x00{"url": "https://example.com"}')
     assert result.exit_code == 0
     assert run.call_count == 1
     assert mock_socket.return_value.connect.call_count == 1
@@ -156,7 +163,8 @@ def test_main_single_instance_macports(runner: CliRunner, mocker: MockerFixture)
     mock_os.environ.copy.return_value = {'PATH': '/usr/bin'}
     mock_os.fork.side_effect = [0, 0, 1, 1]
     mocker.patch('open_in_mpv.main.sp.run')
-    result = runner.invoke(main, input=b'\x1e\x00\x00\x00{"url": "https://example.com"}')
+    result = runner.invoke(main, ['chrome://aaa', '-'],
+                           input=b'\x1e\x00\x00\x00{"url": "https://example.com"}')
     assert result.exit_code == 0
     assert mock_socket.return_value.connect.call_count == 1
     assert mock_socket.return_value.send.call_count == 1
