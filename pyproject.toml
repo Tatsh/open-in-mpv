@@ -88,7 +88,7 @@ warn_unreachable = true
 include = ["man"]
 
 [tool.poetry.dependencies]
-click = "^8.1.8"
+click = "^8.2.0"
 colorlog = "^6.9.0"
 platformdirs = "^4.3.6"
 python = ">=3.10,<3.14"
