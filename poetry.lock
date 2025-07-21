@@ -732,14 +732,14 @@ sphinx = ["sphinx (>=3.4.0)", "sphinx-jinja2-compat (>=0.1.1)", "sphinx-toolbox 
 
 [[package]]
 name = "erdantic"
-version = "1.1.0.post1"
+version = "1.1.1"
 description = "Entity relationship diagrams for Python data model classes like Pydantic."
 optional = true
 python-versions = ">=3.9"
 groups = ["docs"]
 files = [
-    {file = "erdantic-1.1.0.post1-py3-none-any.whl", hash = "sha256:dfff1b0d3282bff8c256a12e8d3ae516a29b395f85d3322bde8617fd7fa31b43"},
-    {file = "erdantic-1.1.0.post1.tar.gz", hash = "sha256:8ab6fec958f02f3e846c01f2fcbaf01df202b93257cbda6f7daec0588a3337cf"},
+    {file = "erdantic-1.1.1-py3-none-any.whl", hash = "sha256:11caab322bac04b4b640a161334ddbe2c12c1bba6a5f3026e3dc1e98201485bb"},
+    {file = "erdantic-1.1.1.tar.gz", hash = "sha256:55aff6d192fd541a4d713a3ee1b770ed4a4780f7ad09c9253adb66d63125475c"},
 ]
 
 [package.dependencies]
