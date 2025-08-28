@@ -5,6 +5,7 @@
 [![GitHub tag (with filter)](https://img.shields.io/github/v/tag/Tatsh/open-in-mpv)](https://github.com/Tatsh/open-in-mpv/tags)
 [![License](https://img.shields.io/github/license/Tatsh/open-in-mpv)](https://github.com/Tatsh/open-in-mpv/blob/master/LICENSE.txt)
 [![GitHub commits since latest release (by SemVer including pre-releases)](https://img.shields.io/github/commits-since/Tatsh/open-in-mpv/v0.1.3/master)](https://github.com/Tatsh/open-in-mpv/compare/v0.1.3...master)
+[![CodeQL](https://github.com/Tatsh/open-in-mpv/actions/workflows/codeql.yml/badge.svg)](https://github.com/Tatsh/open-in-mpv/actions/workflows/codeql.yml)
 [![QA](https://github.com/Tatsh/open-in-mpv/actions/workflows/qa.yml/badge.svg)](https://github.com/Tatsh/open-in-mpv/actions/workflows/qa.yml)
 [![Tests](https://github.com/Tatsh/open-in-mpv/actions/workflows/tests.yml/badge.svg)](https://github.com/Tatsh/open-in-mpv/actions/workflows/tests.yml)
 [![Coverage Status](https://coveralls.io/repos/github/Tatsh/open-in-mpv/badge.svg?branch=master)](https://coveralls.io/github/Tatsh/open-in-mpv?branch=master)
