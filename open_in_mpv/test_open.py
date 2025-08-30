@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: MIT
+"""Command-line tool to test open-in-mpv."""
 from __future__ import annotations
 
 from shlex import quote
@@ -8,9 +8,10 @@ import json
 import logging
 import subprocess as sp
 
+from bascom import setup_logging
 import click
 
-from .utils import setup_logging
+__all__ = ('main',)
 
 log = logging.getLogger(__name__)
 
@@ -19,8 +20,12 @@ log = logging.getLogger(__name__)
 @click.argument('url')
 @click.option('-d', '--debug', help='Enable debug logging.', is_flag=True)
 def main(url: str, *, debug: bool = False) -> None:
-    """Test ``open-in-mpv`` command."""
-    setup_logging(debug=debug)
+    """Test ``open-in-mpv`` command."""  # noqa: DOC501
+    setup_logging(debug=debug,
+                  loggers={'open_in_mpv': {
+                      'handlers': ('console',),
+                      'propagate': False
+                  }})
     if not (full_path := which('open-in-mpv')):
         log.debug('open-in-mpv not found in PATH.')
         raise click.Abort

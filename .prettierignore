@@ -1,11 +1,12 @@
 *.1
 *.j2
 *.jsonnet
+*.kate-swp
 *.libjsonnet
 *.lock
 *.log
-*.pem
 *~
+.*.swp
 .*_cache/
 .coverage
 .cspellcache
@@ -13,6 +14,7 @@
 .pnp.*
 /.yarn/**/*.cjs
 /.yarn/install-state.gz
+/build/
 /dist/
 /docs/_build/
 /man/_static/

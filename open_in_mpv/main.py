@@ -1,3 +1,4 @@
+"""Main command."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -12,22 +13,25 @@ import struct
 import subprocess as sp
 import sys
 
+from bascom import setup_logging
 from open_in_mpv import __version__ as VERSION  # noqa: N812
-from open_in_mpv.constants import (
+from typing_extensions import override
+import click
+
+from .constants import (
     LOG_PATH,
     MACPORTS_BIN_PATH,
     MPV_LOG_PATH,
     MPV_SOCKET,
+    _LOG_DIR_PATH,
 )
-from typing_extensions import override
-import click
-
-from .utils import setup_logging
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Mapping
 
 logger = logging.getLogger(__name__)
+
+__all__ = ('main',)
 
 
 def environment(data_resp: dict[str, Any], *, debugging: bool) -> dict[str, Any]:
@@ -169,17 +173,42 @@ class CustomHelp(click.Command):
 @click.argument('message', type=click.File('rb'), default=sys.stdin.buffer)
 @click.option('-d', '--debug', help='Enable debug logging.', is_flag=True)
 @click.version_option(VERSION, '-V', '--version', message='%(version)s')
-def main(chrome_url: str, message: BinaryIO, *, debug: bool = False) -> None:
+def main(chrome_url: str, message: BinaryIO, *, debug: bool = False) -> None:  # noqa: ARG001
     """
     Open a URL in mpv.
 
     Standard input is read for a single unsigned integer (1 byte) that represents the length of the
     message. Then the message (encoded in JSON) is expected to be proceed.
-    """
+    """  # noqa: DOC501
     input_json = request(message)
     debug = input_json.get('debug', debug)
     single: bool = input_json.get('single', True)
-    setup_logging(debug=debug, no_color=True)
+    setup_logging(
+        debug=debug,
+        formatters={
+            'file': {
+                'format': '%(asctime)s | %(levelname)-8s | %(name)s:%(funcName)s:%(lineno)d - '
+                          '%(message)s',
+            }
+        },
+        handlers={
+            'file': {
+                'backupCount': 1,
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': str(_LOG_DIR_PATH / 'main.log'),
+                'formatter': 'file',
+                'maxBytes': 1048576,
+            }
+        },
+        loggers={
+            'open_in_mpv': {
+                'handlers': ('console', 'file') if debug else ('file',),
+                'propagate': False
+            }
+        },
+        root={
+            'handlers': ('console', 'file'),
+        })
     logger.debug('Arguments: %s', ' '.join(quote(x) for x in sys.argv))
     logger.debug('Decoded message: %s', input_json)
     logger.info('Single instance mode %s.', 'enabled' if single else 'disabled')

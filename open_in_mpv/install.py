@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: MIT
+"""Installation command."""
 from __future__ import annotations
 
 from copy import deepcopy
@@ -9,6 +9,7 @@ import json
 import logging
 import os
 
+from bascom import setup_logging
 import click
 
 from .constants import (
@@ -20,10 +21,11 @@ from .constants import (
     SYSTEM_HOSTS_DIRS,
     USER_HOSTS_DIRS,
 )
-from .utils import setup_logging
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
+__all__ = ('main',)
 
 log = logging.getLogger(__name__)
 
@@ -58,8 +60,12 @@ def main(*,
          user: bool = False,
          force: bool = False,
          debug: bool = False) -> None:
-    """Install open-in-mpv Chrome extension files."""
-    setup_logging(debug=debug)
+    """Install open-in-mpv Chrome extension files."""  # noqa: DOC501
+    setup_logging(debug=debug,
+                  loggers={'open_in_mpv': {
+                      'handlers': ('console',),
+                      'propagate': False
+                  }})
     if not system and not user:
         click.echo('Need an action.', err=True)
         raise click.Abort

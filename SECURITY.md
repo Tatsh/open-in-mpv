@@ -8,9 +8,7 @@
 
 ## Reporting a Vulnerability
 
-Report a vulnerability to the project's
-[GitHub issues](https://github.com/Tatsh/open-in-mpv/issues), unless the vulnerability is considered
-critical. In that case, email me.
+Send me a direct message [on Bsky](https://bsky.app/profile/tatsh.bsky.social).
 
 ### Potential issues that are _not_ considered vulnerabilities
 

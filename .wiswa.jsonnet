@@ -8,6 +8,9 @@
   citation+: {
     'date-released': '2025-04-17',
   },
+  copilot: {
+    intro: 'open-in-mpv is a browser extension that allows users to open links or the current page in mpv via the context menu.',
+  },
   package_json+: {
     devDependencies+: {
       '@eslint/compat': '^1.2.9',

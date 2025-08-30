@@ -1,10 +1,11 @@
-# SPDX-License-Identifier: MIT
+"""Uninstallation command."""
 from __future__ import annotations
 
 from pathlib import Path
 from typing import TYPE_CHECKING
 import logging
 
+from bascom import setup_logging
 import click
 
 from .constants import (
@@ -15,10 +16,11 @@ from .constants import (
     SYSTEM_HOSTS_DIRS,
     USER_HOSTS_DIRS,
 )
-from .utils import setup_logging
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+
+__all__ = ('main',)
 
 log = logging.getLogger(__name__)
 
@@ -34,7 +36,11 @@ def remove_from_all(directories: Iterable[str]) -> None:
 @click.option('-d', '--debug', is_flag=True, help='Enable debug logging.')
 def main(*, debug: bool = False) -> None:
     """Uninstall open-in-mpv Chrome extension files."""
-    setup_logging(debug=debug)
+    setup_logging(debug=debug,
+                  loggers={'open_in_mpv': {
+                      'handlers': ('console',),
+                      'propagate': False
+                  }})
     if IS_LINUX:
         try:
             remove_from_all(SYSTEM_HOSTS_DIRS)
