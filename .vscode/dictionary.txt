@@ -3,7 +3,6 @@ autodoc
 bascom
 bsky
 codeowners
-colored
 commitizen
 conftest
 coveragerc
@@ -37,7 +36,6 @@ lextudio
 libjsonnet
 linters
 macports
-mccabe
 mypy
 namedtuples
 norecursedirs
@@ -52,6 +50,7 @@ pydantic
 pydocstyle
 pylance
 pylint
+pypi
 pyproject
 pyright
 pytest

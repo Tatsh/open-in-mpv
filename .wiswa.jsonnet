@@ -1,25 +1,28 @@
-(import 'defaults.libjsonnet') + {
-  // Project-specific
+local utils = import 'utils.libjsonnet';
+
+{
   description: 'Host-side of the extension to open any link or page URL in mpv via the browser context menu.',
   keywords: ['audio', 'browser extension', 'multimedia', 'mpv', 'video'],
   project_name: 'open-in-mpv',
   version: '0.1.3',
   want_main: true,
-  citation+: {
-    'date-released': '2025-04-17',
-  },
-  copilot: {
+  copilot+: {
     intro: 'open-in-mpv is a browser extension that allows users to open links or the current page in mpv via the context menu.',
   },
+  security_policy_supported_versions: { '0.1.x': ':white_check_mark:' },
   package_json+: {
     devDependencies+: {
-      '@eslint/compat': '^1.2.9',
-      '@eslint/js': '^9.26.0',
-      '@types/chrome': '^0.0.317',
-      cspell: '^8.19.3',
-      eslint: '^9.26.0',
-      'eslint-config': '^0.3.0',
-      globals: '^16.0.0',
+      '@eslint/compat': utils.latestNpmPackageVersionCaret('@eslint/compat'),
+      '@eslint/js': utils.latestNpmPackageVersionCaret('@eslint/js'),
+      '@types/chrome': utils.latestNpmPackageVersionCaret('@types/chrome'),
+      cspell: utils.latestNpmPackageVersionCaret('cspell'),
+      eslint: utils.latestNpmPackageVersionCaret('eslint'),
+      'eslint-config': utils.latestNpmPackageVersionCaret('eslint-config'),
+      globals: utils.latestNpmPackageVersionCaret('globals'),
+    },
+    description: 'Browser side of the extension to open any link or page URL in mpv via the browser context menu.',
+    scripts+: {
+      qa: 'yarn eslint && yarn mypy . && yarn ruff . && yarn check-spelling && yarn check-formatting',
     },
   },
   pyproject+: {
@@ -36,27 +39,19 @@
       },
       poetry+: {
         dependencies+: {
-          platformdirs: '^4.3.6',
+          platformdirs: utils.latestPypiPackageVersionCaret('platformdirs'),
         },
       },
     },
   },
-  // Common
-  authors: [
-    {
-      'family-names': 'Udvare',
-      'given-names': 'Andrew',
-      email: 'audvare@gmail.com',
-      name: '%s %s' % [self['given-names'], self['family-names']],
-    },
-  ],
-  local funding_name = '%s2' % std.asciiLower(self.github_username),
-  github_username: 'Tatsh',
-  github+: {
-    funding+: {
-      ko_fi: funding_name,
-      liberapay: funding_name,
-      patreon: funding_name,
-    },
-  },
+  shared_ignore+: ['*.crx', '*.pem'],
+  security_addendum: |||
+    ### Potential issues that are _not_ considered vulnerabilities
+
+    - In the `open-in-mpv` Python script: running a rogue `mpv` executable (where it is likely a user
+      has a compromised system).
+    - Anything in the `test-open` script as this is only for testing for use by developers.
+    - The lack of a complete uninstaller.
+  |||,
+  force_eslint: true,
 }
