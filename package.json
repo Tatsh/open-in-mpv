@@ -36,7 +36,7 @@
   },
   "description": "Browser side of the extension to open any link or page URL in mpv via the browser context menu.",
   "devDependencies": {
-    "@eslint/compat": "^1.4.1",
+    "@eslint/compat": "^2.0.0",
     "@eslint/js": "^9.39.1",
     "@prettier/plugin-xml": "^3.4.2",
     "@types/chrome": "^0.1.29",
