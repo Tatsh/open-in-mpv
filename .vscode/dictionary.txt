@@ -39,6 +39,7 @@ globaltoc
 hkcu
 hoverxref
 htmlcov
+inetc
 insertmacro
 instdir
 instfiles

@@ -32,6 +32,7 @@ Name "${APP_NAME} ${APP_VERSION}"
 OutFile "${APP_NAME}-${APP_VERSION}-setup.exe"
 InstallDir "$LOCALAPPDATA\${APP_NAME}"
 RequestExecutionLevel user
+ManifestDPIAware true
 
 ; Interface configuration
 !define MUI_ABORTWARNING
@@ -75,16 +76,22 @@ Section "Install" SecInstall
   mpv_not_found:
     ; Download mpv immediately
     DetailPrint "Downloading mpv from ${MPV_DOWNLOAD_URL}..."
-    NSISdl::download /TIMEOUT=30000 "${MPV_DOWNLOAD_URL}" "$TEMP\mpv.7z"
+    inetc::get /TIMEOUT=30000 "${MPV_DOWNLOAD_URL}" "$TEMP\mpv.7z" /END
     Pop $0
-    ${If} $0 == "success"
+    ${If} $0 == "OK"
       DetailPrint "Extracting mpv files..."
-      ; Use Nsis7z plugin to extract all files to installation directory
-      ; The 7z archive has no top-level directory - files are at the root
-      ; This extracts: mpv.exe, mpv.com, d3dcompiler_43.dll, and mpv directory
-      SetOutPath "$INSTDIR"
+      ; Extract 7z archive to temporary directory
+      SetOutPath "$TEMP\mpv-extract"
       Nsis7z::ExtractWithDetails "$TEMP\mpv.7z" "Extracting mpv files %s..."
-      DetailPrint "mpv files extracted."
+      ; Copy expected files to installation directory
+      DetailPrint "Installing mpv files..."
+      CopyFiles "$TEMP\mpv-extract\mpv.exe" "$INSTDIR\mpv.exe"
+      CopyFiles "$TEMP\mpv-extract\mpv.com" "$INSTDIR\mpv.com"
+      CopyFiles "$TEMP\mpv-extract\d3dcompiler_43.dll" "$INSTDIR\d3dcompiler_43.dll"
+      CopyFiles /SILENT "$TEMP\mpv-extract\mpv" "$INSTDIR\mpv"
+      ; Clean up temporary extraction directory
+      RMDir /r "$TEMP\mpv-extract"
+      DetailPrint "mpv files installed."
     ${Else}
       DetailPrint "Failed to download mpv. Opening download page..."
       ExecShell "open" "${MPV_INSTALL_URL}"
@@ -104,9 +111,9 @@ Section "Install" SecInstall
   ytdlp_not_found:
     ; Download yt-dlp immediately
     DetailPrint "Downloading yt-dlp from ${YTDLP_DOWNLOAD_URL}..."
-    NSISdl::download /TIMEOUT=30000 "${YTDLP_DOWNLOAD_URL}" "$INSTDIR\yt-dlp.exe"
+    inetc::get /TIMEOUT=30000 "${YTDLP_DOWNLOAD_URL}" "$INSTDIR\yt-dlp.exe" /END
     Pop $0
-    ${If} $0 == "success"
+    ${If} $0 == "OK"
       DetailPrint "yt-dlp downloaded successfully."
     ${Else}
       DetailPrint "Failed to download yt-dlp. Continuing without it..."
