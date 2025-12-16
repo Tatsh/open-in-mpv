@@ -19,6 +19,7 @@ from typing_extensions import override
 import click
 
 from .constants import (
+    IS_WIN,
     LOG_PATH,
     MACPORTS_BIN_PATH,
     MPV_LOG_PATH,
@@ -107,22 +108,48 @@ def spawn(func: Callable[[], Any]) -> None:
     os._exit(os.EX_OK)
 
 
+def get_mpv_path() -> str:
+    """
+    Get the path to the mpv executable.
+
+    On Windows, if running from a PyInstaller bundle, use the bundled mpv.exe.
+    Otherwise, use the system mpv.
+    """
+    if IS_WIN and getattr(sys, 'frozen', False):
+        # Running in a PyInstaller bundle on Windows
+        if (bundled_mpv := Path(sys.executable).parent / 'mpv.exe').exists():
+            logger.debug('Using bundled mpv at: %s', bundled_mpv)
+            return str(bundled_mpv)
+        logger.warning('Bundled mpv.exe not found, falling back to system mpv.')
+    return 'mpv'
+
+
 def mpv_and_cleanup(url: str,
                     new_env: Mapping[str, str],
                     *,
                     debug: bool = False) -> Callable[[], None]:
     def callback() -> None:
         with Path(MPV_LOG_PATH).open('a', encoding='utf-8') as log:
-            cmd = (
-                'mpv',
-                '--gpu-api=opengl',
-                '--player-operation-mode=pseudo-gui',
-                *(('--quiet',) if not debug else ('-v',)),
-                f'--input-ipc-server={MPV_SOCKET}',
-                url,
-            ) + ((f'--log-file={MPV_LOG_PATH}',) if debug else ())
-            logger.debug('Running: %s', ' '.join(quote(x) for x in cmd))
-            sp.run(cmd, env=new_env, stderr=log, stdout=log, check=True)
+            mpv_path = get_mpv_path()
+            cmd_parts = [mpv_path]
+            if not IS_WIN:
+                cmd_parts.append('--gpu-api=opengl')
+            cmd_parts.append('--player-operation-mode=pseudo-gui')
+            if debug:
+                cmd_parts.append('-v')
+            else:
+                cmd_parts.append('--quiet')
+            cmd_parts.extend((f'--input-ipc-server={MPV_SOCKET}', url))
+            if debug:
+                cmd_parts.append(f'--log-file={MPV_LOG_PATH}')
+            # On Windows with PyInstaller bundle, configure yt-dlp path
+            if IS_WIN and getattr(sys, 'frozen', False):
+                ytdlp_path = Path(sys.executable).parent / 'yt-dlp.exe'
+                if ytdlp_path.exists():
+                    logger.debug('Using bundled yt-dlp at: %s', ytdlp_path)
+                    cmd_parts.append(f'--script-opts=ytdl_hook-ytdl_path={ytdlp_path}')
+            logger.debug('Running: %s', ' '.join(quote(x) for x in cmd_parts))
+            sp.run(cmd_parts, env=new_env, stderr=log, stdout=log, check=True)
         if not remove_socket():  # pragma: no cover
             logger.warning('Failed to remove socket file.')
 

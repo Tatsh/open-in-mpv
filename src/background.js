@@ -28,13 +28,20 @@
  * @property {boolean} singleFlag
  */
 
-chrome.runtime.onInstalled.addListener(() =>
+chrome.runtime.onInstalled.addListener((details) => {
   chrome.contextMenus.create({
     contexts: ['audio', 'link', 'page', 'video'],
     id: 'open-in-mpv-menu',
     title: 'Open in mpv',
-  }),
-);
+  });
+
+  // Show installation instructions on first install
+  if (details.reason === 'install') {
+    chrome.tabs.create({
+      url: chrome.runtime.getURL('install.html'),
+    });
+  }
+});
 chrome.contextMenus.onClicked.addListener((message) => {
   if (typeof message === 'undefined') {
     console.error(chrome.runtime.lastError);
