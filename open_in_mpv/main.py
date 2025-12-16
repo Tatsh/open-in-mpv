@@ -19,6 +19,7 @@ from typing_extensions import override
 import click
 
 from .constants import (
+    IS_WIN,
     LOG_PATH,
     MACPORTS_BIN_PATH,
     MPV_LOG_PATH,
@@ -107,15 +108,34 @@ def spawn(func: Callable[[], Any]) -> None:
     os._exit(os.EX_OK)
 
 
+def get_mpv_path() -> str:
+    """
+    Get the path to the mpv executable.
+
+    On Windows, if running from a PyInstaller bundle, use the bundled mpv.exe.
+    Otherwise, use the system mpv.
+    """
+    if IS_WIN and getattr(sys, 'frozen', False):
+        # Running in a PyInstaller bundle on Windows
+        bundle_dir = Path(sys.executable).parent
+        bundled_mpv = bundle_dir / 'mpv.exe'
+        if bundled_mpv.exists():
+            logger.debug('Using bundled mpv at: %s', bundled_mpv)
+            return str(bundled_mpv)
+        logger.warning('Bundled mpv.exe not found, falling back to system mpv')
+    return 'mpv'
+
+
 def mpv_and_cleanup(url: str,
                     new_env: Mapping[str, str],
                     *,
                     debug: bool = False) -> Callable[[], None]:
     def callback() -> None:
         with Path(MPV_LOG_PATH).open('a', encoding='utf-8') as log:
+            mpv_path = get_mpv_path()
             cmd = (
-                'mpv',
-                '--gpu-api=opengl',
+                mpv_path,
+                *(('--gpu-api=opengl',) if not IS_WIN else ()),
                 '--player-operation-mode=pseudo-gui',
                 *(('--quiet',) if not debug else ('-v',)),
                 f'--input-ipc-server={MPV_SOCKET}',

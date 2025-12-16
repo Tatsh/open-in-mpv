@@ -23,39 +23,35 @@
  */
 
 /**
- * @typedef StorageItems
- * @property {boolean} debugFlag
- * @property {boolean} singleFlag
+ * Detect the user's platform and show appropriate installation instructions.
  */
+function detectPlatform() {
+  const platform = navigator.platform.toLowerCase();
+  const userAgent = navigator.userAgent.toLowerCase();
 
-chrome.runtime.onInstalled.addListener((details) => {
-  chrome.contextMenus.create({
-    contexts: ['audio', 'link', 'page', 'video'],
-    id: 'open-in-mpv-menu',
-    title: 'Open in mpv',
-  });
+  let detectedPlatform = 'linux';
 
-  // Show installation instructions on first install
-  if (details.reason === 'install') {
-    chrome.tabs.create({
-      url: chrome.runtime.getURL('install.html'),
-    });
+  if (platform.includes('win') || userAgent.includes('windows')) {
+    detectedPlatform = 'windows';
+  } else if (platform.includes('mac') || userAgent.includes('mac')) {
+    detectedPlatform = 'mac';
   }
-});
-chrome.contextMenus.onClicked.addListener((message) => {
-  if (typeof message === 'undefined') {
-    console.error(chrome.runtime.lastError);
-    return;
+
+  const platformDiv = document.getElementById(`${detectedPlatform}-instructions`);
+  if (platformDiv) {
+    platformDiv.classList.add('active');
   }
-  chrome.storage.local.get((/** @type StorageItems | null | undefined */ items) => {
-    if (typeof items === 'undefined') {
-      console.error(chrome.runtime.lastError);
-      return;
+
+  // Set up download link for Windows
+  if (detectedPlatform === 'windows') {
+    const downloadLink = document.getElementById('windows-download');
+    if (downloadLink) {
+      // This URL should be updated to point to the actual release
+      downloadLink.href =
+        'https://github.com/Tatsh/open-in-mpv/releases/latest/download/open-in-mpv-installer.exe';
     }
-    chrome.runtime.sendNativeMessage('sh.tat.open_in_mpv', {
-      debug: items.debugFlag,
-      single: items.singleFlag,
-      url: message.linkUrl || message.srcUrl || message.pageUrl,
-    });
-  });
-});
+  }
+}
+
+// Run on page load
+document.addEventListener('DOMContentLoaded', detectPlatform);
