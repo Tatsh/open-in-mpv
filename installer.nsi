@@ -21,6 +21,8 @@ ${StrRep}
 !define MPV_VERSION "20251214-git-f7be2ee"
 !define MPV_DOWNLOAD_URL "https://downloads.sourceforge.net/project/mpv-player-windows/64bit/mpv-x86_64-${MPV_VERSION}.7z"
 !define MPV_INSTALL_URL "https://mpv.io/installation/"
+!define YTDLP_VERSION "2025.12.08"
+!define YTDLP_DOWNLOAD_URL "https://github.com/yt-dlp/yt-dlp/releases/download/${YTDLP_VERSION}/yt-dlp.exe"
 
 ; Determine current year
 !define /date CURRENT_YEAR "%Y"
@@ -90,6 +92,27 @@ Section "Install" SecInstall
     ${EndIf}
 
   mpv_done:
+
+  ; Check if yt-dlp.exe already exists
+  DetailPrint "Checking for yt-dlp.exe..."
+  IfFileExists "$INSTDIR\yt-dlp.exe" ytdlp_exists ytdlp_not_found
+
+  ytdlp_exists:
+    DetailPrint "yt-dlp.exe already present."
+    Goto ytdlp_done
+
+  ytdlp_not_found:
+    ; Download yt-dlp immediately
+    DetailPrint "Downloading yt-dlp from ${YTDLP_DOWNLOAD_URL}..."
+    NSISdl::download /TIMEOUT=30000 "${YTDLP_DOWNLOAD_URL}" "$INSTDIR\yt-dlp.exe"
+    Pop $0
+    ${If} $0 == "success"
+      DetailPrint "yt-dlp downloaded successfully."
+    ${Else}
+      DetailPrint "Failed to download yt-dlp. Continuing without it..."
+    ${EndIf}
+
+  ytdlp_done:
 
   ; Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -199,6 +222,7 @@ Section "Uninstall"
   Delete "$INSTDIR\mpv.exe"
   Delete "$INSTDIR\mpv.com"
   Delete "$INSTDIR\d3dcompiler_43.dll"
+  Delete "$INSTDIR\yt-dlp.exe"
   Delete "$INSTDIR\Uninstall.exe"
 
   ; Remove mpv directory

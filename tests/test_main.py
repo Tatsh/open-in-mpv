@@ -287,3 +287,104 @@ def test_mpv_and_cleanup_callback_debug(mocker: MockerFixture) -> None:
     # In debug mode, should have -v and --log-file
     assert '-v' in cmd_parts
     assert any('--log-file=' in arg for arg in cmd_parts)
+
+
+def test_mpv_and_cleanup_windows_with_ytdlp(mocker: MockerFixture) -> None:
+    """Test mpv_and_cleanup on Windows with PyInstaller bundle and yt-dlp.exe present."""
+    from open_in_mpv.main import mpv_and_cleanup
+    from unittest.mock import MagicMock
+    mocker.patch('open_in_mpv.main.IS_WIN', new=True)
+    mocker.patch('open_in_mpv.main.sys.frozen', new=True, create=True)
+    mocker.patch('open_in_mpv.main.sys.executable', 'C:\\test\\open-in-mpv.exe')
+
+    # Mock Path class to return different objects based on what's being constructed
+    mock_path_class = mocker.patch('open_in_mpv.main.Path')
+    call_count = [0]
+
+    def path_constructor(path_arg):
+        call_count[0] += 1
+        if call_count[0] == 1:
+            # First call: Path(MPV_LOG_PATH) for log file
+            mock_log_path = MagicMock()
+            mock_log_path.open.return_value.__enter__.return_value = MagicMock()
+            mock_log_path.open.return_value.__exit__.return_value = None
+            return mock_log_path
+        # Second call: Path(sys.executable) for yt-dlp check
+        mock_exe_path = MagicMock()
+        mock_parent = MagicMock()
+        mock_exe_path.parent = mock_parent
+        # When / 'yt-dlp.exe' is called on parent, return a path that exists
+        mock_ytdlp_path = MagicMock()
+        mock_ytdlp_path.exists.return_value = True
+        mock_ytdlp_path.__str__.return_value = 'C:\\test\\yt-dlp.exe'
+        mock_parent.__truediv__.return_value = mock_ytdlp_path
+        return mock_exe_path
+
+    mock_path_class.side_effect = path_constructor
+
+    mock_get_mpv_path = mocker.patch('open_in_mpv.main.get_mpv_path')
+    mock_get_mpv_path.return_value = 'C:\\test\\mpv.exe'
+    mock_sp_run = mocker.patch('open_in_mpv.main.sp.run')
+    mock_remove_socket = mocker.patch('open_in_mpv.main.remove_socket')
+    mock_remove_socket.return_value = True
+
+    callback = mpv_and_cleanup('https://example.com', {'PATH': '/usr/bin'}, debug=False)
+    callback()
+
+    # Verify sp.run was called
+    assert mock_sp_run.call_count == 1
+    args = mock_sp_run.call_args
+    cmd_parts = args[0][0]
+    # Should include yt-dlp parameters
+    assert '--ytdl=yes' in cmd_parts
+    assert any('--script-opts=ytdl_hook-ytdl_path=' in arg for arg in cmd_parts)
+
+
+def test_mpv_and_cleanup_windows_without_ytdlp(mocker: MockerFixture) -> None:
+    """Test mpv_and_cleanup on Windows with PyInstaller bundle but no yt-dlp.exe."""
+    from open_in_mpv.main import mpv_and_cleanup
+    from unittest.mock import MagicMock
+    mocker.patch('open_in_mpv.main.IS_WIN', new=True)
+    mocker.patch('open_in_mpv.main.sys.frozen', new=True, create=True)
+    mocker.patch('open_in_mpv.main.sys.executable', 'C:\\test\\open-in-mpv.exe')
+
+    # Mock Path class to return different objects based on what's being constructed
+    mock_path_class = mocker.patch('open_in_mpv.main.Path')
+    call_count = [0]
+
+    def path_constructor(path_arg):
+        call_count[0] += 1
+        if call_count[0] == 1:
+            # First call: Path(MPV_LOG_PATH) for log file
+            mock_log_path = MagicMock()
+            mock_log_path.open.return_value.__enter__.return_value = MagicMock()
+            mock_log_path.open.return_value.__exit__.return_value = None
+            return mock_log_path
+        # Second call: Path(sys.executable) for yt-dlp check
+        mock_exe_path = MagicMock()
+        mock_parent = MagicMock()
+        mock_exe_path.parent = mock_parent
+        # When / 'yt-dlp.exe' is called on parent, return a path that doesn't exist
+        mock_ytdlp_path = MagicMock()
+        mock_ytdlp_path.exists.return_value = False
+        mock_parent.__truediv__.return_value = mock_ytdlp_path
+        return mock_exe_path
+
+    mock_path_class.side_effect = path_constructor
+
+    mock_get_mpv_path = mocker.patch('open_in_mpv.main.get_mpv_path')
+    mock_get_mpv_path.return_value = 'C:\\test\\mpv.exe'
+    mock_sp_run = mocker.patch('open_in_mpv.main.sp.run')
+    mock_remove_socket = mocker.patch('open_in_mpv.main.remove_socket')
+    mock_remove_socket.return_value = True
+
+    callback = mpv_and_cleanup('https://example.com', {'PATH': '/usr/bin'}, debug=False)
+    callback()
+
+    # Verify sp.run was called
+    assert mock_sp_run.call_count == 1
+    args = mock_sp_run.call_args
+    cmd_parts = args[0][0]
+    # Should NOT include yt-dlp parameters
+    assert '--ytdl=yes' not in cmd_parts
+    assert not any('--script-opts=ytdl_hook-ytdl_path=' in arg for arg in cmd_parts)
