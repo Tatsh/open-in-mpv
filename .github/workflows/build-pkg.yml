@@ -23,66 +23,66 @@ jobs:
         run: |
           # Get version from pyproject.toml
           version=$(tomlq -r .project.version pyproject.toml)
-          
+
           # Create directory structure for pkg
           mkdir -p pkg/arm64/scripts pkg/x86_64/scripts
           mkdir -p pkg/arm64/payload/usr/local/bin
           mkdir -p pkg/x86_64/payload/usr/local/bin
-          
+
           # Copy binaries to payload directories
           cp dist/arm64/* pkg/arm64/payload/usr/local/bin/
           cp dist/x86_64/* pkg/x86_64/payload/usr/local/bin/
-          
+
           # Make binaries executable
           chmod +x pkg/arm64/payload/usr/local/bin/*
           chmod +x pkg/x86_64/payload/usr/local/bin/*
-          
+
           # Create postinstall script for ARM64
           cat > pkg/arm64/scripts/postinstall <<'EOF'
           #!/bin/bash
           # Post-installation script for open-in-mpv
-          
+
           # Install native messaging host for all users
           /usr/local/bin/open-in-mpv-install --user --force || true
-          
+
           # Check if mpv is installed
           if ! command -v mpv &> /dev/null; then
               echo "Warning: mpv is not installed. Please install it with 'brew install mpv' or from https://mpv.io/"
           fi
-          
+
           # Check if yt-dlp is installed
           if ! command -v yt-dlp &> /dev/null; then
               echo "Note: yt-dlp is not installed. For best results, install it with 'brew install yt-dlp' or 'pip install yt-dlp'"
           fi
-          
+
           exit 0
           EOF
-          
+
           # Create postinstall script for x86_64
           cat > pkg/x86_64/scripts/postinstall <<'EOF'
           #!/bin/bash
           # Post-installation script for open-in-mpv
-          
+
           # Install native messaging host for all users
           /usr/local/bin/open-in-mpv-install --user --force || true
-          
+
           # Check if mpv is installed
           if ! command -v mpv &> /dev/null; then
               echo "Warning: mpv is not installed. Please install it with 'brew install mpv' or from https://mpv.io/"
           fi
-          
+
           # Check if yt-dlp is installed
           if ! command -v yt-dlp &> /dev/null; then
               echo "Note: yt-dlp is not installed. For best results, install it with 'brew install yt-dlp' or 'pip install yt-dlp'"
           fi
-          
+
           exit 0
           EOF
-          
+
           # Make scripts executable
           chmod +x pkg/arm64/scripts/postinstall
           chmod +x pkg/x86_64/scripts/postinstall
-          
+
           echo "PKG_VERSION=${version}" >> $GITHUB_ENV
       - name: 'Build ARM64 pkg'
         run: |
@@ -93,7 +93,7 @@ jobs:
             --version "${PKG_VERSION}" \
             --install-location / \
             pkg/open-in-mpv-arm64-component.pkg
-          
+
           # Create distribution XML
           cat > pkg/arm64-distribution.xml <<EOF
           <?xml version="1.0" encoding="utf-8"?>
@@ -115,7 +115,7 @@ jobs:
             <pkg-ref id="sh.tat.open-in-mpv" version="${PKG_VERSION}" onConclusion="none">open-in-mpv-arm64-component.pkg</pkg-ref>
           </installer-gui-script>
           EOF
-          
+
           # Build product archive
           productbuild --distribution pkg/arm64-distribution.xml \
             --package-path pkg \
@@ -130,7 +130,7 @@ jobs:
             --version "${PKG_VERSION}" \
             --install-location / \
             pkg/open-in-mpv-x86_64-component.pkg
-          
+
           # Create distribution XML
           cat > pkg/x86_64-distribution.xml <<EOF
           <?xml version="1.0" encoding="utf-8"?>
@@ -152,7 +152,7 @@ jobs:
             <pkg-ref id="sh.tat.open-in-mpv" version="${PKG_VERSION}" onConclusion="none">open-in-mpv-x86_64-component.pkg</pkg-ref>
           </installer-gui-script>
           EOF
-          
+
           # Build product archive
           productbuild --distribution pkg/x86_64-distribution.xml \
             --package-path pkg \
