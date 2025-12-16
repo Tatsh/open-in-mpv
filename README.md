@@ -60,12 +60,39 @@ install the native host part of the extension system-wide.
 
 ## Uninstallation
 
+### General uninstallation
+
 ```shell
 open-in-mpv-uninstall
 pip remove --user open-in-mpv
 ```
 
 Uninstall the extension from your browser.
+
+### macOS pkg uninstallation
+
+If you installed open-in-mpv using the macOS pkg installer, follow these steps to completely
+uninstall it:
+
+1. Run the uninstall command for each user:
+
+   ```shell
+   # For each user that had open-in-mpv installed
+   sudo -u username open-in-mpv-uninstall
+   ```
+
+2. Remove the package files:
+
+   ```shell
+   pkgutil --only-files --files sh.tat.open-in-mpv | tr '\n' '\0' | xargs -n 1 -0 sudo rm -f
+   pkgutil --only-dirs --files sh.tat.open-in-mpv | tail -r | tr '\n' '\0' | xargs -n 1 -0 sudo rmdir
+   ```
+
+3. Forget the package:
+
+   ```shell
+   sudo pkgutil --forget sh.tat.open-in-mpv
+   ```
 
 ## Known issues
 
