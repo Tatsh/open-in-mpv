@@ -12,7 +12,8 @@ from .constants import (
     IS_LINUX,
     IS_MAC,
     JSON_FILENAME,
-    MAC_HOSTS_DIRS,
+    MAC_SYSTEM_HOSTS_DIRS,
+    MAC_USER_HOSTS_DIRS,
     SYSTEM_HOSTS_DIRS,
     USER_HOSTS_DIRS,
 )
@@ -48,4 +49,8 @@ def main(*, debug: bool = False) -> None:
             click.echo('To delete files installed in /etc, run this as root.', err=True)
         remove_from_all(USER_HOSTS_DIRS)
     if IS_MAC:
-        remove_from_all(MAC_HOSTS_DIRS)
+        try:
+            remove_from_all(MAC_SYSTEM_HOSTS_DIRS)
+        except PermissionError:
+            click.echo('To delete files installed in /Library, run this as root.', err=True)
+        remove_from_all(MAC_USER_HOSTS_DIRS)

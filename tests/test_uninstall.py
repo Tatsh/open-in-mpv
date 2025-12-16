@@ -26,10 +26,24 @@ def test_uninstall_linux_system_dirs_permission_error(mocker: MockerFixture,
     mock_remove_from_all.assert_any_call(['/home/user/fake'])
 
 
+def test_uninstall_mac_system_dirs_permission_error(mocker: MockerFixture,
+                                                    runner: CliRunner) -> None:
+    mocker.patch.object(open_in_mpv.uninstall, 'IS_LINUX', False)  # noqa: FBT003
+    mocker.patch.object(open_in_mpv.uninstall, 'IS_MAC', True)  # noqa: FBT003
+    mock_remove_from_all = mocker.patch('open_in_mpv.uninstall.remove_from_all')
+    mocker.patch('open_in_mpv.uninstall.MAC_SYSTEM_HOSTS_DIRS', ['/Library/fake'])
+    mocker.patch('open_in_mpv.uninstall.MAC_USER_HOSTS_DIRS', ['/Users/user/fake'])
+    mock_remove_from_all.side_effect = [PermissionError, None]
+    result = runner.invoke(main, ['--debug'])
+    assert 'To delete files installed in /Library, run this as root.' in result.output
+    mock_remove_from_all.assert_any_call(['/Library/fake'])
+    mock_remove_from_all.assert_any_call(['/Users/user/fake'])
+
+
 def test_uninstall_mac(mocker: MockerFixture, runner: CliRunner) -> None:
     mocker.patch.object(open_in_mpv.uninstall, 'IS_LINUX', False)  # noqa: FBT003
     mocker.patch.object(open_in_mpv.uninstall, 'IS_MAC', True)  # noqa: FBT003
-    mocker.patch('open_in_mpv.uninstall.MAC_HOSTS_DIRS', ['/Library/fake'])
+    mocker.patch('open_in_mpv.uninstall.MAC_USER_HOSTS_DIRS', ['/Library/fake'])
     mocker.patch('open_in_mpv.uninstall.Path')
     result = runner.invoke(main, ['--debug'])
     assert result.exit_code == 0

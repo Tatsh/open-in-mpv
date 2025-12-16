@@ -7,8 +7,8 @@ import platform
 from platformdirs import user_config_dir, user_log_path, user_runtime_path
 
 __all__ = ('HOST_DATA', 'HOST_DATA_FIREFOX', 'IS_LINUX', 'IS_MAC', 'IS_WIN', 'JSON_FILENAME',
-           'LOG_PATH', 'MAC_HOSTS_DIRS', 'MPV_LOG_PATH', 'MPV_SOCKET', 'SYSTEM_HOSTS_DIRS',
-           'USER_CHROME_HOSTS_REG_PATH_WIN', 'USER_HOSTS_DIRS')
+           'LOG_PATH', 'MAC_SYSTEM_HOSTS_DIRS', 'MAC_USER_HOSTS_DIRS', 'MPV_LOG_PATH', 'MPV_SOCKET',
+           'SYSTEM_HOSTS_DIRS', 'USER_CHROME_HOSTS_REG_PATH_WIN', 'USER_HOSTS_DIRS')
 
 IS_MAC = bool(platform.mac_ver()[0])
 IS_WIN = bool(platform.win32_ver()[0])
@@ -19,11 +19,12 @@ HOME = os.environ.get('HOME', '')
 
 USER_CHROME_HOSTS_REG_PATH_WIN = r'HKCU:\Software\Google\Chrome\NativeMessagingHosts'
 
-MAC_HOSTS_DIRS = (f'{HOME}/Library/Application Support/Chromium/NativeMessagingHosts',
-                  f'{HOME}/Library/Application Support/Google/Chrome Beta/NativeMessagingHosts',
-                  f'{HOME}/Library/Application Support/Google/Chrome Canary/NativeMessagingHosts',
-                  f'{HOME}/Library/Application Support/Google/Chrome/NativeMessagingHosts',
-                  f'{HOME}/Library/Application Support/Mozilla/NativeMessagingHosts')
+MAC_SYSTEM_HOSTS_DIRS = ('/Library/Application Support/Chromium/NativeMessagingHosts',
+                         '/Library/Application Support/Google/Chrome Beta/NativeMessagingHosts',
+                         '/Library/Application Support/Google/Chrome Canary/NativeMessagingHosts',
+                         '/Library/Application Support/Google/Chrome/NativeMessagingHosts',
+                         '/Library/Application Support/Mozilla/NativeMessagingHosts')
+MAC_USER_HOSTS_DIRS = tuple(f'{HOME}{x}' for x in MAC_SYSTEM_HOSTS_DIRS)
 
 MACPORTS_BIN_PATH = '/opt/local/bin'
 
