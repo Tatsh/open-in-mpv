@@ -194,7 +194,7 @@ Function InstallChromeBetaHost
 FunctionEnd
 
 Function InstallChromeCanaryHost
-  WriteRegStr HKCU "Software\Google\Chrome Canary\NativeMessagingHosts\sh.tat.open_in_mpv" "" "$INSTDIR\sh.tat.open_in_mpv.json"
+  WriteRegStr HKCU "Software\Google\Chrome SxS\NativeMessagingHosts\sh.tat.open_in_mpv" "" "$INSTDIR\sh.tat.open_in_mpv.json"
 FunctionEnd
 
 Function InstallChromiumHost
@@ -221,7 +221,7 @@ Section "Uninstall"
   ; Remove native messaging host registry entries
   DeleteRegKey HKCU "Software\Google\Chrome\NativeMessagingHosts\sh.tat.open_in_mpv"
   DeleteRegKey HKCU "Software\Google\Chrome Beta\NativeMessagingHosts\sh.tat.open_in_mpv"
-  DeleteRegKey HKCU "Software\Google\Chrome Canary\NativeMessagingHosts\sh.tat.open_in_mpv"
+  DeleteRegKey HKCU "Software\Google\Chrome SxS\NativeMessagingHosts\sh.tat.open_in_mpv"
   DeleteRegKey HKCU "Software\Chromium\NativeMessagingHosts\sh.tat.open_in_mpv"
   DeleteRegKey HKCU "SOFTWARE\Mozilla\NativeMessagingHosts\sh.tat.open_in_mpv"
 
