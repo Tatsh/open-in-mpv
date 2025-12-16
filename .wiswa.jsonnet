@@ -35,7 +35,7 @@ local utils = import 'utils.libjsonnet';
     },
     tool+: {
       commitizen+: {
-        version_files+: ['src/manifest.json'],
+        version_files+: ['installer.nsi', 'src/manifest.json'],
       },
       poetry+: {
         dependencies+: {

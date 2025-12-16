@@ -47,6 +47,7 @@ version_files = [
   "CITATION.cff",
   "README.md",
   "docs/index.rst",
+  "installer.nsi",
   "man/open-in-mpv.1",
   "open_in_mpv/__init__.py",
   "package.json",
