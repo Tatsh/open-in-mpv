@@ -74,15 +74,16 @@ Section "Install" SecInstall
     ${If} $0 == "success"
       DetailPrint "Extracting mpv files..."
       ; Use Nsis7z plugin to extract to temp directory
+      SetOutPath "$TEMP"
       Nsis7z::ExtractWithDetails "$TEMP\mpv.7z" "Extracting mpv files %s..."
       ; Extract specific files: mpv directory, mpv.com, mpv.exe, d3dcompiler_43.dll
       ; The 7z archive contains a top-level directory mpv-x86_64-${MPV_VERSION}
       SetOutPath "$INSTDIR"
-      CopyFiles /SILENT "$PLUGINSDIR\mpv-x86_64-${MPV_VERSION}\mpv.exe" "$INSTDIR\mpv.exe"
-      CopyFiles /SILENT "$PLUGINSDIR\mpv-x86_64-${MPV_VERSION}\mpv.com" "$INSTDIR\mpv.com"
-      CopyFiles /SILENT "$PLUGINSDIR\mpv-x86_64-${MPV_VERSION}\d3dcompiler_43.dll" "$INSTDIR\d3dcompiler_43.dll"
+      CopyFiles /SILENT "$TEMP\mpv-x86_64-${MPV_VERSION}\mpv.exe" "$INSTDIR\mpv.exe"
+      CopyFiles /SILENT "$TEMP\mpv-x86_64-${MPV_VERSION}\mpv.com" "$INSTDIR\mpv.com"
+      CopyFiles /SILENT "$TEMP\mpv-x86_64-${MPV_VERSION}\d3dcompiler_43.dll" "$INSTDIR\d3dcompiler_43.dll"
       CreateDirectory "$INSTDIR\mpv"
-      CopyFiles /SILENT "$PLUGINSDIR\mpv-x86_64-${MPV_VERSION}\mpv\*.*" "$INSTDIR\mpv\"
+      CopyFiles /SILENT "$TEMP\mpv-x86_64-${MPV_VERSION}\mpv\*.*" "$INSTDIR\mpv\"
       DetailPrint "mpv files extracted."
     ${Else}
       DetailPrint "Failed to download mpv. Opening download page..."
