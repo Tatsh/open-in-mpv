@@ -253,7 +253,7 @@ def test_mpv_and_cleanup_callback_windows(mocker: MockerFixture) -> None:
     mock_sp_run = mocker.patch('open_in_mpv.main.sp.run')
     mock_remove_socket = mocker.patch('open_in_mpv.main.remove_socket')
     mock_remove_socket.return_value = True
-    
+
     callback = mpv_and_cleanup('https://example.com', {'PATH': '/usr/bin'}, debug=False)
     callback()
     
@@ -277,7 +277,7 @@ def test_mpv_and_cleanup_callback_debug(mocker: MockerFixture) -> None:
     mock_sp_run = mocker.patch('open_in_mpv.main.sp.run')
     mock_remove_socket = mocker.patch('open_in_mpv.main.remove_socket')
     mock_remove_socket.return_value = True
-    
+
     callback = mpv_and_cleanup('https://example.com', {'PATH': '/usr/bin'}, debug=True)
     callback()
     
