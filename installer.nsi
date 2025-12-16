@@ -7,6 +7,10 @@
 !include "MUI2.nsh"
 !include "FileFunc.nsh"
 !include "LogicLib.nsh"
+!include "StrFunc.nsh"
+
+; Initialize StrRep function
+${StrRep}
 
 ; Application information
 !define APP_NAME "open-in-mpv"
