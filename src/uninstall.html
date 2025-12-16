@@ -14,14 +14,17 @@
       body {
         background-color: #f8f9fa;
       }
+
       .platform {
         display: none;
       }
+
       .platform.active {
         display: block;
       }
     </style>
   </head>
+
   <body>
     <div class="container my-5">
       <div class="card shadow">
@@ -29,7 +32,7 @@
           <h1 class="card-title mb-4">👋 Open in mpv Extension Uninstalled</h1>
           <div class="alert alert-info" role="alert">
             <strong>ℹ️ Reminder:</strong> The extension has been removed from your browser, but the
-            native messaging host component is still installed on your system.
+            native messaging host component may be still installed on your system.
           </div>
           <h2 class="mt-4 mb-3">Complete Uninstallation</h2>
           <p>
@@ -46,10 +49,6 @@
                   in mpv → Uninstall
                 </li>
                 <li><strong>Settings:</strong> Go to Settings → Apps → Open in mpv → Uninstall</li>
-                <li>
-                  <strong>Installer:</strong> Run the installer again and choose the uninstall
-                  option
-                </li>
               </ul>
             </div>
           </div>
@@ -64,18 +63,29 @@ pip uninstall open-in-mpv</code></pre>
           <div id="mac-instructions" class="platform">
             <div class="alert alert-secondary border-start border-secondary border-4">
               <h3>macOS</h3>
-              <p>Run the uninstall command:</p>
-              <pre class="bg-dark text-light p-3 rounded"><code>open-in-mpv-uninstall
-pip uninstall open-in-mpv</code></pre>
+              <ol>
+                <li>Open Terminal.app.</li>
+                <li>
+                  <p>Run the uninstall command:</p>
+                  <pre
+                    class="bg-dark text-light p-3 rounded"
+                  ><code>sudo /usr/local/bin/open-in-mpv-uninstall</code></pre>
+                </li>
+                <li>
+                  <p>Remove the package files:</p>
+                  <pre
+                    class="bg-dark text-light p-3 rounded"
+                  ><code>pkgutil --only-files --files sh.tat.open-in-mpv | tr '\n' '\0' | xargs -n 1 -0 sudo rm -f && pkgutil --only-dirs --files sh.tat.open-in-mpv | tail -r | tr '\n' '\0' | xargs -n 1 -0 sudo rmdir</code></pre>
+                </li>
+                <li>
+                  <p>Forget the package:</p>
+                  <pre
+                    class="bg-dark text-light p-3 rounded"
+                  ><code>sudo pkgutil --forget sh.tat.open-in-mpv</code></pre>
+                </li>
+              </ol>
             </div>
           </div>
-          <h2 class="mt-4 mb-3">Why Uninstall the Host Component?</h2>
-          <p>The native messaging host component:</p>
-          <ul>
-            <li>Takes up disk space</li>
-            <li>Is no longer needed without the extension</li>
-            <li>May have background processes or configurations</li>
-          </ul>
           <p>
             Thank you for using Open in mpv! If you have any feedback, please visit the
             <a href="https://github.com/Tatsh/open-in-mpv" target="_blank">project page</a>.

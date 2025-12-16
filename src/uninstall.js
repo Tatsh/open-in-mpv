@@ -3,7 +3,7 @@
 
 // Detect the user's platform and show appropriate uninstallation instructions.
 document.addEventListener('DOMContentLoaded', () => {
-  const platform = navigator.platform.toLowerCase();
+  const platform = navigator.userAgentData.platform.toLowerCase();
   const userAgent = navigator.userAgent.toLowerCase();
   let detectedPlatform = 'linux';
   if (platform.includes('win') || userAgent.includes('windows')) {

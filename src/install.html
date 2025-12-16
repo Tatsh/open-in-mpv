@@ -14,14 +14,17 @@
       body {
         background-color: #f8f9fa;
       }
+
       .platform {
         display: none;
       }
+
       .platform.active {
         display: block;
       }
     </style>
   </head>
+
   <body>
     <div class="container my-5">
       <div class="card shadow">
@@ -42,42 +45,56 @@
               <a href="#" class="btn btn-primary" id="windows-download"
                 >Download Windows Installer</a
               >
-              <p class="mt-3">The installer will:</p>
-              <ul>
-                <li>Install the native messaging host</li>
-                <li>Download and install mpv</li>
-                <li>Configure everything automatically</li>
-              </ul>
             </div>
           </div>
           <div id="linux-instructions" class="platform">
             <div class="alert alert-info border-start border-info border-4">
               <h3>Linux</h3>
+              <p>
+                If you installed open-in-mpv with a package manager, you may not need to do
+                anything. If your package manager does not set up open-in-mpv system-wide, run
+                <code>open-in-mpv-install --user --force</code>.
+              </p>
               <p>Install using pip:</p>
               <pre class="bg-dark text-light p-3 rounded"><code>pip install --user open-in-mpv
 open-in-mpv-install --user --force</code></pre>
-              <p>
-                Make sure you have mpv installed on your system. You can install it using your
-                package manager:
-              </p>
-              <pre class="bg-dark text-light p-3 rounded"><code># Debian/Ubuntu
-sudo apt install mpv
-
-# Fedora
-sudo dnf install mpv
-
-# Arch Linux
-sudo pacman -S mpv</code></pre>
+              <p>Make sure you have mpv (and optionally yt-dlp) installed on your system.</p>
             </div>
           </div>
           <div id="mac-instructions" class="platform">
             <div class="alert alert-info border-start border-info border-4">
               <h3>macOS</h3>
-              <p>Install using pip:</p>
-              <pre class="bg-dark text-light p-3 rounded"><code>pip install --user open-in-mpv
-open-in-mpv-install --user --force</code></pre>
-              <p>Install mpv using Homebrew:</p>
-              <pre class="bg-dark text-light p-3 rounded"><code>brew install mpv</code></pre>
+              <ol>
+                <li>
+                  Install mpv using
+                  <a href="https://mpv.io/installation/" target="_blank"
+                    >one of the supported methods</a
+                  >.
+                </li>
+                <li>
+                  Optional but highly recommended: install
+                  <a
+                    target="_blank"
+                    href="https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#release-files"
+                    >yt-dlp</a
+                  >
+                  by placing <code>yt-dlp_macos</code> atr <code>/usr/local/bin/yt-dlp</code>, or by
+                  using your package manager.
+                </li>
+                <li>
+                  Install the host-side component with the official package:<br />
+                  <a href="#" class="btn btn-primary" id="macos-download">Download macOS Package</a>
+                </li>
+              </ol>
+              <h4>Terminal</h4>
+              <p>Steps 1 and 2, for Apple Silicon only:</p>
+              <pre
+                class="bg-dark text-light p-3 rounded"
+              ><code>curl -LO 'https://laboratory.stolendata.net/~djinn/mpv_osx/mpv-arm64-latest.tar.gz'
+tar xvf mpv-arm64-latest.tar.gz
+mv mpv-arm64*/mpv.app /Applications/
+rm mpv-arm64-latest.tar.gz
+sudo curl -Lo /usr/local/bin/yt-dlp 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos'</code></pre>
             </div>
           </div>
           <h2 class="mt-4 mb-3">Next Steps</h2>
