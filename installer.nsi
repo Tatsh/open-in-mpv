@@ -55,24 +55,25 @@ Section "Install" SecInstall
   ; Install the main executable
   File "dist\${APP_EXEC}"
 
-  ; Download and extract mpv if not present
-  DetailPrint "Checking for mpv..."
-  IfFileExists "$INSTDIR\mpv.exe" mpv_exists 0
-    DetailPrint "Downloading mpv..."
-    NSISdl::download /TIMEOUT=30000 "${MPV_DOWNLOAD_URL}" "$TEMP\mpv.7z"
-    Pop $0
-    ${If} $0 == "success"
-      DetailPrint "Extracting mpv..."
-      ; Note: This requires 7-Zip or a plugin to extract. For simplicity, we'll use a pre-extracted version.
-      ; In production, you'd use the NSIS 7-Zip plugin or bundle mpv.exe directly.
-      DetailPrint "Please manually place mpv.exe in: $INSTDIR"
-      MessageBox MB_OK "mpv.exe needs to be placed in the installation directory. Please download mpv from https://mpv.io/ and place mpv.exe in: $INSTDIR"
-    ${Else}
-      DetailPrint "Failed to download mpv. You'll need to install it manually."
-      MessageBox MB_OK "Failed to download mpv automatically. Please download it from https://mpv.io/ and place mpv.exe in: $INSTDIR"
-    ${EndIf}
-  mpv_exists:
-    DetailPrint "mpv.exe found or will be installed manually."
+  ; Check if mpv.exe already exists (e.g., from GitHub Actions build)
+  DetailPrint "Checking for mpv.exe..."
+  IfFileExists "$INSTDIR\mpv.exe" 0 +2
+    DetailPrint "mpv.exe already present."
+    Goto mpv_done
+
+  ; If not present, prompt user to download manually
+  DetailPrint "mpv.exe not found in installer."
+  MessageBox MB_YESNO "mpv.exe is required but not included. Would you like to download it now from https://mpv.io/?" IDYES download_mpv IDNO skip_mpv
+
+  download_mpv:
+    ExecShell "open" "https://mpv.io/installation/"
+    MessageBox MB_OK "Please download mpv and extract mpv.exe to:$\n$INSTDIR$\n$\nClick OK after placing mpv.exe in the directory."
+    Goto mpv_done
+
+  skip_mpv:
+    DetailPrint "Skipping mpv installation. You'll need to install it manually."
+
+  mpv_done:
 
   ; Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -162,8 +163,8 @@ FunctionEnd
 Function WriteHostJSON
   ; Create the JSON file with proper escaping for the path
   StrCpy $1 "$INSTDIR\${APP_EXEC}"
-  ; Replace backslashes with forward slashes for JSON
-  ${StrRep} $2 $1 "\" "/"
+  ; Replace single backslashes with double backslashes for JSON
+  ${StrRep} $2 $1 "\" "\\"
 
   FileOpen $0 "$TEMP\sh.tat.open_in_mpv.json" w
   FileWrite $0 '{$\r$\n'

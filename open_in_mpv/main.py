@@ -133,16 +133,19 @@ def mpv_and_cleanup(url: str,
     def callback() -> None:
         with Path(MPV_LOG_PATH).open('a', encoding='utf-8') as log:
             mpv_path = get_mpv_path()
-            cmd = (
-                mpv_path,
-                *(('--gpu-api=opengl',) if not IS_WIN else ()),
-                '--player-operation-mode=pseudo-gui',
-                *(('--quiet',) if not debug else ('-v',)),
-                f'--input-ipc-server={MPV_SOCKET}',
-                url,
-            ) + ((f'--log-file={MPV_LOG_PATH}',) if debug else ())
-            logger.debug('Running: %s', ' '.join(quote(x) for x in cmd))
-            sp.run(cmd, env=new_env, stderr=log, stdout=log, check=True)
+            cmd_parts = [mpv_path]
+            if not IS_WIN:
+                cmd_parts.append('--gpu-api=opengl')
+            cmd_parts.append('--player-operation-mode=pseudo-gui')
+            if debug:
+                cmd_parts.append('-v')
+            else:
+                cmd_parts.append('--quiet')
+            cmd_parts.extend((f'--input-ipc-server={MPV_SOCKET}', url))
+            if debug:
+                cmd_parts.append(f'--log-file={MPV_LOG_PATH}')
+            logger.debug('Running: %s', ' '.join(quote(x) for x in cmd_parts))
+            sp.run(cmd_parts, env=new_env, stderr=log, stdout=log, check=True)
         if not remove_socket():  # pragma: no cover
             logger.warning('Failed to remove socket file.')
 

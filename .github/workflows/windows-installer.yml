@@ -49,8 +49,15 @@ jobs:
           Invoke-WebRequest -Uri "https://sourceforge.net/projects/mpv-player-windows/files/64bit/mpv-x86_64-latest.7z" -OutFile "$env:TEMP\mpv.7z"
           Write-Host "Extracting mpv..."
           7z x "$env:TEMP\mpv.7z" -o"$env:TEMP\mpv-extract"
-          Copy-Item "$env:TEMP\mpv-extract\mpv.exe" "dist\mpv.exe"
-          Write-Host "mpv.exe copied to dist folder"
+          Write-Host "Finding mpv.exe..."
+          $mpvExe = Get-ChildItem -Path "$env:TEMP\mpv-extract" -Filter "mpv.exe" -Recurse | Select-Object -First 1
+          if ($mpvExe) {
+            Copy-Item $mpvExe.FullName "dist\mpv.exe"
+            Write-Host "mpv.exe copied to dist folder from $($mpvExe.FullName)"
+          } else {
+            Write-Error "mpv.exe not found in extracted archive"
+            exit 1
+          }
         shell: 'pwsh'
 
       - name: 'Install NSIS'
