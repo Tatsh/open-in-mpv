@@ -50,7 +50,7 @@ def test_get_mpv_path_windows_frozen_not_exists(mocker: MockerFixture) -> None:
 def test_get_mpv_path_windows_not_frozen(mocker: MockerFixture) -> None:
     """Test get_mpv_path on Windows but not in PyInstaller bundle."""
     mocker.patch('open_in_mpv.main.IS_WIN', new=True)
-    # Don't set sys.frozen, so getattr returns False
+    # Don't set sys.frozen, so getattr returns False.
     result = get_mpv_path()
     assert result == 'mpv'
 
@@ -278,15 +278,13 @@ def test_mpv_and_cleanup_callback_debug(mocker: MockerFixture) -> None:
     mock_sp_run = mocker.patch('open_in_mpv.main.sp.run')
     mock_remove_socket = mocker.patch('open_in_mpv.main.remove_socket')
     mock_remove_socket.return_value = True
-
     callback = mpv_and_cleanup('https://example.com', {'PATH': '/usr/bin'}, debug=True)
     callback()
-
-    # Verify sp.run was called with debug flags
+    # Verify sp.run was called with debug flags.
     assert mock_sp_run.call_count == 1
     args = mock_sp_run.call_args
     cmd_parts = args[0][0]
-    # In debug mode, should have -v and --log-file
+    # In debug mode, should have -v and --log-file.
     assert '-v' in cmd_parts
     assert any('--log-file=' in arg for arg in cmd_parts)
 
@@ -299,8 +297,6 @@ def test_mpv_and_cleanup_windows_with_ytdlp(mocker: MockerFixture) -> None:
     mocker.patch('open_in_mpv.main.IS_WIN', new=True)
     mocker.patch('open_in_mpv.main.sys.frozen', new=True, create=True)
     mocker.patch('open_in_mpv.main.sys.executable', 'C:\\test\\open-in-mpv.exe')
-
-    # Mock Path class to return different objects based on what's being constructed
     mock_path_class = mocker.patch('open_in_mpv.main.Path')
     call_count = [0]
 
@@ -324,21 +320,16 @@ def test_mpv_and_cleanup_windows_with_ytdlp(mocker: MockerFixture) -> None:
         return mock_exe_path
 
     mock_path_class.side_effect = path_constructor
-
     mock_get_mpv_path = mocker.patch('open_in_mpv.main.get_mpv_path')
     mock_get_mpv_path.return_value = 'C:\\test\\mpv.exe'
     mock_sp_run = mocker.patch('open_in_mpv.main.sp.run')
     mock_remove_socket = mocker.patch('open_in_mpv.main.remove_socket')
     mock_remove_socket.return_value = True
-
     callback = mpv_and_cleanup('https://example.com', {'PATH': '/usr/bin'}, debug=False)
     callback()
-
-    # Verify sp.run was called
     assert mock_sp_run.call_count == 1
     args = mock_sp_run.call_args
     cmd_parts = args[0][0]
-    # Should include yt-dlp path parameter
     assert any('--script-opts=ytdl_hook-ytdl_path=' in arg for arg in cmd_parts)
 
 
@@ -350,8 +341,6 @@ def test_mpv_and_cleanup_windows_without_ytdlp(mocker: MockerFixture) -> None:
     mocker.patch('open_in_mpv.main.IS_WIN', new=True)
     mocker.patch('open_in_mpv.main.sys.frozen', new=True, create=True)
     mocker.patch('open_in_mpv.main.sys.executable', 'C:\\test\\open-in-mpv.exe')
-
-    # Mock Path class to return different objects based on what's being constructed
     mock_path_class = mocker.patch('open_in_mpv.main.Path')
     call_count = [0]
 
@@ -374,19 +363,14 @@ def test_mpv_and_cleanup_windows_without_ytdlp(mocker: MockerFixture) -> None:
         return mock_exe_path
 
     mock_path_class.side_effect = path_constructor
-
     mock_get_mpv_path = mocker.patch('open_in_mpv.main.get_mpv_path')
     mock_get_mpv_path.return_value = 'C:\\test\\mpv.exe'
     mock_sp_run = mocker.patch('open_in_mpv.main.sp.run')
     mock_remove_socket = mocker.patch('open_in_mpv.main.remove_socket')
     mock_remove_socket.return_value = True
-
     callback = mpv_and_cleanup('https://example.com', {'PATH': '/usr/bin'}, debug=False)
     callback()
-
-    # Verify sp.run was called
     assert mock_sp_run.call_count == 1
     args = mock_sp_run.call_args
     cmd_parts = args[0][0]
-    # Should NOT include yt-dlp path parameter
     assert not any('--script-opts=ytdl_hook-ytdl_path=' in arg for arg in cmd_parts)

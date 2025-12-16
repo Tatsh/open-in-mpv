@@ -34,8 +34,6 @@ chrome.runtime.onInstalled.addListener((details) => {
     id: 'open-in-mpv-menu',
     title: 'Open in mpv',
   });
-
-  // Show installation instructions on first install
   if (details.reason === 'install') {
     chrome.tabs.create({
       url: chrome.runtime.getURL('install.html'),
