@@ -37,6 +37,7 @@ foxundermoon
 geteuid
 globaltoc
 hkcu
+hostArchitectures
 hoverxref
 htmlcov
 inetc
@@ -58,6 +59,7 @@ linters
 localappdata
 macports
 makensis
+minSpecVersion
 mozilla
 mypy
 namedtuples
@@ -67,14 +69,19 @@ nsisdl
 nsisdir
 numpy
 numpydoc
+onConclusion
 onefile
 opengl
 opera
 pacman
 pavelzw
 pipx
+pkg
+pkgbuild
 platformdirs
+postinstall
 proc
+productbuild
 prodvers
 pycache
 pydantic
