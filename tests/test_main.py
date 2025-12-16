@@ -21,13 +21,12 @@ def test_get_mpv_path_default() -> None:
 
 def test_get_mpv_path_windows_frozen_exists(mocker: MockerFixture) -> None:
     """Test get_mpv_path on Windows with PyInstaller bundle and mpv.exe exists."""
-    mocker.patch('open_in_mpv.main.IS_WIN', True)
-    mocker.patch('open_in_mpv.main.sys.frozen', True, create=True)
+    mocker.patch('open_in_mpv.main.IS_WIN', new=True)
+    mocker.patch('open_in_mpv.main.sys.frozen', new=True, create=True)
     mock_path = mocker.patch('open_in_mpv.main.Path')
     mock_path.return_value.parent.__truediv__.return_value.exists.return_value = True
     mock_path.return_value.parent.__truediv__.return_value.__str__.return_value = (
-        'C:\\test\\mpv.exe'
-    )
+        'C:\\test\\mpv.exe')
     mocker.patch('open_in_mpv.main.sys.executable', 'C:\\test\\open-in-mpv.exe')
 
     result = get_mpv_path()
@@ -36,8 +35,8 @@ def test_get_mpv_path_windows_frozen_exists(mocker: MockerFixture) -> None:
 
 def test_get_mpv_path_windows_frozen_not_exists(mocker: MockerFixture) -> None:
     """Test get_mpv_path on Windows with PyInstaller bundle but mpv.exe doesn't exist."""
-    mocker.patch('open_in_mpv.main.IS_WIN', True)
-    mocker.patch('open_in_mpv.main.sys.frozen', True, create=True)
+    mocker.patch('open_in_mpv.main.IS_WIN', new=True)
+    mocker.patch('open_in_mpv.main.sys.frozen', new=True, create=True)
     mock_path = mocker.patch('open_in_mpv.main.Path')
     mock_path.return_value.parent.__truediv__.return_value.exists.return_value = False
     mocker.patch('open_in_mpv.main.sys.executable', 'C:\\test\\open-in-mpv.exe')
@@ -48,7 +47,7 @@ def test_get_mpv_path_windows_frozen_not_exists(mocker: MockerFixture) -> None:
 
 def test_get_mpv_path_windows_not_frozen(mocker: MockerFixture) -> None:
     """Test get_mpv_path on Windows but not in PyInstaller bundle."""
-    mocker.patch('open_in_mpv.main.IS_WIN', True)
+    mocker.patch('open_in_mpv.main.IS_WIN', new=True)
     # Don't set sys.frozen, so getattr returns False
     result = get_mpv_path()
     assert result == 'mpv'
@@ -244,7 +243,7 @@ def test_main_debug_mode(runner: CliRunner, mocker: MockerFixture) -> None:
 def test_mpv_and_cleanup_callback_windows(mocker: MockerFixture) -> None:
     """Test mpv_and_cleanup callback on Windows to cover Windows-specific paths."""
     from open_in_mpv.main import mpv_and_cleanup
-    mocker.patch('open_in_mpv.main.IS_WIN', True)
+    mocker.patch('open_in_mpv.main.IS_WIN', new=True)
     mock_path_open = mocker.patch('open_in_mpv.main.Path')
     mock_path_open.return_value.open.return_value.__enter__.return_value = mocker.Mock()
     mock_path_open.return_value.open.return_value.__exit__.return_value = None
@@ -256,7 +255,7 @@ def test_mpv_and_cleanup_callback_windows(mocker: MockerFixture) -> None:
 
     callback = mpv_and_cleanup('https://example.com', {'PATH': '/usr/bin'}, debug=False)
     callback()
-    
+
     # Verify sp.run was called
     assert mock_sp_run.call_count == 1
     args = mock_sp_run.call_args
@@ -280,7 +279,7 @@ def test_mpv_and_cleanup_callback_debug(mocker: MockerFixture) -> None:
 
     callback = mpv_and_cleanup('https://example.com', {'PATH': '/usr/bin'}, debug=True)
     callback()
-    
+
     # Verify sp.run was called with debug flags
     assert mock_sp_run.call_count == 1
     args = mock_sp_run.call_args
