@@ -89,6 +89,10 @@ jobs:
           dist_files=(dist/*)
           echo "Found ${#dist_files[@]} files in dist/: ${dist_files[*]##*/}"
           for file in "${dist_files[@]}"; do
+              if [[ "${file}" == dist/index.*js ]]; then
+                  echo "Skipping index.js."
+                  continue
+              fi
               echo "Testing '${file}'."
               "./${file}" --help
           done
@@ -99,6 +103,15 @@ jobs:
           name: open-in-mpv-binaries-linux-x86_64
           path: |
             dist/*
+      - name: 'Attest'
+        uses: 'actions/attest-build-provenance@v3'
+        with:
+          subject-path: 'dist/*'
+      - if: github.ref_type == 'tag'
+        name: 'Attest'
+        uses: 'actions/attest-build-provenance@v3'
+        with:
+          subject-path: 'dist/*.AppImage'
       - if: github.ref_type == 'tag'
         name: Upload package
         uses: softprops/action-gh-release@v2
@@ -117,4 +130,6 @@ name: 'AppImage'
     tags:
       - 'v*.*.*'
 permissions:
-  contents: 'read'
+  attestations: 'write'
+  contents: 'write'
+  id-token: 'write'

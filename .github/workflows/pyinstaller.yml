@@ -65,7 +65,8 @@ jobs:
               fi
               echo "Building executable for '${script_name}'..."
               poetry run -- pyinstaller --log-level ERROR --onefile -n "${script_name}" --optimize 1 \
-                --hidden-import colorlog -y --version-file version-info.txt temp_script.py
+                --hidden-import colorlog -y --version-file version-info.txt \
+                temp_script.py
               if [[ "${ACTIONS_RUNNER_DEBUG}" == 'true' ]]; then
                   cat "${script_name}.spec"
               fi
@@ -86,6 +87,10 @@ jobs:
           dist_files=(dist/*)
           echo "Found ${#dist_files[@]} files in dist/: ${dist_files[*]##*/}"
           for file in "${dist_files[@]}"; do
+              if [[ "${file}" == dist/index.*js ]]; then
+                  echo "Skipping index.js."
+                  continue
+              fi
               echo "Testing '${file}'."
               "./${file}" --help
           done
@@ -96,12 +101,28 @@ jobs:
           name: open-in-mpv-binaries-${{ matrix.suffix }}
           path: |
             ${{ matrix.dist_path }}
-      - if: github.ref_type == 'tag'
+      - name: 'Attest'
+        uses: 'actions/attest-build-provenance@v3'
+        with:
+          subject-path: '${{ matrix.dist_path }}'
+      - if: (matrix.os == 'macos-latest' || matrix.os == 'macos-15-intel') && github.ref_type == 'tag'
         name: 'Zip files'
         run: |
           rm -fR _out
           mkdir _out
-          zip -j _out/open-in-mpv-${{ github.ref_name }}.zip ${{ matrix.dist_path }}
+          zip -j _out/open-in-mpv-${{ github.ref_name }}-${{ matrix.suffix }}.zip ${{ matrix.dist_path }}
+      - if: (matrix.os == 'windows-latest' || matrix.os == 'windows-11-arm') && github.ref_type == 'tag'
+        name: 'Zip files'
+        run: |
+          Remove-Item -Force _out -ErrorAction Continue
+          New-Item -ItemType Directory -Name _out
+          Compress-Archive -Path ${{ matrix.dist_path }} -DestinationPath _out/open-in-mpv-${{ github.ref_name }}-${{ matrix.suffix }}.zip
+        shell: pwsh
+      - if: github.ref_type == 'tag'
+        name: 'Attest'
+        uses: 'actions/attest-build-provenance@v3'
+        with:
+          subject-path: '_out/*.zip'
       - if: github.ref_type == 'tag'
         name: Upload package
         uses: softprops/action-gh-release@v2
@@ -135,4 +156,6 @@ name: 'PyInstaller'
     tags:
       - 'v*.*.*'
 permissions:
-  contents: 'read'
+  attestations: 'write'
+  contents: 'write'
+  id-token: 'write'

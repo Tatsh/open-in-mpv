@@ -103,15 +103,15 @@ applyTo: '**/*.py, **/*.pyi'
 - All public facing functions, methods, objects, class attributes, and classes must have docstrings.
 - Never add an "Attributes" section in class docstrings. Document class attributes using docstrings:
 
-```python
-class MyClass:
-    """Class for doing some useful work."""
+  ```python
+  class MyClass:
+      """Class for doing some useful work."""
 
-    attr1 = 42
-    """The attr1 attribute."""
-    attr2 = 'default'
-    """The attr2 attribute."""
-```
+      attr1 = 42
+      """The attr1 attribute."""
+      attr2 = 'default'
+      """The attr2 attribute."""
+  ```
 
 - Never place a newline after class attribute docstrings.
 - In docstrings, for optional parameters, do not add `, optional` to the parameter

@@ -12,6 +12,7 @@
     "donjayamanne.python-environment-manager",
     "dotjoshjohnson.xml",
     "eamodio.gitlens",
+    "eeyore.yapf",
     "esbenp.prettier-vscode",
     "foxundermoon.shell-format",
     "github.vscode-pull-request-github",
