@@ -64,7 +64,7 @@ install the native host part of the extension system-wide.
 
 ```shell
 open-in-mpv-uninstall
-pip remove --user open-in-mpv
+pip uninstall open-in-mpv
 ```
 
 Uninstall the extension from your browser.
@@ -77,8 +77,8 @@ uninstall it:
 1. Run the uninstall command for each user:
 
    ```shell
-   # For each user that had open-in-mpv installed
-   sudo -u username open-in-mpv-uninstall
+   # For each user that had open-in-mpv installed (replace <username> with actual username)
+   sudo -u <username> open-in-mpv-uninstall
    ```
 
 2. Remove the package files:
