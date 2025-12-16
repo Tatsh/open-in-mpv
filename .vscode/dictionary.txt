@@ -37,7 +37,7 @@ foxundermoon
 geteuid
 globaltoc
 hkcu
-hostArchitectures
+hostarchitectures
 hoverxref
 htmlcov
 inetc
@@ -59,7 +59,7 @@ linters
 localappdata
 macports
 makensis
-minSpecVersion
+minspecversion
 mozilla
 mypy
 namedtuples
@@ -69,7 +69,7 @@ nsisdl
 nsisdir
 numpy
 numpydoc
-onConclusion
+onconclusion
 onefile
 opengl
 opera
