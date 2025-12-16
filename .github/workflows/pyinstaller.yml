@@ -252,7 +252,7 @@ jobs:
 
           # Check if mpv is installed
           if ! command -v mpv &> /dev/null; then
-              echo "Warning: mpv is not installed. Please install it with 'brew install mpv', 'port install mpv', or from https://mpv.io/"
+              echo "Warning: mpv is not installed. Please install it with 'brew install mpv', 'port install mpv +network', or from https://mpv.io/"
           fi
 
           # Check if yt-dlp is installed
