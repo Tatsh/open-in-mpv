@@ -169,12 +169,16 @@ jobs:
           $ProgressPreference = 'SilentlyContinue'
           Invoke-WebRequest -Uri "https://nsis.sourceforge.io/mediawiki/images/6/69/Nsis7z_19.00.7z" -OutFile "$env:TEMP\Nsis7z.7z"
           7z x "$env:TEMP\Nsis7z.7z" -o"$env:TEMP\Nsis7z"
-          Copy-Item "$env:TEMP\Nsis7z\Plugins\x64-unicode\nsis7z.dll" "C:\Program Files (x86)\NSIS\Plugins\x64-unicode\nsis7z.dll"
+          $pluginDir = "$env:ProgramFiles(x86)\NSIS\Plugins\x64-unicode"
+          if (-not (Test-Path $pluginDir)) {
+            New-Item -ItemType Directory -Path $pluginDir -Force | Out-Null
+          }
+          Copy-Item "$env:TEMP\Nsis7z\Plugins\x64-unicode\nsis7z.dll" "$pluginDir\nsis7z.dll"
         shell: 'pwsh'
 
       - name: 'Build installer'
         run: |
-          & "C:\Program Files (x86)\NSIS\makensis.exe" installer.nsi
+          & "$env:ProgramFiles(x86)\NSIS\makensis.exe" installer.nsi
         shell: 'pwsh'
 
       - name: 'Upload installer artifact'
