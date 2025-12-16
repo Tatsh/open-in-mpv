@@ -335,8 +335,7 @@ def test_mpv_and_cleanup_windows_with_ytdlp(mocker: MockerFixture) -> None:
     assert mock_sp_run.call_count == 1
     args = mock_sp_run.call_args
     cmd_parts = args[0][0]
-    # Should include yt-dlp parameters
-    assert '--ytdl=yes' in cmd_parts
+    # Should include yt-dlp path parameter
     assert any('--script-opts=ytdl_hook-ytdl_path=' in arg for arg in cmd_parts)
 
 
@@ -385,6 +384,5 @@ def test_mpv_and_cleanup_windows_without_ytdlp(mocker: MockerFixture) -> None:
     assert mock_sp_run.call_count == 1
     args = mock_sp_run.call_args
     cmd_parts = args[0][0]
-    # Should NOT include yt-dlp parameters
-    assert '--ytdl=yes' not in cmd_parts
+    # Should NOT include yt-dlp path parameter
     assert not any('--script-opts=ytdl_hook-ytdl_path=' in arg for arg in cmd_parts)

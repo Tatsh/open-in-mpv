@@ -147,8 +147,7 @@ def mpv_and_cleanup(url: str,
                 ytdlp_path = Path(sys.executable).parent / 'yt-dlp.exe'
                 if ytdlp_path.exists():
                     logger.debug('Using bundled yt-dlp at: %s', ytdlp_path)
-                    cmd_parts.extend(('--ytdl=yes',
-                                     f'--script-opts=ytdl_hook-ytdl_path={ytdlp_path}'))
+                    cmd_parts.append(f'--script-opts=ytdl_hook-ytdl_path={ytdlp_path}')
             logger.debug('Running: %s', ' '.join(quote(x) for x in cmd_parts))
             sp.run(cmd_parts, env=new_env, stderr=log, stdout=log, check=True)
         if not remove_socket():  # pragma: no cover
