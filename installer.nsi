@@ -13,9 +13,9 @@
 !define APP_VERSION "0.1.3"
 !define APP_PUBLISHER "Andrew Udvare"
 !define APP_URL "https://github.com/Tatsh/${APP_NAME}"
-!define APP_EXEC "open-in-mpv.exe"
-!define MPV_VERSION "20241215"
-!define MPV_DOWNLOAD_URL "https://sourceforge.net/projects/mpv-player-windows/files/64bit/mpv-x86_64-${MPV_VERSION}.7z"
+!define APP_EXEC "${APP_NAME}.exe"
+!define MPV_VERSION "20251214-git-f7be2ee"
+!define MPV_DOWNLOAD_URL "https://downloads.sourceforge.net/project/mpv-player-windows/64bit/mpv-x86_64-${MPV_VERSION}.7z"
 !define MPV_INSTALL_URL "https://mpv.io/installation/"
 
 ; Determine current year
@@ -23,8 +23,8 @@
 
 ; Installer configuration
 Name "${APP_NAME} ${APP_VERSION}"
-OutFile "open-in-mpv-${APP_VERSION}-setup.exe"
-InstallDir "$LOCALAPPDATA\open-in-mpv"
+OutFile "${APP_NAME}-${APP_VERSION}-setup.exe"
+InstallDir "$LOCALAPPDATA\${APP_NAME}"
 RequestExecutionLevel user
 
 ; Interface configuration
@@ -35,7 +35,6 @@ RequestExecutionLevel user
 ; Pages
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "LICENSE.txt"
-!insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
 
@@ -51,7 +50,7 @@ VIAddVersionKey "ProductName" "${APP_NAME}"
 VIAddVersionKey "CompanyName" "${APP_PUBLISHER}"
 VIAddVersionKey "FileDescription" "${APP_NAME} Installer"
 VIAddVersionKey "FileVersion" "${APP_VERSION}"
-VIAddVersionKey "LegalCopyright" "Copyright (c) ${CURRENT_YEAR} ${APP_PUBLISHER}"
+VIAddVersionKey "LegalCopyright" "Copyright (c) ${CURRENT_YEAR} ${APP_PUBLISHER}."
 
 Section "Install" SecInstall
   SetOutPath "$INSTDIR"
@@ -73,27 +72,18 @@ Section "Install" SecInstall
     NSISdl::download /TIMEOUT=30000 "${MPV_DOWNLOAD_URL}" "$TEMP\mpv.7z"
     Pop $0
     ${If} $0 == "success"
-      DetailPrint "Extracting mpv..."
-      ; Use 7z to extract (requires 7-Zip plugin or bundled 7z)
-      ExecWait '"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -Command "& {Expand-Archive -Path \"$TEMP\mpv.7z\" -DestinationPath \"$TEMP\mpv-extract\" -Force}"' $1
-      ${If} $1 == 0
-        ; Find mpv.exe recursively
-        FindFirst $2 $3 "$TEMP\mpv-extract\*"
-        loop:
-          StrCmp $3 "" done
-          IfFileExists "$TEMP\mpv-extract\$3\mpv.exe" 0 +3
-            CopyFiles "$TEMP\mpv-extract\$3\mpv.exe" "$INSTDIR\mpv.exe"
-            Goto done
-          FindNext $2 $3
-          Goto loop
-        done:
-        FindClose $2
-        DetailPrint "mpv.exe extracted and copied."
-      ${Else}
-        DetailPrint "Failed to extract mpv. Opening download page..."
-        ExecShell "open" "${MPV_INSTALL_URL}"
-        MessageBox MB_OK "Please download mpv manually and place mpv.exe in:$\n$INSTDIR"
-      ${EndIf}
+      DetailPrint "Extracting mpv files..."
+      ; Use Nsis7z plugin to extract to temp directory
+      Nsis7z::ExtractWithDetails "$TEMP\mpv.7z" "Extracting mpv files %s..."
+      ; Extract specific files: mpv directory, mpv.com, mpv.exe, d3dcompiler_43.dll
+      ; The 7z archive contains a top-level directory mpv-x86_64-${MPV_VERSION}
+      SetOutPath "$INSTDIR"
+      CopyFiles /SILENT "$PLUGINSDIR\mpv-x86_64-${MPV_VERSION}\mpv.exe" "$INSTDIR\mpv.exe"
+      CopyFiles /SILENT "$PLUGINSDIR\mpv-x86_64-${MPV_VERSION}\mpv.com" "$INSTDIR\mpv.com"
+      CopyFiles /SILENT "$PLUGINSDIR\mpv-x86_64-${MPV_VERSION}\d3dcompiler_43.dll" "$INSTDIR\d3dcompiler_43.dll"
+      CreateDirectory "$INSTDIR\mpv"
+      CopyFiles /SILENT "$PLUGINSDIR\mpv-x86_64-${MPV_VERSION}\mpv\*.*" "$INSTDIR\mpv\"
+      DetailPrint "mpv files extracted."
     ${Else}
       DetailPrint "Failed to download mpv. Opening download page..."
       ExecShell "open" "${MPV_INSTALL_URL}"
@@ -208,7 +198,12 @@ Section "Uninstall"
   ; Remove files
   Delete "$INSTDIR\${APP_EXEC}"
   Delete "$INSTDIR\mpv.exe"
+  Delete "$INSTDIR\mpv.com"
+  Delete "$INSTDIR\d3dcompiler_43.dll"
   Delete "$INSTDIR\Uninstall.exe"
+
+  ; Remove mpv directory
+  RMDir /r "$INSTDIR\mpv"
 
   ; Remove native messaging hosts
   Delete "$LOCALAPPDATA\Google\Chrome\NativeMessagingHosts\sh.tat.open_in_mpv.json"
