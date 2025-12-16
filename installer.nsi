@@ -132,10 +132,30 @@ Section "Install" SecInstall
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "DisplayVersion" "${APP_VERSION}"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "URLInfoAbout" "${APP_URL}"
 
-  ; Install native messaging hosts for detected browsers
+  ; Install native messaging host manifest
+  Call WriteHostJSON
+
+  ; Install native messaging hosts for detected browsers via registry
   Call InstallNativeMessagingHosts
 
 SectionEnd
+
+Function WriteHostJSON
+  ; Create the JSON file with proper escaping for the path
+  StrCpy $1 "$INSTDIR\${APP_EXEC}"
+  ; Replace single backslashes with double backslashes for JSON
+  ${StrRep} $2 $1 "\" "\\"
+
+  FileOpen $0 "$INSTDIR\sh.tat.open_in_mpv.json" w
+  FileWrite $0 '{$\r$\n'
+  FileWrite $0 '  "allowed_origins": ["chrome-extension://jlhcojdohadhkchjpjefbmagpiaedpgc/"],$\r$\n'
+  FileWrite $0 '  "description": "Opens a URL in mpv (for use with extension).",$\r$\n'
+  FileWrite $0 '  "name": "sh.tat.open_in_mpv",$\r$\n'
+  FileWrite $0 '  "path": "$2",$\r$\n'
+  FileWrite $0 '  "type": "stdio"$\r$\n'
+  FileWrite $0 '}$\r$\n'
+  FileClose $0
+FunctionEnd
 
 Function InstallNativeMessagingHosts
   ; Chrome
@@ -163,64 +183,26 @@ Function InstallNativeMessagingHosts
     DetailPrint "Installing native messaging host for Firefox..."
     Call InstallFirefoxHost
 
-  ; Opera
-  IfFileExists "$APPDATA\Opera Software\*.*" 0 +3
-    DetailPrint "Installing native messaging host for Opera..."
-    Call InstallOperaHost
-
 FunctionEnd
 
 Function InstallChromeHost
-  CreateDirectory "$LOCALAPPDATA\Google\Chrome\NativeMessagingHosts"
-  Call WriteHostJSON
-  CopyFiles "$TEMP\sh.tat.open_in_mpv.json" "$LOCALAPPDATA\Google\Chrome\NativeMessagingHosts\sh.tat.open_in_mpv.json"
+  WriteRegStr HKCU "Software\Google\Chrome\NativeMessagingHosts\sh.tat.open_in_mpv" "" "$INSTDIR\sh.tat.open_in_mpv.json"
 FunctionEnd
 
 Function InstallChromeBetaHost
-  CreateDirectory "$LOCALAPPDATA\Google\Chrome Beta\NativeMessagingHosts"
-  Call WriteHostJSON
-  CopyFiles "$TEMP\sh.tat.open_in_mpv.json" "$LOCALAPPDATA\Google\Chrome Beta\NativeMessagingHosts\sh.tat.open_in_mpv.json"
+  WriteRegStr HKCU "Software\Google\Chrome Beta\NativeMessagingHosts\sh.tat.open_in_mpv" "" "$INSTDIR\sh.tat.open_in_mpv.json"
 FunctionEnd
 
 Function InstallChromeCanaryHost
-  CreateDirectory "$LOCALAPPDATA\Google\Chrome SxS\NativeMessagingHosts"
-  Call WriteHostJSON
-  CopyFiles "$TEMP\sh.tat.open_in_mpv.json" "$LOCALAPPDATA\Google\Chrome SxS\NativeMessagingHosts\sh.tat.open_in_mpv.json"
+  WriteRegStr HKCU "Software\Google\Chrome Canary\NativeMessagingHosts\sh.tat.open_in_mpv" "" "$INSTDIR\sh.tat.open_in_mpv.json"
 FunctionEnd
 
 Function InstallChromiumHost
-  CreateDirectory "$LOCALAPPDATA\Chromium\NativeMessagingHosts"
-  Call WriteHostJSON
-  CopyFiles "$TEMP\sh.tat.open_in_mpv.json" "$LOCALAPPDATA\Chromium\NativeMessagingHosts\sh.tat.open_in_mpv.json"
+  WriteRegStr HKCU "Software\Chromium\NativeMessagingHosts\sh.tat.open_in_mpv" "" "$INSTDIR\sh.tat.open_in_mpv.json"
 FunctionEnd
 
 Function InstallFirefoxHost
-  CreateDirectory "$APPDATA\Mozilla\NativeMessagingHosts"
-  Call WriteHostJSON
-  CopyFiles "$TEMP\sh.tat.open_in_mpv.json" "$APPDATA\Mozilla\NativeMessagingHosts\sh.tat.open_in_mpv.json"
-FunctionEnd
-
-Function InstallOperaHost
-  CreateDirectory "$APPDATA\Opera Software\NativeMessagingHosts"
-  Call WriteHostJSON
-  CopyFiles "$TEMP\sh.tat.open_in_mpv.json" "$APPDATA\Opera Software\NativeMessagingHosts\sh.tat.open_in_mpv.json"
-FunctionEnd
-
-Function WriteHostJSON
-  ; Create the JSON file with proper escaping for the path
-  StrCpy $1 "$INSTDIR\${APP_EXEC}"
-  ; Replace single backslashes with double backslashes for JSON
-  ${StrRep} $2 $1 "\" "\\"
-
-  FileOpen $0 "$TEMP\sh.tat.open_in_mpv.json" w
-  FileWrite $0 '{$\r$\n'
-  FileWrite $0 '  "allowed_origins": ["chrome-extension://jlhcojdohadhkchjpjefbmagpiaedpgc/"],$\r$\n'
-  FileWrite $0 '  "description": "Opens a URL in mpv (for use with extension).",$\r$\n'
-  FileWrite $0 '  "name": "sh.tat.open_in_mpv",$\r$\n'
-  FileWrite $0 '  "path": "$2",$\r$\n'
-  FileWrite $0 '  "type": "stdio"$\r$\n'
-  FileWrite $0 '}$\r$\n'
-  FileClose $0
+  WriteRegStr HKCU "SOFTWARE\Mozilla\NativeMessagingHosts\sh.tat.open_in_mpv" "" "$INSTDIR\sh.tat.open_in_mpv.json"
 FunctionEnd
 
 Section "Uninstall"
@@ -230,18 +212,18 @@ Section "Uninstall"
   Delete "$INSTDIR\mpv.com"
   Delete "$INSTDIR\d3dcompiler_43.dll"
   Delete "$INSTDIR\yt-dlp.exe"
+  Delete "$INSTDIR\sh.tat.open_in_mpv.json"
   Delete "$INSTDIR\Uninstall.exe"
 
   ; Remove mpv directory
   RMDir /r "$INSTDIR\mpv"
 
-  ; Remove native messaging hosts
-  Delete "$LOCALAPPDATA\Google\Chrome\NativeMessagingHosts\sh.tat.open_in_mpv.json"
-  Delete "$LOCALAPPDATA\Google\Chrome Beta\NativeMessagingHosts\sh.tat.open_in_mpv.json"
-  Delete "$LOCALAPPDATA\Google\Chrome SxS\NativeMessagingHosts\sh.tat.open_in_mpv.json"
-  Delete "$LOCALAPPDATA\Chromium\NativeMessagingHosts\sh.tat.open_in_mpv.json"
-  Delete "$APPDATA\Mozilla\NativeMessagingHosts\sh.tat.open_in_mpv.json"
-  Delete "$APPDATA\Opera Software\NativeMessagingHosts\sh.tat.open_in_mpv.json"
+  ; Remove native messaging host registry entries
+  DeleteRegKey HKCU "Software\Google\Chrome\NativeMessagingHosts\sh.tat.open_in_mpv"
+  DeleteRegKey HKCU "Software\Google\Chrome Beta\NativeMessagingHosts\sh.tat.open_in_mpv"
+  DeleteRegKey HKCU "Software\Google\Chrome Canary\NativeMessagingHosts\sh.tat.open_in_mpv"
+  DeleteRegKey HKCU "Software\Chromium\NativeMessagingHosts\sh.tat.open_in_mpv"
+  DeleteRegKey HKCU "SOFTWARE\Mozilla\NativeMessagingHosts\sh.tat.open_in_mpv"
 
   ; Remove directories if empty
   RMDir "$INSTDIR"
