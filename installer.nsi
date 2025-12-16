@@ -32,6 +32,7 @@ Name "${APP_NAME} ${APP_VERSION}"
 OutFile "${APP_NAME}-${APP_VERSION}-setup.exe"
 InstallDir "$LOCALAPPDATA\${APP_NAME}"
 RequestExecutionLevel user
+ManifestDPIAware true
 
 ; Interface configuration
 !define MUI_ABORTWARNING
@@ -75,9 +76,9 @@ Section "Install" SecInstall
   mpv_not_found:
     ; Download mpv immediately
     DetailPrint "Downloading mpv from ${MPV_DOWNLOAD_URL}..."
-    NSISdl::download /TIMEOUT=30000 "${MPV_DOWNLOAD_URL}" "$TEMP\mpv.7z"
+    inetc::get /TIMEOUT=30000 "${MPV_DOWNLOAD_URL}" "$TEMP\mpv.7z" /END
     Pop $0
-    ${If} $0 == "success"
+    ${If} $0 == "OK"
       DetailPrint "Extracting mpv files..."
       ; Use Nsis7z plugin to extract all files to installation directory
       ; The 7z archive has no top-level directory - files are at the root
@@ -104,9 +105,9 @@ Section "Install" SecInstall
   ytdlp_not_found:
     ; Download yt-dlp immediately
     DetailPrint "Downloading yt-dlp from ${YTDLP_DOWNLOAD_URL}..."
-    NSISdl::download /TIMEOUT=30000 "${YTDLP_DOWNLOAD_URL}" "$INSTDIR\yt-dlp.exe"
+    inetc::get /TIMEOUT=30000 "${YTDLP_DOWNLOAD_URL}" "$INSTDIR\yt-dlp.exe" /END
     Pop $0
-    ${If} $0 == "success"
+    ${If} $0 == "OK"
       DetailPrint "yt-dlp downloaded successfully."
     ${Else}
       DetailPrint "Failed to download yt-dlp. Continuing without it..."

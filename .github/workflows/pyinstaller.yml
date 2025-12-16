@@ -172,6 +172,18 @@ jobs:
           }
           Copy-Item "$env:TEMP\Nsis7z\Plugins\x86-unicode\nsis7z.dll" "$pluginSubDir\nsis7z.dll"
         shell: 'pwsh'
+      - name: 'Download and install Inetc plugin'
+        run: |
+          $ProgressPreference = 'SilentlyContinue'
+          Invoke-WebRequest -Uri "https://nsis.sourceforge.io/mediawiki/images/c/c9/Inetc.zip" -OutFile "$env:TEMP\Inetc.zip"
+          Expand-Archive -Path "$env:TEMP\Inetc.zip" -DestinationPath "$env:TEMP\Inetc" -Force
+          $pluginDir = "${env:ProgramFiles(x86)}\NSIS\Plugins"
+          $pluginSubDir = "$pluginDir\x86-unicode"
+          if (-not (Test-Path $pluginSubDir)) {
+            New-Item -ItemType Directory -Path $pluginSubDir -Force | Out-Null
+          }
+          Copy-Item "$env:TEMP\Inetc\Plugins\x86-unicode\INetC.dll" "$pluginSubDir\INetC.dll"
+        shell: 'pwsh'
       - name: 'Build installer'
         run: |
           & "${env:ProgramFiles(x86)}\NSIS\makensis.exe" installer.nsi
