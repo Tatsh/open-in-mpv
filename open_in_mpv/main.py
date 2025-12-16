@@ -122,7 +122,7 @@ def get_mpv_path() -> str:
         if bundled_mpv.exists():
             logger.debug('Using bundled mpv at: %s', bundled_mpv)
             return str(bundled_mpv)
-        logger.warning('Bundled mpv.exe not found, falling back to system mpv')
+        logger.warning('Bundled mpv.exe not found, falling back to system mpv.')
     return 'mpv'
 
 

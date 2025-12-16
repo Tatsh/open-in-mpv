@@ -9,18 +9,21 @@
 !include "LogicLib.nsh"
 
 ; Application information
-!define APP_NAME "Open in mpv"
+!define APP_NAME "open-in-mpv"
 !define APP_VERSION "0.1.3"
 !define APP_PUBLISHER "Andrew Udvare"
-!define APP_URL "https://github.com/Tatsh/open-in-mpv"
+!define APP_URL "https://github.com/Tatsh/${APP_NAME}"
 !define APP_EXEC "open-in-mpv.exe"
-!define MPV_VERSION "latest"
-!define MPV_DOWNLOAD_URL "https://sourceforge.net/projects/mpv-player-windows/files/64bit/mpv-x86_64-latest.7z"
+!define MPV_VERSION "20241215"
+!define MPV_DOWNLOAD_URL "https://sourceforge.net/projects/mpv-player-windows/files/64bit/mpv-x86_64-${MPV_VERSION}.7z"
 !define MPV_INSTALL_URL "https://mpv.io/installation/"
+
+; Determine current year
+!define /date CURRENT_YEAR "%Y"
 
 ; Installer configuration
 Name "${APP_NAME} ${APP_VERSION}"
-OutFile "open-in-mpv-installer.exe"
+OutFile "open-in-mpv-${APP_VERSION}-setup.exe"
 InstallDir "$LOCALAPPDATA\open-in-mpv"
 RequestExecutionLevel user
 
@@ -48,7 +51,7 @@ VIAddVersionKey "ProductName" "${APP_NAME}"
 VIAddVersionKey "CompanyName" "${APP_PUBLISHER}"
 VIAddVersionKey "FileDescription" "${APP_NAME} Installer"
 VIAddVersionKey "FileVersion" "${APP_VERSION}"
-VIAddVersionKey "LegalCopyright" "Copyright (c) 2020 ${APP_PUBLISHER}"
+VIAddVersionKey "LegalCopyright" "Copyright (c) ${CURRENT_YEAR} ${APP_PUBLISHER}"
 
 Section "Install" SecInstall
   SetOutPath "$INSTDIR"
@@ -56,7 +59,7 @@ Section "Install" SecInstall
   ; Install the main executable
   File "dist\${APP_EXEC}"
 
-  ; Check if mpv.exe already exists (e.g., from GitHub Actions build)
+  ; Check if mpv.exe already exists
   DetailPrint "Checking for mpv.exe..."
   IfFileExists "$INSTDIR\mpv.exe" mpv_exists mpv_not_found
 
@@ -65,17 +68,37 @@ Section "Install" SecInstall
     Goto mpv_done
 
   mpv_not_found:
-    ; If not present, prompt user to download manually
-    DetailPrint "mpv.exe not found in installer."
-    MessageBox MB_YESNO "mpv.exe is required but not included. Would you like to download it now from ${MPV_INSTALL_URL}?" IDYES download_mpv IDNO skip_mpv
-
-  download_mpv:
-    ExecShell "open" "${MPV_INSTALL_URL}"
-    MessageBox MB_OK "Please download mpv and extract mpv.exe to:$\n$INSTDIR$\n$\nClick OK after placing mpv.exe in the directory."
-    Goto mpv_done
-
-  skip_mpv:
-    DetailPrint "Skipping mpv installation. You'll need to install it manually."
+    ; Download mpv immediately
+    DetailPrint "Downloading mpv from ${MPV_DOWNLOAD_URL}..."
+    NSISdl::download /TIMEOUT=30000 "${MPV_DOWNLOAD_URL}" "$TEMP\mpv.7z"
+    Pop $0
+    ${If} $0 == "success"
+      DetailPrint "Extracting mpv..."
+      ; Use 7z to extract (requires 7-Zip plugin or bundled 7z)
+      ExecWait '"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -Command "& {Expand-Archive -Path \"$TEMP\mpv.7z\" -DestinationPath \"$TEMP\mpv-extract\" -Force}"' $1
+      ${If} $1 == 0
+        ; Find mpv.exe recursively
+        FindFirst $2 $3 "$TEMP\mpv-extract\*"
+        loop:
+          StrCmp $3 "" done
+          IfFileExists "$TEMP\mpv-extract\$3\mpv.exe" 0 +3
+            CopyFiles "$TEMP\mpv-extract\$3\mpv.exe" "$INSTDIR\mpv.exe"
+            Goto done
+          FindNext $2 $3
+          Goto loop
+        done:
+        FindClose $2
+        DetailPrint "mpv.exe extracted and copied."
+      ${Else}
+        DetailPrint "Failed to extract mpv. Opening download page..."
+        ExecShell "open" "${MPV_INSTALL_URL}"
+        MessageBox MB_OK "Please download mpv manually and place mpv.exe in:$\n$INSTDIR"
+      ${EndIf}
+    ${Else}
+      DetailPrint "Failed to download mpv. Opening download page..."
+      ExecShell "open" "${MPV_INSTALL_URL}"
+      MessageBox MB_OK "Please download mpv manually and place mpv.exe in:$\n$INSTDIR"
+    ${EndIf}
 
   mpv_done:
 
