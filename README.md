@@ -60,6 +60,9 @@ install the native host part of the extension system-wide.
 
 ## Uninstallation
 
+Uninstall the extension from your browser. Then follow steps below depending on how you installed
+the native messaging host component:
+
 ### General uninstallation
 
 ```shell
@@ -67,32 +70,33 @@ open-in-mpv-uninstall
 pip uninstall open-in-mpv
 ```
 
-Uninstall the extension from your browser.
-
 ### macOS pkg uninstallation
 
 If you installed open-in-mpv using the macOS pkg installer, follow these steps to completely
 uninstall it:
 
-1. Run the uninstall command for each user:
+1. Run the uninstall command:
 
    ```shell
-   # For each user that had open-in-mpv installed (replace <username> with actual username)
-   sudo -u <username> open-in-mpv-uninstall
+   sudo /usr/local/bin/open-in-mpv-uninstall
    ```
 
-2. Remove the package files:
+1. Remove the package files:
 
    ```shell
    pkgutil --only-files --files sh.tat.open-in-mpv | tr '\n' '\0' | xargs -n 1 -0 sudo rm -f
    pkgutil --only-dirs --files sh.tat.open-in-mpv | tail -r | tr '\n' '\0' | xargs -n 1 -0 sudo rmdir
    ```
 
-3. Forget the package:
+1. Forget the package:
 
    ```shell
    sudo pkgutil --forget sh.tat.open-in-mpv
    ```
+
+### Windows
+
+Uninstall open-in-mpv using _Programs & Features_.
 
 ## Known issues
 

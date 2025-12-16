@@ -237,20 +237,7 @@ jobs:
           cat > pkg/postinstall <<'EOF'
           #!/bin/bash
           # Post-installation script for open-in-mpv
-          # Get all real user accounts (excluding root and special users)
-          # Real users have UID >= 500 and are not special accounts
-          for user_home in /Users/*; do
-              if [[ -d "${user_home}" ]]; then
-                  username=$(basename "${user_home}")
-                  user_uid=$(dscl . -read "/Users/${username}" UniqueID 2>/dev/null | awk '{print $2}')
-                  # Skip if UID is not set, special accounts, is root (0), or is a system user (< 500)
-                  if [[ -z "${user_uid}" ]] || [[ "${user_uid}" -lt 500 ]] || [[ "${username}" == "_"* ]] || [[ "${username}" == "Shared" ]]; then
-                      continue
-                  fi
-                  echo "Installing open-in-mpv for user: ${username}"
-                  sudo -u "${username}" /usr/local/bin/open-in-mpv-install --exec-path /usr/local/bin/open-in-mpv --user --force || true
-              fi
-          done
+          /usr/local/bin/open-in-mpv-install --debug --exec-path /usr/local/bin/open-in-mpv --system --force || true
           if ! command -v mpv &> /dev/null; then
               echo "Warning: mpv is not installed. Please install it with 'brew install mpv', 'port install mpv +network', or from https://mpv.io/"
           fi
