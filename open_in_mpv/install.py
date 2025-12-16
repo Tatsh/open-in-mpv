@@ -17,7 +17,8 @@ from .constants import (
     IS_LINUX,
     IS_MAC,
     JSON_FILENAME,
-    MAC_HOSTS_DIRS,
+    MAC_SYSTEM_HOSTS_DIRS,
+    MAC_USER_HOSTS_DIRS,
     SYSTEM_HOSTS_DIRS,
     USER_HOSTS_DIRS,
 )
@@ -79,18 +80,16 @@ def main(exec_path: str | None = None,
         click.echo('open-in-mpv not found in PATH.', err=True)
         raise click.Abort
     host_data['path'] = full_path
+    if system and os.geteuid() != 0:
+        click.echo('Run this as root.', err=True)
+        raise click.Abort
     if IS_LINUX:
         if system:
-            if os.geteuid() != 0:
-                click.echo('Run this as root.', err=True)
-                raise click.Abort
-            for directory in SYSTEM_HOSTS_DIRS:
-                Path(directory).mkdir(exist_ok=True, parents=True)
-                write_json(host_data, directory)
-        else:
+            write_json_files(host_data, SYSTEM_HOSTS_DIRS, force=force)
+        if user:
             write_json_files(host_data, USER_HOSTS_DIRS, force=force)
     if IS_MAC:
         if system:
-            click.echo('System installation on macOS is not supported.', err=True)
-            raise click.Abort
-        write_json_files(host_data, MAC_HOSTS_DIRS, force=force)
+            write_json_files(host_data, MAC_SYSTEM_HOSTS_DIRS, force=force)
+        if user:
+            write_json_files(host_data, MAC_USER_HOSTS_DIRS, force=force)

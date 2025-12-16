@@ -63,7 +63,7 @@ def test_install_mac_system(runner: CliRunner, mocker: MockerFixture,
     mocker.patch.object(open_in_mpv.install, 'IS_LINUX', False)  # noqa: FBT003
     mocker.patch.object(open_in_mpv.install, 'IS_MAC', True)  # noqa: FBT003
     result = runner.invoke(main, ['--system'])
-    assert result.exit_code != 0
+    assert result.exit_code == 0
 
 
 def test_install_mac_user(runner: CliRunner, mocker: MockerFixture,
