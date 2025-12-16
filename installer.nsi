@@ -73,11 +73,11 @@ Section "Install" SecInstall
     Pop $0
     ${If} $0 == "success"
       DetailPrint "Extracting mpv files..."
-      ; Use Nsis7z plugin to extract to installation directory
+      ; Use Nsis7z plugin to extract all files to installation directory
+      ; The 7z archive has no top-level directory - files are at the root
+      ; This extracts: mpv.exe, mpv.com, d3dcompiler_43.dll, and mpv directory
       SetOutPath "$INSTDIR"
       Nsis7z::ExtractWithDetails "$TEMP\mpv.7z" "Extracting mpv files %s..."
-      ; The 7z archive has no top-level directory - files are at the root
-      ; Extract specific files: mpv directory, mpv.com, mpv.exe, d3dcompiler_43.dll
       DetailPrint "mpv files extracted."
     ${Else}
       DetailPrint "Failed to download mpv. Opening download page..."
