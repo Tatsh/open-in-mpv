@@ -46,7 +46,6 @@ function detectPlatform() {
   if (detectedPlatform === 'windows') {
     const downloadLink = document.getElementById('windows-download');
     if (downloadLink) {
-      // This URL should be updated to point to the actual release
       downloadLink.href =
         'https://github.com/Tatsh/open-in-mpv/releases/latest/download/open-in-mpv-installer.exe';
     }

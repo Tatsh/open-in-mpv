@@ -16,6 +16,7 @@
 !define APP_EXEC "open-in-mpv.exe"
 !define MPV_VERSION "latest"
 !define MPV_DOWNLOAD_URL "https://sourceforge.net/projects/mpv-player-windows/files/64bit/mpv-x86_64-latest.7z"
+!define MPV_INSTALL_URL "https://mpv.io/installation/"
 
 ; Installer configuration
 Name "${APP_NAME} ${APP_VERSION}"
@@ -57,16 +58,19 @@ Section "Install" SecInstall
 
   ; Check if mpv.exe already exists (e.g., from GitHub Actions build)
   DetailPrint "Checking for mpv.exe..."
-  IfFileExists "$INSTDIR\mpv.exe" 0 +2
+  IfFileExists "$INSTDIR\mpv.exe" mpv_exists mpv_not_found
+
+  mpv_exists:
     DetailPrint "mpv.exe already present."
     Goto mpv_done
 
-  ; If not present, prompt user to download manually
-  DetailPrint "mpv.exe not found in installer."
-  MessageBox MB_YESNO "mpv.exe is required but not included. Would you like to download it now from https://mpv.io/?" IDYES download_mpv IDNO skip_mpv
+  mpv_not_found:
+    ; If not present, prompt user to download manually
+    DetailPrint "mpv.exe not found in installer."
+    MessageBox MB_YESNO "mpv.exe is required but not included. Would you like to download it now from ${MPV_INSTALL_URL}?" IDYES download_mpv IDNO skip_mpv
 
   download_mpv:
-    ExecShell "open" "https://mpv.io/installation/"
+    ExecShell "open" "${MPV_INSTALL_URL}"
     MessageBox MB_OK "Please download mpv and extract mpv.exe to:$\n$INSTDIR$\n$\nClick OK after placing mpv.exe in the directory."
     Goto mpv_done
 
