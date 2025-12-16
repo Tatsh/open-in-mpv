@@ -11,8 +11,8 @@
 ; Application information
 !define APP_NAME "open-in-mpv"
 !define APP_VERSION "0.1.3"
-!define APP_PUBLISHER "Andrew Udvare"
-!define APP_URL "https://github.com/Tatsh/${APP_NAME}"
+!define APP_PUBLISHER "Tatsh"
+!define APP_URL "https://github.com/${APP_PUBLISHER}/${APP_NAME}"
 !define APP_EXEC "${APP_NAME}.exe"
 !define MPV_VERSION "20251214-git-f7be2ee"
 !define MPV_DOWNLOAD_URL "https://downloads.sourceforge.net/project/mpv-player-windows/64bit/mpv-x86_64-${MPV_VERSION}.7z"
@@ -73,17 +73,11 @@ Section "Install" SecInstall
     Pop $0
     ${If} $0 == "success"
       DetailPrint "Extracting mpv files..."
-      ; Use Nsis7z plugin to extract to temp directory
-      SetOutPath "$TEMP"
-      Nsis7z::ExtractWithDetails "$TEMP\mpv.7z" "Extracting mpv files %s..."
-      ; Extract specific files: mpv directory, mpv.com, mpv.exe, d3dcompiler_43.dll
-      ; The 7z archive contains a top-level directory mpv-x86_64-${MPV_VERSION}
+      ; Use Nsis7z plugin to extract to installation directory
       SetOutPath "$INSTDIR"
-      CopyFiles /SILENT "$TEMP\mpv-x86_64-${MPV_VERSION}\mpv.exe" "$INSTDIR\mpv.exe"
-      CopyFiles /SILENT "$TEMP\mpv-x86_64-${MPV_VERSION}\mpv.com" "$INSTDIR\mpv.com"
-      CopyFiles /SILENT "$TEMP\mpv-x86_64-${MPV_VERSION}\d3dcompiler_43.dll" "$INSTDIR\d3dcompiler_43.dll"
-      CreateDirectory "$INSTDIR\mpv"
-      CopyFiles /SILENT "$TEMP\mpv-x86_64-${MPV_VERSION}\mpv\*.*" "$INSTDIR\mpv\"
+      Nsis7z::ExtractWithDetails "$TEMP\mpv.7z" "Extracting mpv files %s..."
+      ; The 7z archive has no top-level directory - files are at the root
+      ; Extract specific files: mpv directory, mpv.com, mpv.exe, d3dcompiler_43.dll
       DetailPrint "mpv files extracted."
     ${Else}
       DetailPrint "Failed to download mpv. Opening download page..."

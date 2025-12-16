@@ -117,9 +117,7 @@ def get_mpv_path() -> str:
     """
     if IS_WIN and getattr(sys, 'frozen', False):
         # Running in a PyInstaller bundle on Windows
-        bundle_dir = Path(sys.executable).parent
-        bundled_mpv = bundle_dir / 'mpv.exe'
-        if bundled_mpv.exists():
+        if (bundled_mpv := Path(sys.executable).parent / 'mpv.exe').exists():
             logger.debug('Using bundled mpv at: %s', bundled_mpv)
             return str(bundled_mpv)
         logger.warning('Bundled mpv.exe not found, falling back to system mpv.')

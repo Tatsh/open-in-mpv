@@ -145,6 +145,57 @@ jobs:
           - os: 'windows-11-arm'
             dist_path: 'dist/*.exe'
             suffix: 'win-arm64'
+
+  build-installer:
+    runs-on: 'windows-latest'
+    needs: build
+    steps:
+      - name: 'Checkout repository'
+        uses: 'actions/checkout@v6'
+
+      - name: 'Download PyInstaller artifact'
+        uses: 'actions/download-artifact@v6'
+        with:
+          name: open-in-mpv-binaries-win-x86_64
+          path: dist
+
+      - name: 'Install NSIS'
+        run: |
+          choco install nsis -y
+        shell: 'pwsh'
+
+      - name: 'Download and install Nsis7z plugin'
+        run: |
+          $ProgressPreference = 'SilentlyContinue'
+          Invoke-WebRequest -Uri "https://nsis.sourceforge.io/mediawiki/images/6/69/Nsis7z_19.00.7z" -OutFile "$env:TEMP\Nsis7z.7z"
+          7z x "$env:TEMP\Nsis7z.7z" -o"$env:TEMP\Nsis7z"
+          Copy-Item "$env:TEMP\Nsis7z\Plugins\x64-unicode\nsis7z.dll" "C:\Program Files (x86)\NSIS\Plugins\x64-unicode\nsis7z.dll"
+        shell: 'pwsh'
+
+      - name: 'Build installer'
+        run: |
+          & "C:\Program Files (x86)\NSIS\makensis.exe" installer.nsi
+        shell: 'pwsh'
+
+      - name: 'Upload installer artifact'
+        uses: 'actions/upload-artifact@v6'
+        with:
+          if-no-files-found: error
+          name: open-in-mpv-installer
+          path: 'open-in-mpv-*-setup.exe'
+
+      - name: 'Attest installer'
+        uses: 'actions/attest-build-provenance@v3'
+        with:
+          subject-path: 'open-in-mpv-*-setup.exe'
+
+      - if: github.ref_type == 'tag'
+        name: 'Upload installer to release'
+        uses: softprops/action-gh-release@v2
+        with:
+          fail_on_unmatched_files: true
+          files: 'open-in-mpv-*-setup.exe'
+
 name: 'PyInstaller'
 'on':
   pull_request:
