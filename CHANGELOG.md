@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Windows installer for easy setup of the native messaging host (sets up Chrome, Chrome Beta,
   Chrome Canary, Chromium, Firefox, and Opera if they are installed).
   - Also bundles a copy of `mpv` and `yt-dlp`.
+- macOS installer (pkg file).
 - Post-installation page for browser extension with platform-specific instructions.
 - Post-uninstallation page for browser extension.
 
