@@ -110,4 +110,5 @@ virtualenv
 wiswa
 yapf
 yapfignore
+ytdl
 ytdlp

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 import json
 import re
 import struct
@@ -9,6 +9,8 @@ from open_in_mpv.main import get_mpv_path, main, spawn
 import pytest
 
 if TYPE_CHECKING:
+    from unittest.mock import MagicMock
+
     from click.testing import CliRunner
     from pytest_mock import MockerFixture
 
@@ -291,8 +293,9 @@ def test_mpv_and_cleanup_callback_debug(mocker: MockerFixture) -> None:
 
 def test_mpv_and_cleanup_windows_with_ytdlp(mocker: MockerFixture) -> None:
     """Test mpv_and_cleanup on Windows with PyInstaller bundle and yt-dlp.exe present."""
-    from open_in_mpv.main import mpv_and_cleanup
     from unittest.mock import MagicMock
+
+    from open_in_mpv.main import mpv_and_cleanup
     mocker.patch('open_in_mpv.main.IS_WIN', new=True)
     mocker.patch('open_in_mpv.main.sys.frozen', new=True, create=True)
     mocker.patch('open_in_mpv.main.sys.executable', 'C:\\test\\open-in-mpv.exe')
@@ -301,7 +304,7 @@ def test_mpv_and_cleanup_windows_with_ytdlp(mocker: MockerFixture) -> None:
     mock_path_class = mocker.patch('open_in_mpv.main.Path')
     call_count = [0]
 
-    def path_constructor(path_arg):
+    def path_constructor(path_arg: Any) -> MagicMock:
         call_count[0] += 1
         if call_count[0] == 1:
             # First call: Path(MPV_LOG_PATH) for log file
@@ -316,7 +319,7 @@ def test_mpv_and_cleanup_windows_with_ytdlp(mocker: MockerFixture) -> None:
         # When / 'yt-dlp.exe' is called on parent, return a path that exists
         mock_ytdlp_path = MagicMock()
         mock_ytdlp_path.exists.return_value = True
-        mock_ytdlp_path.__str__.return_value = 'C:\\test\\yt-dlp.exe'
+        mock_ytdlp_path.configure_mock(**{'__str__.return_value': 'C:\\test\\yt-dlp.exe'})
         mock_parent.__truediv__.return_value = mock_ytdlp_path
         return mock_exe_path
 
@@ -341,8 +344,9 @@ def test_mpv_and_cleanup_windows_with_ytdlp(mocker: MockerFixture) -> None:
 
 def test_mpv_and_cleanup_windows_without_ytdlp(mocker: MockerFixture) -> None:
     """Test mpv_and_cleanup on Windows with PyInstaller bundle but no yt-dlp.exe."""
-    from open_in_mpv.main import mpv_and_cleanup
     from unittest.mock import MagicMock
+
+    from open_in_mpv.main import mpv_and_cleanup
     mocker.patch('open_in_mpv.main.IS_WIN', new=True)
     mocker.patch('open_in_mpv.main.sys.frozen', new=True, create=True)
     mocker.patch('open_in_mpv.main.sys.executable', 'C:\\test\\open-in-mpv.exe')
@@ -351,7 +355,7 @@ def test_mpv_and_cleanup_windows_without_ytdlp(mocker: MockerFixture) -> None:
     mock_path_class = mocker.patch('open_in_mpv.main.Path')
     call_count = [0]
 
-    def path_constructor(path_arg):
+    def path_constructor(path_arg: Any) -> MagicMock:
         call_count[0] += 1
         if call_count[0] == 1:
             # First call: Path(MPV_LOG_PATH) for log file
