@@ -1,3 +1,4 @@
+abortwarning
 appdata
 appdir
 appimage
@@ -13,12 +14,14 @@ chromium
 codeowners
 colorlog
 commitizen
+contrib
 conftest
 coveragerc
 coverallsapp
 dataclasses
 datatable
 datatables
+dcompiler
 debugpy
 djlint
 docstrings
@@ -36,7 +39,9 @@ globaltoc
 hkcu
 hoverxref
 htmlcov
+insertmacro
 instdir
+instfiles
 intersphinx
 isort
 itertools
@@ -58,11 +63,13 @@ namedtuples
 norecursedirs
 nsis
 nsisdl
+nsisdir
 numpy
 numpydoc
 onefile
 opengl
 opera
+pacman
 pavelzw
 pipx
 platformdirs
@@ -95,6 +102,7 @@ tomlq
 tonumber
 tryfirst
 udvare
+unicon
 uninstaller
 venv
 vers
