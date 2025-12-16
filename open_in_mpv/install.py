@@ -55,7 +55,11 @@ def write_json_files(host_data: Any, directories: Sequence[str], *, force: bool 
               help='Install user native host JSON files even if the path does not yet exist.')
 @click.option('-s', '--system', is_flag=True, help='Install system native host JSON files.')
 @click.option('-u', '--user', is_flag=True, help='Install user native host JSON files.')
-def main(*,
+@click.option('--exec-path',
+              type=click.Path(dir_okay=False),
+              help='Absolute path to open-in-mpv executable.')
+def main(exec_path: str | None = None,
+         *,
          system: bool = False,
          user: bool = False,
          force: bool = False,
@@ -70,7 +74,8 @@ def main(*,
         click.echo('Need an action.', err=True)
         raise click.Abort
     host_data = deepcopy(HOST_DATA)
-    if not (full_path := which('open-in-mpv')):
+    full_path = exec_path
+    if not full_path and not (full_path := which('open-in-mpv')):
         click.echo('open-in-mpv not found in PATH.', err=True)
         raise click.Abort
     host_data['path'] = full_path
@@ -85,4 +90,7 @@ def main(*,
         else:
             write_json_files(host_data, USER_HOSTS_DIRS, force=force)
     if IS_MAC:
+        if system:
+            click.echo('System installation on macOS is not supported.', err=True)
+            raise click.Abort
         write_json_files(host_data, MAC_HOSTS_DIRS, force=force)
