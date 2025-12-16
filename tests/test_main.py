@@ -5,7 +5,7 @@ import json
 import re
 import struct
 
-from open_in_mpv.main import get_mpv_path, main, spawn
+from open_in_mpv.main import get_callback, get_mpv_path, main, spawn
 import pytest
 
 if TYPE_CHECKING:
@@ -218,6 +218,23 @@ def test_main_single_instance_macports(runner: CliRunner, mocker: MockerFixture)
     assert isinstance(data, dict)
     assert 'macports' in data
     assert data['macports'] is True
+
+
+def test_main_spawn_windows(mocker: MockerFixture) -> None:
+    mocker.patch('open_in_mpv.main.IS_WIN', new=True)
+    mock_callable = mocker.Mock()
+    spawn(mock_callable)
+    mock_callable.assert_called_once()
+
+
+def test_get_callback_no_af_unix(mocker: MockerFixture) -> None:
+    mocker.patch('open_in_mpv.main.IS_WIN', new=True)
+    socket_socket = mocker.patch('open_in_mpv.main.socket.socket')
+    mocker.patch('open_in_mpv.main.socket', new=object)
+    mocker.patch('open_in_mpv.main.sp')
+    callback = get_callback('http://example.com', {})
+    callback()
+    assert socket_socket.call_count == 0
 
 
 def test_main_spawn_exit_second_parent(mocker: MockerFixture) -> None:

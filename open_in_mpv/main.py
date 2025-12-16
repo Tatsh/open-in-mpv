@@ -84,6 +84,10 @@ def spawn(func: Callable[[], Any]) -> None:
 
     Takes a callable which will be called in the fork.
     """
+    if IS_WIN:
+        logger.debug('Windows detected, just calling func().')
+        func()
+        return
     try:
         if os.fork() > 0:
             # parent process, return and keep running
@@ -166,6 +170,12 @@ def get_callback(url: str,
                  *,
                  debug: bool = False) -> Callable[[], None]:
     def callback() -> None:
+        if not hasattr(socket, 'AF_UNIX'):
+            # The build of Python may not yet support AF_UNIX sockets on Windows or it is running an
+            # older version of Windows.
+            logger.debug('AF_UNIX not supported, spawning initial instance.')
+            spawn_init(url, new_env, debug=debug)
+            return
         logger.debug('Sending loadfile command.')
         sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         sock.settimeout(2)
