@@ -25,6 +25,9 @@ local utils = import 'utils.libjsonnet';
       qa: 'yarn eslint && yarn mypy . && yarn ruff . && yarn check-spelling && yarn check-formatting',
     },
   },
+  prettierignore+: [
+    '*.nsi',
+  ],
   pyproject+: {
     project+: {
       scripts+: {

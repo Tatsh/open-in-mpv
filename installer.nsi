@@ -52,12 +52,14 @@ ManifestDPIAware true
 !insertmacro MUI_LANGUAGE "English"
 
 ; Version information
-VIProductVersion "0.1.3.0"
+VIProductVersion "${APP_VERSION}.0"
+VIAddVersionKey "ProductVersion" "${APP_VERSION}.0"
 VIAddVersionKey "ProductName" "${APP_NAME}"
 VIAddVersionKey "CompanyName" "${APP_PUBLISHER}"
 VIAddVersionKey "FileDescription" "${APP_NAME} Installer"
 VIAddVersionKey "FileVersion" "${APP_VERSION}"
 VIAddVersionKey "LegalCopyright" "Copyright (c) ${CURRENT_YEAR} ${APP_PUBLISHER}."
+VIAddVersionKey "Comments" "${APP_URL}"
 
 Section "Install" SecInstall
   SetOutPath "$INSTDIR"
