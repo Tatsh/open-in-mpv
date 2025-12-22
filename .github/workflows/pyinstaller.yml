@@ -152,7 +152,7 @@ jobs:
       - name: 'Checkout repository'
         uses: 'actions/checkout@v6'
       - name: 'Download PyInstaller artifact'
-        uses: 'actions/download-artifact@v6'
+        uses: 'actions/download-artifact@v7'
         with:
           name: open-in-mpv-binaries-win-x86_64
           path: dist
@@ -211,12 +211,12 @@ jobs:
       - name: 'Checkout repository'
         uses: 'actions/checkout@v6'
       - name: 'Download PyInstaller artifact (ARM64)'
-        uses: 'actions/download-artifact@v6'
+        uses: 'actions/download-artifact@v7'
         with:
           name: open-in-mpv-binaries-mac-arm64
           path: dist/arm64
       - name: 'Download PyInstaller artifact (x86_64)'
-        uses: 'actions/download-artifact@v6'
+        uses: 'actions/download-artifact@v7'
         with:
           name: open-in-mpv-binaries-mac-x86_64
           path: dist/x86_64
