@@ -1,0 +1,74 @@
+jobs:
+  build-installer:
+    runs-on: 'windows-latest'
+    needs: build
+    steps:
+      - name: 'Checkout repository'
+        uses: 'actions/checkout@v6'
+      - name: 'Download PyInstaller artifact'
+        uses: 'actions/download-artifact@v7'
+        with:
+          name: open-in-mpv-binaries-win-x86_64
+          path: dist
+      - name: 'Install NSIS'
+        run: |
+          choco install nsis -y
+        shell: 'pwsh'
+      - name: 'Download and install Nsis7z plugin'
+        run: |
+          $ProgressPreference = 'SilentlyContinue'
+          Invoke-WebRequest -Uri "https://nsis.sourceforge.io/mediawiki/images/6/69/Nsis7z_19.00.7z" -OutFile "$env:TEMP\Nsis7z.7z"
+          7z x "$env:TEMP\Nsis7z.7z" -o"$env:TEMP\Nsis7z"
+          $pluginDir = "${env:ProgramFiles(x86)}\NSIS\Plugins"
+          $pluginSubDir = "$pluginDir\x86-unicode"
+          if (-not (Test-Path $pluginSubDir)) {
+            New-Item -ItemType Directory -Path $pluginSubDir -Force | Out-Null
+          }
+          Copy-Item "$env:TEMP\Nsis7z\Plugins\x86-unicode\nsis7z.dll" "$pluginSubDir\nsis7z.dll"
+        shell: 'pwsh'
+      - name: 'Download and install Inetc plugin'
+        run: |
+          $ProgressPreference = 'SilentlyContinue'
+          Invoke-WebRequest -Uri "https://nsis.sourceforge.io/mediawiki/images/c/c9/Inetc.zip" -OutFile "$env:TEMP\Inetc.zip"
+          Expand-Archive -Path "$env:TEMP\Inetc.zip" -DestinationPath "$env:TEMP\Inetc" -Force
+          $pluginDir = "${env:ProgramFiles(x86)}\NSIS\Plugins"
+          $pluginSubDir = "$pluginDir\x86-unicode"
+          if (-not (Test-Path $pluginSubDir)) {
+            New-Item -ItemType Directory -Path $pluginSubDir -Force | Out-Null
+          }
+          Copy-Item "$env:TEMP\Inetc\Plugins\x86-unicode\INetC.dll" "$pluginSubDir\INetC.dll"
+        shell: 'pwsh'
+      - name: 'Build installer'
+        run: |
+          & "${env:ProgramFiles(x86)}\NSIS\makensis.exe" installer.nsi
+        shell: 'pwsh'
+      - name: 'Upload installer artifact'
+        uses: 'actions/upload-artifact@v6'
+        with:
+          if-no-files-found: error
+          name: open-in-mpv-installer
+          path: 'open-in-mpv-*-setup.exe'
+      - name: 'Attest installer'
+        uses: 'actions/attest-build-provenance@v3'
+        with:
+          subject-path: 'open-in-mpv-*-setup.exe'
+      - if: github.ref_type == 'tag'
+        name: 'Upload installer to release'
+        uses: softprops/action-gh-release@v2
+        with:
+          fail_on_unmatched_files: true
+          files: 'open-in-mpv-*-setup.exe'
+name: 'Windows Installer (NSIS)'
+'on':
+  pull_request:
+    branches:
+      - 'master'
+  push:
+    branches:
+      - 'master'
+    tags:
+      - 'v*.*.*'
+permissions:
+  attestations: 'write'
+  contents: 'write'
+  id-token: 'write'
