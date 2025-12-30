@@ -1,7 +1,6 @@
 jobs:
   build-pkg:
     runs-on: 'macos-latest'
-    needs: build
     steps:
       - name: 'Checkout repository'
         uses: 'actions/checkout@v6'
@@ -115,14 +114,7 @@ jobs:
             open-in-mpv-*.pkg
 name: 'macOS package'
 'on':
-  pull_request:
-    branches:
-      - 'master'
-  push:
-    branches:
-      - 'master'
-    tags:
-      - 'v*.*.*'
+  workflow_call:
 permissions:
   attestations: 'write'
   contents: 'write'

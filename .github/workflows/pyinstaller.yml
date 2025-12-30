@@ -145,6 +145,14 @@ jobs:
           - os: 'windows-11-arm'
             dist_path: 'dist/*.exe'
             suffix: 'win-arm64'
+  call-build-windows-installer:
+    needs: build
+    secrets: inherit
+    uses: ./.github/workflows/windows-installer.yml
+  call-build-macos-pkg:
+    needs: build
+    secrets: inherit
+    uses: ./.github/workflows/macos-pkg.yml
 name: 'PyInstaller'
 'on':
   pull_request:

@@ -1,7 +1,6 @@
 jobs:
   build-installer:
     runs-on: 'windows-latest'
-    needs: build
     steps:
       - name: 'Checkout repository'
         uses: 'actions/checkout@v6'
@@ -60,14 +59,7 @@ jobs:
           files: 'open-in-mpv-*-setup.exe'
 name: 'Windows Installer (NSIS)'
 'on':
-  pull_request:
-    branches:
-      - 'master'
-  push:
-    branches:
-      - 'master'
-    tags:
-      - 'v*.*.*'
+  workflow_call:
 permissions:
   attestations: 'write'
   contents: 'write'
