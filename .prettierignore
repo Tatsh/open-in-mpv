@@ -6,6 +6,7 @@
 *.libjsonnet
 *.lock
 *.log
+*.mdc
 *.nsi
 *.pem
 *~

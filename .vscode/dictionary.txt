@@ -7,7 +7,6 @@ autodoc
 bascom
 bsky
 choco
-codeowners
 colorlog
 commitizen
 conftest
@@ -61,7 +60,6 @@ nsisdir
 numpy
 numpydoc
 onefile
-opengl
 pavelzw
 pipx
 pkgbuild

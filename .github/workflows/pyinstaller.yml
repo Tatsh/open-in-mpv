@@ -155,9 +155,6 @@ jobs:
     uses: ./.github/workflows/macos-pkg.yml
 name: 'PyInstaller'
 'on':
-  pull_request:
-    branches:
-      - 'master'
   push:
     branches:
       - 'master'
