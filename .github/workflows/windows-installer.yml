@@ -42,7 +42,7 @@ jobs:
           & "${env:ProgramFiles(x86)}\NSIS\makensis.exe" installer.nsi
         shell: 'pwsh'
       - name: 'Upload installer artifact'
-        uses: 'actions/upload-artifact@v6'
+        uses: 'actions/upload-artifact@v7'
         with:
           if-no-files-found: error
           name: open-in-mpv-installer
