@@ -5,7 +5,7 @@ jobs:
       - name: 'Checkout repository'
         uses: 'actions/checkout@v6'
       - name: 'Download PyInstaller artifact'
-        uses: 'actions/download-artifact@v7'
+        uses: 'actions/download-artifact@v8'
         with:
           name: open-in-mpv-binaries-win-x86_64
           path: dist
