@@ -91,7 +91,7 @@ jobs:
           build_pkg arm64
           build_pkg x86_64
       - name: 'Upload pkg artifacts'
-        uses: 'actions/upload-artifact@v6'
+        uses: 'actions/upload-artifact@v7'
         with:
           if-no-files-found: error
           name: open-in-mpv-pkg-installers
