@@ -40,7 +40,7 @@
     "@eslint/js": "^10.0.1",
     "@prettier/plugin-xml": "^3.4.2",
     "@types/chrome": "^0.1.37",
-    "cspell": "^9.6.4",
+    "cspell": "^9.7.0",
     "eslint": "^10.0.2",
     "eslint-config": "^0.3.0",
     "globals": "^17.4.0",
