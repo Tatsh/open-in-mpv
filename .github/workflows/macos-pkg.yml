@@ -98,11 +98,11 @@ jobs:
           path: |
             open-in-mpv-*.pkg
       - name: 'Attest ARM64 pkg'
-        uses: 'actions/attest-build-provenance@v3'
+        uses: 'actions/attest-build-provenance@v4'
         with:
           subject-path: 'open-in-mpv-*-arm64.pkg'
       - name: 'Attest x86_64 pkg'
-        uses: 'actions/attest-build-provenance@v3'
+        uses: 'actions/attest-build-provenance@v4'
         with:
           subject-path: 'open-in-mpv-*-x86_64.pkg'
       - if: github.ref_type == 'tag'
