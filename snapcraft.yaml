@@ -1,0 +1,34 @@
+apps:
+  open-in-mpv:
+    command: 'bin/open-in-mpv'
+    plugs:
+      - 'home'
+      - 'network'
+      - 'network-bind'
+base: 'core24'
+confinement: 'strict'
+contact: 'https://github.com/Tatsh/open-in-mpv/issues'
+description: 'Host-side of the extension to open any link or page URL in mpv via the browser context menu.'
+donation: 'https://buymeacoffee.com/Tatsh'
+grade: 'stable'
+issues: 'https://github.com/Tatsh/open-in-mpv/issues'
+license: 'MIT'
+name: 'open-in-mpv'
+parts:
+  open-in-mpv:
+    build-packages: []
+    plugin: 'python'
+    python-packages:
+      - '.'
+    source: '.'
+    stage-packages: []
+platforms:
+  amd64:
+    build-on: 'amd64'
+  arm64:
+    build-on: 'arm64'
+source-code: 'https://github.com/Tatsh/open-in-mpv'
+summary: 'Host-side of the extension to open any link or page URL in mpv via the browser context menu.'
+title: 'open-in-mpv'
+version: '0.1.3'
+website: 'https://tatsh.github.io/open-in-mpv/'
