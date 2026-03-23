@@ -146,7 +146,6 @@ name: 'AppImage'
       - '.github/workflows/appimage.yml'
       - 'pyproject.toml'
       - 'uv.lock'
-      - 'poetry.lock'
     tags:
       - 'v*.*.*'
 permissions:

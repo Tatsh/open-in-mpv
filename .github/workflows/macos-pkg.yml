@@ -14,10 +14,12 @@ jobs:
         with:
           name: open-in-mpv-binaries-mac-x86_64
           path: dist/x86_64
-      - name: 'Install Poetry and dependencies'
-        run: |
-          pipx install poetry yq
-          poetry install
+      - name: 'Install yq'
+        run: 'pipx install yq'
+      - name: 'Install uv'
+        uses: 'astral-sh/setup-uv@v7'
+      - name: 'Install dependencies (uv)'
+        run: 'uv sync'
       - name: 'Create pkg structure'
         run: |
           version=$(tomlq -r .project.version pyproject.toml)

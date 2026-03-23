@@ -50,7 +50,6 @@ name: 'Tests'
       - '.github/workflows/tests.yml'
       - 'pyproject.toml'
       - 'uv.lock'
-      - 'poetry.lock'
       - 'tests/**'
   push:
     branches:
@@ -61,7 +60,6 @@ name: 'Tests'
       - '.github/workflows/tests.yml'
       - 'pyproject.toml'
       - 'uv.lock'
-      - 'poetry.lock'
       - 'tests/**'
 permissions:
   contents: 'read'

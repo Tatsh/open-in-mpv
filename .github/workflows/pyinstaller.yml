@@ -187,7 +187,6 @@ name: 'PyInstaller'
       - '.github/workflows/pyinstaller.yml'
       - 'pyproject.toml'
       - 'uv.lock'
-      - 'poetry.lock'
     tags:
       - 'v*.*.*'
 permissions:

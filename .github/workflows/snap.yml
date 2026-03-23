@@ -45,7 +45,6 @@ name: 'Snap'
       - 'pyproject.toml'
       - 'snapcraft.yaml'
       - 'uv.lock'
-      - 'poetry.lock'
     tags:
       - 'v*.*.*'
   workflow_dispatch: null
