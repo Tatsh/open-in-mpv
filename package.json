@@ -39,7 +39,7 @@
     "@eslint/compat": "^2.0.3",
     "@eslint/js": "^10.0.1",
     "@prettier/plugin-xml": "^3.4.2",
-    "@types/chrome": "^0.1.38",
+    "@types/chrome": "^0.1.39",
     "cspell": "^9.7.0",
     "eslint": "^10.1.0",
     "eslint-config": "^0.3.0",
