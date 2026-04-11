@@ -807,13 +807,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chrome@npm:^0.1.38":
-  version: 0.1.38
-  resolution: "@types/chrome@npm:0.1.38"
+"@types/chrome@npm:^0.1.40":
+  version: 0.1.40
+  resolution: "@types/chrome@npm:0.1.40"
   dependencies:
     "@types/filesystem": "npm:*"
     "@types/har-format": "npm:*"
-  checksum: 10c0/109347bdd2e694929088d30f0ee5eb5e927f5f41db146f60fb139e5ab3f06fe44ce4a879eacd62fd9a875d262b12a26334c2e54a6f1dad7d30f39310673b47f4
+  checksum: 10c0/e32b69e967b6e02b3d71935ce12b679b0d443e5418241b27087bb13fc6d35005f3621261ff4abc83a1726463d56a7c07165811a5a6e526204717e22ade5a446c
   languageName: node
   linkType: hard
 
@@ -3724,7 +3724,7 @@ __metadata:
     "@eslint/compat": "npm:^2.0.3"
     "@eslint/js": "npm:^10.0.1"
     "@prettier/plugin-xml": "npm:^3.4.2"
-    "@types/chrome": "npm:^0.1.38"
+    "@types/chrome": "npm:^0.1.40"
     cspell: "npm:^9.7.0"
     eslint: "npm:^10.1.0"
     eslint-config: "npm:^0.3.0"
