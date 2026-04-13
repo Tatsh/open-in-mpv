@@ -1,5 +1,6 @@
 abortwarning
 anchore
+Ångström
 appdir
 appimage
 appinfo
@@ -9,10 +10,12 @@ bascom
 bsky
 cdrommsf
 choco
+codesign
 colorlog
 commitizen
 conftest
 contrib
+cooldown
 coveragerc
 coverallsapp
 ctypes
@@ -23,8 +26,8 @@ datatables
 dcompiler
 debugpy
 docstrings
+doctree
 doctrees
-dorny
 dunder
 eeyore
 elif
@@ -32,7 +35,7 @@ esbenp
 esbonio
 excinfo
 filevers
-fontawesome
+flathub
 foxundermoon
 functools
 geteuid
@@ -47,10 +50,12 @@ instfiles
 intersphinx
 isort
 itertools
+jinja
 jlhcojdohadhkchjpjefbmagpiaedpgc
 jsonnet
 jsonschema
 kwargs
+lastexitcode
 launchable
 lextudio
 libera
@@ -67,6 +72,8 @@ myproject
 mypy
 namedtuples
 norecursedirs
+notarytool
+npmjs
 nsis
 nsisdir
 numpy
@@ -87,6 +94,7 @@ pydantic
 pydocstyle
 pyinstaller
 pylint
+pylock
 pypa
 pypi
 pyproject
@@ -95,10 +103,12 @@ regen
 resp
 rstcheck
 schemafile
+sdist
 setattr
 setsid
 shellcheck
 shellformat
+signtool
 snapcore
 snapcraft
 softprops
@@ -121,9 +131,10 @@ venv
 vers
 virtualenv
 wiswa
+wiswa's
+xcrun
 yapf
 yapfignore
 yarnrc
 ytdl
 ytdlp
-ångström
