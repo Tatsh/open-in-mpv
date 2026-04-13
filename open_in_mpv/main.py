@@ -62,7 +62,7 @@ def request(buffer: BinaryIO) -> dict[str, Any]:
     message = json.loads(buffer.read(req_len).decode())
     return {
         'init': 'init' in message,
-        'url': message.get('url', None),
+        'url': message.get('url'),
         'debug': message.get('debug', False),
         'single': message.get('single', True),
     }
@@ -90,17 +90,17 @@ def spawn(func: Callable[[], Any]) -> None:
         return
     try:
         if os.fork() > 0:
-            # parent process, return and keep running
+            # Parent returns and keeps running.
             return
     except OSError as exc:
         logger.exception('Fork #1 failed: %s (%s).', exc.errno, exc.strerror)
         sys.exit(1)
     os.setsid()
-    # do second fork
+    # Perform the second fork.
     logger.debug('Second fork.')
     try:
         if os.fork() > 0:
-            # exit from second parent
+            # Exit from the second parent.
             sys.exit(0)
     except OSError as exc:
         logger.exception('Fork #2 failed: %s (%s).', exc.errno, exc.strerror)
@@ -108,7 +108,7 @@ def spawn(func: Callable[[], Any]) -> None:
     logger.debug('Calling callback.')
     func()
     logger.debug('Callback returned.')
-    # Exit without calling cleanup handlers
+    # Exit without calling cleanup handlers.
     os._exit(os.EX_OK)
 
 
@@ -118,9 +118,14 @@ def get_mpv_path() -> str:
 
     On Windows, if running from a PyInstaller bundle, use the bundled mpv.exe.
     Otherwise, use the system mpv.
+
+    Returns
+    -------
+    str
+        Path to bundled ``mpv.exe`` when present, otherwise ``mpv`` for PATH resolution.
     """
     if IS_WIN and getattr(sys, 'frozen', False):
-        # Running in a PyInstaller bundle on Windows
+        # Running in a PyInstaller bundle on Windows.
         if (bundled_mpv := Path(sys.executable).parent / 'mpv.exe').exists():
             logger.debug('Using bundled mpv at: %s', bundled_mpv)
             return str(bundled_mpv)
@@ -146,7 +151,7 @@ def mpv_and_cleanup(url: str,
             cmd_parts.extend((f'--input-ipc-server={MPV_SOCKET}', url))
             if debug:
                 cmd_parts.append(f'--log-file={MPV_LOG_PATH}')
-            # On Windows with PyInstaller bundle, configure yt-dlp path
+            # On Windows with a PyInstaller bundle, configure the yt-dlp path.
             if IS_WIN and getattr(sys, 'frozen', False):
                 ytdlp_path = Path(sys.executable).parent / 'yt-dlp.exe'
                 if ytdlp_path.exists():
@@ -171,8 +176,8 @@ def get_callback(url: str,
                  debug: bool = False) -> Callable[[], None]:
     def callback() -> None:
         if not hasattr(socket, 'AF_UNIX'):
-            # The build of Python may not yet support AF_UNIX sockets on Windows or it is running an
-            # older version of Windows.
+            # The Python build may lack AF_UNIX socket support on Windows, or the OS version may be
+            # too old.
             logger.debug('AF_UNIX not supported, spawning initial instance.')
             spawn_init(url, new_env, debug=debug)
             return
@@ -211,12 +216,7 @@ class CustomHelp(click.Command):
 @click.option('-d', '--debug', help='Enable debug logging.', is_flag=True)
 @click.version_option(VERSION, '-V', '--version', message='%(version)s')
 def main(chrome_url: str, message: BinaryIO, *, debug: bool = False) -> None:  # noqa: ARG001
-    """
-    Open a URL in mpv.
-
-    Standard input is read for a single unsigned integer (1 byte) that represents the length of the
-    message. Then the message (encoded in JSON) is expected to be proceed.
-    """  # noqa: DOC501
+    """Open a URL in mpv; read a 4-byte length prefix and JSON message from standard input."""  # noqa: DOC501
     input_json = request(message)
     debug = input_json.get('debug', debug)
     single: bool = input_json.get('single', True)
