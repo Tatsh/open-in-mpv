@@ -14,7 +14,7 @@
       "*": true
     },
     "enableGlobDot": true,
-    "files": ["*"],
+    "files": ["**"],
     "ignorePaths": [
       "*.1",
       "*.har",
@@ -36,12 +36,12 @@
   },
   "description": "Browser side of the extension to open any link or page URL in mpv via the browser context menu.",
   "devDependencies": {
-    "@eslint/compat": "^2.0.3",
+    "@eslint/compat": "^2.0.4",
     "@eslint/js": "^10.0.1",
     "@prettier/plugin-xml": "^3.4.2",
-    "@types/chrome": "^0.1.38",
-    "cspell": "^9.7.0",
-    "eslint": "^10.1.0",
+    "@types/chrome": "^0.1.39",
+    "cspell": "^10.0.0",
+    "eslint": "^10.2.0",
     "eslint-config": "^0.3.0",
     "globals": "^17.4.0",
     "markdownlint-cli2": "^0.22.0",
@@ -83,21 +83,9 @@
     "jsonRecursiveSort": true,
     "overrides": [
       {
-        "files": ["package.json"],
+        "files": ["*.json.dist", "package.json"],
         "options": {
           "parser": "json"
-        }
-      },
-      {
-        "files": ["*.json.dist"],
-        "options": {
-          "parser": "json"
-        }
-      },
-      {
-        "files": ["*.md", "*.mdc"],
-        "options": {
-          "parser": "markdown"
         }
       }
     ],
@@ -116,14 +104,14 @@
     "url": "git@github.com:Tatsh/open-in-mpv.git"
   },
   "scripts": {
-    "check-formatting": "prettier -c . && uv run yapf -prd . && markdownlint-cli2 --config package.json --configPointer /markdownlint-cli2",
-    "check-spelling": "cspell --no-progress './**/*'  './**/.*'",
-    "dict:update": "rm -f .vscode/dictionary.txt && cspell --no-progress './**/*' './**/.*' 2>&1 | grep -oP '(?<=Unknown word \\()\\S+(?=\\))' | python3 -c \"import sys; print('\\n'.join(sorted(set(l.strip().lower() for l in sys.stdin if l.strip()))))\" > .vscode/dictionary.txt",
-    "format": "prettier -w . && uv run yapf -ri . && markdownlint-cli2 --config package.json --configPointer /markdownlint-cli2 --fix",
-    "gen-docs": "uv run sphinx-build -T -E -b html -d docs/_build/doctrees -D language=en docs docs/_build/html",
-    "gen-manpage": "uv run sphinx-build -T -E -b man -d docs/_build/doctrees -D language=en docs man",
+    "check-formatting": "prettier --check . && uv run yapf --diff --parallel --recursive . && markdownlint-cli2 --config package.json --configPointer /markdownlint-cli2",
+    "check-spelling": "cspell --no-progress",
+    "dict:update": "rm -f .vscode/dictionary.txt && cspell lint --no-progress --no-summary --unique --words-only | tr '[:upper:]' '[:lower:]' | sort -u > .vscode/dictionary.txt",
+    "format": "prettier --write . && uv run yapf --in-place --parallel --recursive . && markdownlint-cli2 --config package.json --configPointer /markdownlint-cli2 --fix",
+    "gen-docs": "uv run sphinx-build --fresh-env --fail-on-warning --builder html --doctree-dir docs/_build/doctrees --define language=en docs docs/_build/html",
+    "gen-manpage": "uv run sphinx-build --fresh-env --fail-on-warning --builder man --doctree-dir docs/_build/doctrees --define language=en docs man",
     "mypy": "uv run mypy",
-    "qa": "yarn eslint && yarn mypy . && yarn ruff . && yarn check-spelling && yarn check-formatting",
+    "qa": "yarn eslint && yarn mypy . && yarn pyright && uv run ty check && yarn ruff . && yarn check-spelling && yarn check-formatting",
     "regen": "uv run wiswa",
     "ruff": "uv run ruff check",
     "ruff:fix": "uv run ruff check --fix",

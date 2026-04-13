@@ -1,28 +1,27 @@
 local utils = import 'utils.libjsonnet';
 
 {
+  uses_user_defaults: true,
   description: 'Host-side of the extension to open any link or page URL in mpv via the browser context menu.',
   keywords: ['audio', 'browser extension', 'multimedia', 'mpv', 'video'],
   project_name: 'open-in-mpv',
   version: '0.1.3',
   want_main: true,
-  copilot+: {
-    intro: 'open-in-mpv is a browser extension that allows users to open links or the current page in mpv via the context menu.',
-  },
+  want_flatpak: true,
+  publishing+: { flathub: 'sh.tat.open-in-mpv' },
   security_policy_supported_versions: { '0.1.x': ':white_check_mark:' },
   package_json+: {
     devDependencies+: {
       '@eslint/compat': utils.latestNpmPackageVersionCaret('@eslint/compat'),
       '@eslint/js': utils.latestNpmPackageVersionCaret('@eslint/js'),
       '@types/chrome': utils.latestNpmPackageVersionCaret('@types/chrome'),
-      cspell: utils.latestNpmPackageVersionCaret('cspell'),
       eslint: utils.latestNpmPackageVersionCaret('eslint'),
       'eslint-config': utils.latestNpmPackageVersionCaret('eslint-config'),
       globals: utils.latestNpmPackageVersionCaret('globals'),
     },
     description: 'Browser side of the extension to open any link or page URL in mpv via the browser context menu.',
     scripts+: {
-      qa: 'yarn eslint && yarn mypy . && yarn ruff . && yarn check-spelling && yarn check-formatting',
+      qa: 'yarn eslint &&' + super.qa,
     },
   },
   prettierignore+: [
@@ -57,4 +56,5 @@ local utils = import 'utils.libjsonnet';
     - The lack of a complete uninstaller.
   |||,
   force_eslint: true,
+  snapcraft+: { summary: 'Open any link or page URL in mpv via the browser context menu.' },
 }

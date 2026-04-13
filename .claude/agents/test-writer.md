@@ -5,8 +5,8 @@ Generates tests following the project's established patterns and conventions.
 ## Role
 
 You write comprehensive pytest test suites for open-in-mpv. Follow all conventions in
-`.github/instructions/python-tests.instructions.md` and
-`.github/instructions/python.instructions.md`.
+`.claude/rules/python-tests.md` and
+`.claude/rules/python.md`.
 
 ## Test Conventions
 
@@ -53,7 +53,7 @@ def test_my_func(input_val: str, expected: int) -> None:
 Test both success and failure paths. Use `pytest.raises` for exceptions:
 
 ```python
-def test_my_func_raises_on_empty(self) -> None:
+def test_my_func_raises_on_empty() -> None:
     with pytest.raises(ValueError, match='empty'):
         my_func('')
 ```

@@ -32,7 +32,7 @@ jobs:
           chmod +x pkg/x86_64/payload/usr/local/bin/*
           cat > pkg/postinstall <<'EOF'
           #!/bin/bash
-          # Post-installation script for open-in-mpv
+          # Post-installation script for open-in-mpv.
           /usr/local/bin/open-in-mpv-install --debug --exec-path /usr/local/bin/open-in-mpv --system --force || true
           if ! command -v mpv &> /dev/null; then
               echo "Warning: mpv is not installed. Please install it with 'brew install mpv', 'port install mpv +network', or from https://mpv.io/"
@@ -42,27 +42,27 @@ jobs:
           fi
           exit 0
           EOF
-          # Copy postinstall script to both architecture directories
+          # Copy the postinstall script to both architecture directories.
           cp pkg/postinstall pkg/arm64/scripts/postinstall
           cp pkg/postinstall pkg/x86_64/scripts/postinstall
-          # Make scripts executable
+          # Make scripts executable.
           chmod +x pkg/arm64/scripts/postinstall
           chmod +x pkg/x86_64/scripts/postinstall
           echo "PKG_VERSION=${version}" >> $GITHUB_ENV
       - name: 'Build pkg installers'
         run: |
-          # Function to create distribution XML and build pkg
+          # Function to create distribution XML and build the pkg.
           build_pkg() {
             local arch=$1
             local component_pkg="open-in-mpv-${arch}-component.pkg"
-            # Build component package
+            # Build the component package.
             pkgbuild --root "pkg/${arch}/payload" \
               --scripts "pkg/${arch}/scripts" \
               --identifier sh.tat.open-in-mpv \
               --version "${PKG_VERSION}" \
               --install-location / \
               "pkg/${component_pkg}"
-            # Create distribution XML
+            # Create the distribution XML.
             cat > "pkg/${arch}-distribution.xml" <<EOF
           <?xml version="1.0" encoding="utf-8"?>
           <installer-gui-script minSpecVersion="1">
@@ -83,13 +83,13 @@ jobs:
             <pkg-ref id="sh.tat.open-in-mpv" version="${PKG_VERSION}" onConclusion="none">${component_pkg}</pkg-ref>
           </installer-gui-script>
           EOF
-            # Build product archive
+            # Build the product archive.
             productbuild --distribution "pkg/${arch}-distribution.xml" \
               --package-path pkg \
               --version "${PKG_VERSION}" \
               "open-in-mpv-${PKG_VERSION}-${arch}.pkg"
           }
-          # Build both architectures
+          # Build both architectures.
           build_pkg arm64
           build_pkg x86_64
       - name: 'Upload pkg artifacts'

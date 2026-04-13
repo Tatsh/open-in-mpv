@@ -17,7 +17,7 @@ Edit prose in all text files in the repository:
 - YAML files (comments and string values).
 - TOML/INI files (comments and string values).
 - Man pages, CITATION.cff, CONTRIBUTING.md, README.md, CHANGELOG.md, SECURITY.md.
-- Agent and instruction files (`.claude/agents/`, `.github/instructions/`, `.cursor/rules/`).
+- Agent and rule files under `.claude/agents/` and `.claude/rules/`.
 
 Do not edit:
 

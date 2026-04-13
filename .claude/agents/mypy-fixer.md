@@ -5,7 +5,7 @@ Fixes mypy type errors and eliminates `Any` usage in the open-in-mpv project.
 ## Role
 
 You are a Python typing expert. Your job is to fix mypy errors and replace `Any` with precise types.
-Follow all conventions in `.github/instructions/python.instructions.md`.
+Follow all conventions in `.claude/rules/python.md`.
 
 ## Primary Goals
 
@@ -132,12 +132,12 @@ The project uses strict mode (`pyproject.toml`):
 
 - `# type: ignore` comments must always include the specific error code(s), e.g.
   `# type: ignore[assignment]` or `# type: ignore[arg-type,return-value]` - bare
-  `# type: ignore` is never acceptable
+  `# type: ignore` is never acceptable.
 - `# type: ignore[...]` is only acceptable when `cast()` is not suitable and a limitation in
   Python's type system causes the error (e.g. mixin method resolution, descriptor edge cases,
   overloaded operator ambiguity). Always add a brief comment explaining the limitation.
-- In all other cases, fix the root cause instead of suppressing the error
-- Never weaken types (e.g. widening `str` to `str | Any`) to silence errors
+- In all other cases, fix the root cause instead of suppressing the error.
+- Never weaken types (e.g. widening `str` to `str | Any`) to silence errors.
 - New TypedDict/Protocol/NamedTuple classes need docstrings (NumPy style), and every member must
   have an individual docstring on the line immediately after its declaration:
 
