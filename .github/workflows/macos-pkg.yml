@@ -109,7 +109,7 @@ jobs:
           subject-path: 'open-in-mpv-*-x86_64.pkg'
       - if: github.ref_type == 'tag'
         name: 'Upload pkg to release'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           fail_on_unmatched_files: true
           files: |
