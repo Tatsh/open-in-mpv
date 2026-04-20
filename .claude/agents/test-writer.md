@@ -53,7 +53,7 @@ def test_my_func(input_val: str, expected: int) -> None:
 Test both success and failure paths. Use `pytest.raises` for exceptions:
 
 ```python
-def test_my_func_raises_on_empty() -> None:
+def test_my_func_raises_on_empty(self) -> None:
     with pytest.raises(ValueError, match='empty'):
         my_func('')
 ```

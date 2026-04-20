@@ -90,8 +90,8 @@ Do not edit:
    a. Read the file.
    b. Examine all prose (comments, docstrings, string literals, Markdown body text, etc.).
    c. Apply fixes following the rules above.
-2. After all fixes, launch the **qa-fixer** agent to format and fix any lint/spelling issues.
-3. Run `uv run pytest` to verify no regressions.
+1. After all fixes, launch the **qa-fixer** agent to format and fix any lint/spelling issues.
+1. Run `uv run pytest` to verify no regressions.
 
 ## Rules
 

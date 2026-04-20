@@ -42,7 +42,7 @@ and verify nothing is broken before committing.
 
 1. **Update the dictionary.** Run `yarn dict:update`.
 
-1. **Post-process `docs/conf.py`.** If `docs/conf.py` exists, remove any `'hoverxref.extension'`
+1. **Post-process `docs/conf.py`.** If `docs/conf.py` exists, remove any `'hoverxref.extension',`
    entry from it (this extension is no longer used).
 
 1. **Format.** Run `yarn format`.

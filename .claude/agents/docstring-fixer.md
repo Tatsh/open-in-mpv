@@ -17,8 +17,8 @@ Only items listed in `__all__` and their public members:
 - Module-level constants in `__all__` (with `:meta hide-value:` at the end).
 - Module docstrings (first line of each `.py` file).
 - `self.attribute` assignments in `__init__` of classes in `__all__`. This includes nested
-  assignments within logic blocks (only the first assignment should be given a docstring;
-  subsequent ones are ignored).
+  assignments within logic blocks (only the first assignment be given a docstring, subsequent
+  ones are ignored).
 
 ## What does NOT get docstrings
 
