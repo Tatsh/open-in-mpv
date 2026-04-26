@@ -6,6 +6,7 @@
 *.libsonnet
 *.lock
 *.log
+*.min.js
 *.nsi
 *.pem
 *~

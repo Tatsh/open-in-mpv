@@ -18,14 +18,7 @@ from open_in_mpv import __version__ as VERSION  # noqa: N812
 from typing_extensions import override
 import click
 
-from .constants import (
-    IS_WIN,
-    LOG_PATH,
-    MACPORTS_BIN_PATH,
-    MPV_LOG_PATH,
-    MPV_SOCKET,
-    _LOG_DIR_PATH,
-)
+from .constants import IS_WIN, LOG_PATH, MACPORTS_BIN_PATH, MPV_LOG_PATH, MPV_SOCKET, _LOG_DIR_PATH
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Mapping
@@ -64,7 +57,7 @@ def request(buffer: BinaryIO) -> dict[str, Any]:
         'init': 'init' in message,
         'url': message.get('url'),
         'debug': message.get('debug', False),
-        'single': message.get('single', True),
+        'single': message.get('single', True)
     }
 
 
@@ -225,7 +218,7 @@ def main(chrome_url: str, message: BinaryIO, *, debug: bool = False) -> None:  #
         formatters={
             'file': {
                 'format': '%(asctime)s | %(levelname)-8s | %(name)s:%(funcName)s:%(lineno)d - '
-                          '%(message)s',
+                          '%(message)s'
             }
         },
         handlers={
@@ -234,7 +227,7 @@ def main(chrome_url: str, message: BinaryIO, *, debug: bool = False) -> None:  #
                 'class': 'logging.handlers.RotatingFileHandler',
                 'filename': str(_LOG_DIR_PATH / 'main.log'),
                 'formatter': 'file',
-                'maxBytes': 1048576,
+                'maxBytes': 1048576
             }
         },
         loggers={
@@ -243,9 +236,7 @@ def main(chrome_url: str, message: BinaryIO, *, debug: bool = False) -> None:  #
                 'propagate': False
             }
         },
-        root={
-            'handlers': ('console', 'file'),
-        })
+        root={'handlers': ('console', 'file')})
     logger.debug('Arguments: %s', ' '.join(quote(x) for x in sys.argv))
     logger.debug('Decoded message: %s', input_json)
     logger.info('Single instance mode %s.', 'enabled' if single else 'disabled')

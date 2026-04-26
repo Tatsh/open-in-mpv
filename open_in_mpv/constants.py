@@ -45,11 +45,11 @@ COMMON_HOST_DATA = {
 }
 HOST_DATA = COMMON_HOST_DATA | {
     'allowed_origins': ['chrome-extension://jlhcojdohadhkchjpjefbmagpiaedpgc/'],
-    'name': 'sh.tat.open_in_mpv',
+    'name': 'sh.tat.open_in_mpv'
 }
 HOST_DATA_FIREFOX = COMMON_HOST_DATA | {
     'allowed_extensions': ['{43e6f3ef-84a0-55f4-b9dd-d879106a24a9}'],
-    'name': 'sh.tat.open-in-mpv',
+    'name': 'sh.tat.open-in-mpv'
 }
 
 try:
