@@ -66,14 +66,14 @@ jobs:
             esac
           }
           for workflow in "${required_workflows[@]}"; do
-            process_workflow "$workflow" pending
-            rc=$?
+            rc=0
+            process_workflow "$workflow" pending || rc=$?
             [[ $rc -eq 1 ]] && exit 1
             [[ $rc -eq 2 ]] && all_success=false
           done
           for workflow in "${optional_workflows[@]}"; do
-            process_workflow "$workflow" skip
-            rc=$?
+            rc=0
+            process_workflow "$workflow" skip || rc=$?
             [[ $rc -eq 1 ]] && exit 1
             [[ $rc -eq 2 ]] && all_success=false
           done
