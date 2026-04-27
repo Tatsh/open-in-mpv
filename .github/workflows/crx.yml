@@ -1,0 +1,51 @@
+jobs:
+  build-crx:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: 'Checkout repository'
+        uses: 'actions/checkout@v6'
+      - env:
+          CRX_PEM_BASE64: '${{ secrets.CRX_PEM_BASE64 }}'
+        name: 'Decode signing key'
+        run: |
+          umask 077
+          printf '%s' "$CRX_PEM_BASE64" | base64 -d > "$RUNNER_TEMP/open-in-mpv.pem"
+        shell: 'bash'
+      - name: 'Pack CRX'
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          google-chrome \
+            --pack-extension=src \
+            --pack-extension-key="$RUNNER_TEMP/open-in-mpv.pem" \
+            --no-message-box
+          mv src.crx "open-in-mpv-${version}.crx"
+        shell: 'bash'
+      - name: 'Upload CRX artifact'
+        uses: 'actions/upload-artifact@v7'
+        with:
+          if-no-files-found: error
+          name: open-in-mpv-crx
+          path: 'open-in-mpv-*.crx'
+      - name: 'Attest CRX'
+        uses: 'actions/attest-build-provenance@v4'
+        with:
+          subject-path: 'open-in-mpv-*.crx'
+      - name: 'Upload CRX to release'
+        uses: softprops/action-gh-release@v3
+        with:
+          draft: true
+          fail_on_unmatched_files: true
+          files: 'open-in-mpv-*.crx'
+      - if: always()
+        name: 'Remove signing key'
+        run: 'rm -f "$RUNNER_TEMP/open-in-mpv.pem"'
+        shell: 'bash'
+name: 'CRX'
+'on':
+  push:
+    tags:
+      - 'v*.*.*'
+permissions:
+  attestations: 'write'
+  contents: 'write'
+  id-token: 'write'

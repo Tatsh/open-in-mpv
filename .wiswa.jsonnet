@@ -9,6 +9,11 @@ local utils = import 'utils.libjsonnet';
   want_main: true,
   want_flatpak: true,
   publishing+: { flathub: 'sh.tat.open-in-mpv' },
+  github+: {
+    workflows+: {
+      release_gate_workflows+: ['CRX'],
+    },
+  },
   security_policy_supported_versions: { '0.1.x': ':white_check_mark:' },
   package_json+: {
     devDependencies+: {
