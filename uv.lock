@@ -9,7 +9,7 @@ resolution-markers = [
 ]
 
 [options]
-exclude-newer = "2026-04-20T15:13:44.216683122Z"
+exclude-newer = "2026-04-20T16:15:53.928269702Z"
 exclude-newer-span = "P1W"
 
 [[package]]
@@ -1153,7 +1153,7 @@ wheels = [
 
 [[package]]
 name = "open-in-mpv"
-version = "0.2.0"
+version = "0.2.1"
 source = { editable = "." }
 dependencies = [
     { name = "bascom" },
