@@ -14,7 +14,7 @@ ${StrRep}
 
 ; Application information
 !define APP_NAME "open-in-mpv"
-!define APP_VERSION "0.2.1"
+!define APP_VERSION "0.2.0"
 !define APP_PUBLISHER "Tatsh"
 !define APP_URL "https://github.com/${APP_PUBLISHER}/${APP_NAME}"
 !define APP_EXEC "${APP_NAME}.exe"

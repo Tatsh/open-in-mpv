@@ -7,18 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.2.1] - 2026-04-27
-
-### Added
-
-- Packed Chrome extension (`.crx`) is now built and attached to GitHub releases.
-
-### Fixed
-
-- Restored Windows installer (NSIS) and macOS package (pkg) attachments on GitHub releases. Both
-  were absent from v0.2.0 due to a CI regression that left their reusable workflows without a
-  caller.
-
 ## [0.2.0] - 2026-04-27
 
 ### Added
@@ -29,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - macOS installer (pkg file).
 - Post-installation page for browser extension with platform-specific instructions.
 - Post-uninstallation page for browser extension.
+- Packed Chrome extension (`.crx`) is now built and attached to GitHub releases.
 
 ### Changed
 
@@ -45,7 +34,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Logging.
 
-[unreleased]: https://github.com/Tatsh/open-in-mpv/compare/v0.2.1...HEAD
-[0.2.1]: https://github.com/Tatsh/open-in-mpv/compare/v0.2.0...v0.2.1
+[unreleased]: https://github.com/Tatsh/open-in-mpv/compare/v0.2.0...HEAD
 [0.2.0]: https://github.com/Tatsh/open-in-mpv/compare/v0.1.3...v0.2.0
 [0.1.3]: https://github.com/Tatsh/open-in-mpv/compare/v0.1.2...v0.1.3
