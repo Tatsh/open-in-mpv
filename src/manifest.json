@@ -16,7 +16,7 @@
     "page": "options.html"
   },
   "permissions": ["contextMenus", "nativeMessaging", "storage"],
-  "version": "0.2.2",
+  "version": "0.2.3",
   "web_accessible_resources": [
     {
       "matches": ["<all_urls>"],

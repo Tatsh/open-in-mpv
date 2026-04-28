@@ -5,7 +5,7 @@ local utils = import 'utils.libjsonnet';
   description: 'Host-side of the extension to open any link or page URL in mpv via the browser context menu.',
   keywords: ['audio', 'browser extension', 'multimedia', 'mpv', 'video'],
   project_name: 'open-in-mpv',
-  version: '0.2.2',
+  version: '0.2.3',
   want_main: true,
   want_flatpak: true,
   publishing+: { flathub: 'sh.tat.open-in-mpv' },

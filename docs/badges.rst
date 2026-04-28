@@ -16,8 +16,8 @@
       :target: https://github.com/Tatsh/open-in-mpv/blob/master/LICENSE.txt
       :alt: License
 
-   .. image:: https://img.shields.io/github/commits-since/Tatsh/open-in-mpv/v0.2.2/master
-      :target: https://github.com/Tatsh/open-in-mpv/compare/v0.2.2...master
+   .. image:: https://img.shields.io/github/commits-since/Tatsh/open-in-mpv/v0.2.3/master
+      :target: https://github.com/Tatsh/open-in-mpv/compare/v0.2.3...master
       :alt: GitHub commits since latest release (by SemVer including pre-releases)
 
    .. image:: https://github.com/Tatsh/open-in-mpv/actions/workflows/codeql.yml/badge.svg

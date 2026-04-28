@@ -30,5 +30,5 @@ platforms:
 source-code: 'https://github.com/Tatsh/open-in-mpv'
 summary: 'Open any link or page URL in mpv via the browser context menu.'
 title: 'open-in-mpv'
-version: '0.2.2'
+version: '0.2.3'
 website: 'https://tatsh.github.io/open-in-mpv/'
