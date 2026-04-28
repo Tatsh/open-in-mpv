@@ -111,6 +111,7 @@ jobs:
         name: 'Upload pkg to release'
         uses: softprops/action-gh-release@v3
         with:
+          draft: true
           fail_on_unmatched_files: true
           files: |
             open-in-mpv-*.pkg
