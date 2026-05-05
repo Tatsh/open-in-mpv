@@ -14,7 +14,7 @@ local utils = import 'utils.libjsonnet';
       release_gate_workflows+: ['CRX'],
     },
   },
-  security_policy_supported_versions: { '0.1.x': ':white_check_mark:' },
+  security_policy_supported_versions: { '0.2.x': ':white_check_mark:' },
   package_json+: {
     devDependencies+: {
       '@eslint/compat': utils.latestNpmPackageVersionCaret('@eslint/compat'),
