@@ -46,7 +46,7 @@
     "@prettier/plugin-xml": "^3.4.2",
     "@types/chrome": "^0.1.42",
     "cspell": "^10.0.0",
-    "eslint": "^10.3.0",
+    "eslint": "^10.4.0",
     "eslint-config": "^0.3.0",
     "globals": "^17.6.0",
     "markdownlint-cli2": "^0.22.1",
