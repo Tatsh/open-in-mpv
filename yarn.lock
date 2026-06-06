@@ -667,13 +667,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/plugin-kit@npm:^0.7.1":
-  version: 0.7.1
-  resolution: "@eslint/plugin-kit@npm:0.7.1"
+"@eslint/plugin-kit@npm:^0.7.2":
+  version: 0.7.2
+  resolution: "@eslint/plugin-kit@npm:0.7.2"
   dependencies:
     "@eslint/core": "npm:^1.2.1"
     levn: "npm:^0.4.1"
-  checksum: 10c0/335b0c1c46fd906cb50bd5ce442b9cee18dc44342ce35c718ba4a63d1aa51d2797f16a517b2f4fe371ccd777b6862fafb2dc8195e00e69197ef4cb17ab32c01b
+  checksum: 10c0/aafba08077bcd6d7dde6c2e21db18086046a88f914f29971a84cac9ad2d48952ded1b293e665e523805297eff756522dafa16f0062195e2c7143dcd1d47d11ed
   languageName: node
   linkType: hard
 
@@ -1861,16 +1861,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^10.4.0":
-  version: 10.4.0
-  resolution: "eslint@npm:10.4.0"
+"eslint@npm:^10.4.1":
+  version: 10.4.1
+  resolution: "eslint@npm:10.4.1"
   dependencies:
     "@eslint-community/eslint-utils": "npm:^4.8.0"
     "@eslint-community/regexpp": "npm:^4.12.2"
     "@eslint/config-array": "npm:^0.23.5"
     "@eslint/config-helpers": "npm:^0.6.0"
     "@eslint/core": "npm:^1.2.1"
-    "@eslint/plugin-kit": "npm:^0.7.1"
+    "@eslint/plugin-kit": "npm:^0.7.2"
     "@humanfs/node": "npm:^0.16.6"
     "@humanwhocodes/module-importer": "npm:^1.0.1"
     "@humanwhocodes/retry": "npm:^0.4.2"
@@ -1902,7 +1902,7 @@ __metadata:
       optional: true
   bin:
     eslint: bin/eslint.js
-  checksum: 10c0/6bf644dc08fa5a6b23157d23a4a4638d45823d03a67da1daac8dc1085b03934fa98013efd2eac2cd6ec90fe88d36b336bdf38d5f000325f22d823a15f2031426
+  checksum: 10c0/c5e6bb5158fb0d62f090c8e2671de5c98283bbb37a58b6d871bada63af3018e683483c96c1a92272fedc8f4e5279a273a0451acf0da67c487406639daa05aedb
   languageName: node
   linkType: hard
 
@@ -3726,7 +3726,7 @@ __metadata:
     "@prettier/plugin-xml": "npm:^3.4.2"
     "@types/chrome": "npm:^0.1.42"
     cspell: "npm:^10.0.0"
-    eslint: "npm:^10.4.0"
+    eslint: "npm:^10.4.1"
     eslint-config: "npm:^0.3.0"
     globals: "npm:^17.6.0"
     markdownlint-cli2: "npm:^0.22.1"
@@ -3734,7 +3734,7 @@ __metadata:
     prettier-plugin-ini: "npm:^1.3.0"
     prettier-plugin-sort-json: "npm:^4.2.0"
     prettier-plugin-toml: "npm:^2.0.6"
-    pyright: "npm:^1.1.409"
+    pyright: "npm:^1.1.410"
   languageName: unknown
   linkType: soft
 
@@ -3966,9 +3966,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pyright@npm:^1.1.409":
-  version: 1.1.409
-  resolution: "pyright@npm:1.1.409"
+"pyright@npm:^1.1.410":
+  version: 1.1.410
+  resolution: "pyright@npm:1.1.410"
   dependencies:
     fsevents: "npm:~2.3.3"
   dependenciesMeta:
@@ -3977,7 +3977,7 @@ __metadata:
   bin:
     pyright: index.js
     pyright-langserver: langserver.index.js
-  checksum: 10c0/c3d616f85220e837a3b67e1d596a9959510a917f864a08bba82db8bd4d988a4ce67f74dc6ede5a61afd8ad360476ca333a6e8f34ba0ee3cc084e2f2676d27fc8
+  checksum: 10c0/32c8add8d5a32c2b3e8dfef491a13b441e6e84d9d5533ae6fe0568af31aacd6e1e819c4eb03de2d5bb24d81ede7555a6153bdf6dd85d9071e5afd9d54499f653
   languageName: node
   linkType: hard
 
