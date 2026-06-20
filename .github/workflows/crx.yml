@@ -3,7 +3,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     steps:
       - name: 'Checkout repository'
-        uses: 'actions/checkout@v6'
+        uses: 'actions/checkout@v7'
       - env:
           CRX_PEM_BASE64: '${{ secrets.CRX_PEM_BASE64 }}'
         name: 'Decode signing key'
