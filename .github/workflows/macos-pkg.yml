@@ -3,7 +3,7 @@ jobs:
     runs-on: 'macos-latest'
     steps:
       - name: 'Checkout repository'
-        uses: 'actions/checkout@v6'
+        uses: 'actions/checkout@v7'
       - name: 'Download PyInstaller artifact (ARM64)'
         uses: 'actions/download-artifact@v8'
         with:

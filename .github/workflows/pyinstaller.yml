@@ -5,7 +5,7 @@ jobs:
       APPLE_SIGNING_CERT: ${{ secrets.APPLE_SIGNING_CERTIFICATE }}
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: 'actions/checkout@v6.0.2'
+      - uses: 'actions/checkout@v7'
       - name: 'Install yq'
         run: 'pipx install yq'
       - name: 'Install uv'
