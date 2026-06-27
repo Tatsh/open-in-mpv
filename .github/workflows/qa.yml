@@ -4,7 +4,7 @@ jobs:
     steps:
       - uses: 'actions/checkout@v7'
       - name: 'Yarn cache'
-        uses: 'actions/cache@v5.0.5'
+        uses: 'actions/cache@v6.1.0'
         with:
           key: "${{ runner.os }}-yarn-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}"
           path: '~/.yarn/berry'
@@ -20,7 +20,7 @@ jobs:
       - name: 'Install uv'
         uses: 'astral-sh/setup-uv@v8.1.0'
       - name: 'Set up Python'
-        uses: 'actions/setup-python@v6.2.0'
+        uses: 'actions/setup-python@v6.3.0'
         with:
           python-version: '3.10'
       - name: 'Install dependencies (uv)'
@@ -34,7 +34,7 @@ jobs:
       - name: 'Install uv'
         uses: 'astral-sh/setup-uv@v8.1.0'
       - name: 'Set up Python'
-        uses: 'actions/setup-python@v6.2.0'
+        uses: 'actions/setup-python@v6.3.0'
         with:
           python-version: '3.14'
       - name: 'Install dependencies (uv)'
@@ -48,13 +48,13 @@ jobs:
       - name: 'Install uv'
         uses: 'astral-sh/setup-uv@v8.1.0'
       - name: 'Set up Python'
-        uses: 'actions/setup-python@v6.2.0'
+        uses: 'actions/setup-python@v6.3.0'
         with:
           python-version: '3.14'
       - name: 'Install dependencies (uv)'
         run: 'uv sync --group dev --group tests --all-extras'
       - name: 'Yarn cache'
-        uses: 'actions/cache@v5.0.5'
+        uses: 'actions/cache@v6.1.0'
         with:
           key: "${{ runner.os }}-yarn-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}"
           path: '~/.yarn/berry'
@@ -76,7 +76,7 @@ jobs:
       - name: 'Install uv'
         uses: 'astral-sh/setup-uv@v8.1.0'
       - name: 'Set up Python'
-        uses: 'actions/setup-python@v6.2.0'
+        uses: 'actions/setup-python@v6.3.0'
         with:
           python-version: '3.14'
       - name: 'Install dependencies (uv)'
