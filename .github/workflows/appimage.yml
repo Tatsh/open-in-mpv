@@ -8,7 +8,7 @@ jobs:
       - name: 'Install uv'
         uses: 'astral-sh/setup-uv@v8.1.0'
       - name: 'Set up Python'
-        uses: 'actions/setup-python@v6.2.0'
+        uses: 'actions/setup-python@v6.3.0'
         with:
           python-version: '3.13'
       - name: 'Install dependencies (uv)'
@@ -114,11 +114,11 @@ jobs:
           output-file: 'sbom.spdx.json'
           upload-artifact: false
       - name: 'Attest'
-        uses: 'actions/attest@v4.1.0'
+        uses: 'actions/attest@v4.1.1'
         with:
           subject-path: 'dist/*.AppImage'
       - name: 'Attest SBOM'
-        uses: 'actions/attest@v4.1.0'
+        uses: 'actions/attest@v4.1.1'
         with:
           subject-path: 'dist/*.AppImage'
           sbom-path: 'sbom.spdx.json'
