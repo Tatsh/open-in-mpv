@@ -65,7 +65,7 @@ def main(exec_path: str | None = None,
          user: bool = False,
          force: bool = False,
          debug: bool = False) -> None:
-    """Install open-in-mpv Chrome extension files."""  # noqa: DOC501
+    """Install open-in-mpv Chrome extension files."""  # ruff:ignore[docstring-missing-exception]
     setup_logging(debug=debug,
                   loggers={'open_in_mpv': {
                       'handlers': ('console',),

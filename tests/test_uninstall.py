@@ -12,8 +12,10 @@ if TYPE_CHECKING:
 
 def test_uninstall_linux_system_dirs_permission_error(mocker: MockerFixture,
                                                       runner: CliRunner) -> None:
-    mocker.patch.object(open_in_mpv.uninstall, 'IS_LINUX', True)  # noqa: FBT003
-    mocker.patch.object(open_in_mpv.uninstall, 'IS_MAC', False)  # noqa: FBT003
+    mocker.patch.object(open_in_mpv.uninstall, 'IS_LINUX',
+                        True)  # ruff:ignore[boolean-positional-value-in-call]
+    mocker.patch.object(open_in_mpv.uninstall, 'IS_MAC',
+                        False)  # ruff:ignore[boolean-positional-value-in-call]
     mock_remove_from_all = mocker.patch('open_in_mpv.uninstall.remove_from_all')
     mocker.patch('open_in_mpv.uninstall.SYSTEM_HOSTS_DIRS', ['/etc/fake'])
     mocker.patch('open_in_mpv.uninstall.USER_HOSTS_DIRS', ['/home/user/fake'])
@@ -28,8 +30,10 @@ def test_uninstall_linux_system_dirs_permission_error(mocker: MockerFixture,
 
 def test_uninstall_mac_system_dirs_permission_error(mocker: MockerFixture,
                                                     runner: CliRunner) -> None:
-    mocker.patch.object(open_in_mpv.uninstall, 'IS_LINUX', False)  # noqa: FBT003
-    mocker.patch.object(open_in_mpv.uninstall, 'IS_MAC', True)  # noqa: FBT003
+    mocker.patch.object(open_in_mpv.uninstall, 'IS_LINUX',
+                        False)  # ruff:ignore[boolean-positional-value-in-call]
+    mocker.patch.object(open_in_mpv.uninstall, 'IS_MAC',
+                        True)  # ruff:ignore[boolean-positional-value-in-call]
     mock_remove_from_all = mocker.patch('open_in_mpv.uninstall.remove_from_all')
     mocker.patch('open_in_mpv.uninstall.MAC_SYSTEM_HOSTS_DIRS', ['/Library/fake'])
     mocker.patch('open_in_mpv.uninstall.MAC_USER_HOSTS_DIRS', ['/Users/user/fake'])
@@ -41,8 +45,10 @@ def test_uninstall_mac_system_dirs_permission_error(mocker: MockerFixture,
 
 
 def test_uninstall_mac(mocker: MockerFixture, runner: CliRunner) -> None:
-    mocker.patch.object(open_in_mpv.uninstall, 'IS_LINUX', False)  # noqa: FBT003
-    mocker.patch.object(open_in_mpv.uninstall, 'IS_MAC', True)  # noqa: FBT003
+    mocker.patch.object(open_in_mpv.uninstall, 'IS_LINUX',
+                        False)  # ruff:ignore[boolean-positional-value-in-call]
+    mocker.patch.object(open_in_mpv.uninstall, 'IS_MAC',
+                        True)  # ruff:ignore[boolean-positional-value-in-call]
     mocker.patch('open_in_mpv.uninstall.MAC_USER_HOSTS_DIRS', ['/Library/fake'])
     mocker.patch('open_in_mpv.uninstall.Path')
     result = runner.invoke(main, ['--debug'])
@@ -50,8 +56,10 @@ def test_uninstall_mac(mocker: MockerFixture, runner: CliRunner) -> None:
 
 
 def test_uninstall_no_os(mocker: MockerFixture, runner: CliRunner) -> None:
-    mocker.patch.object(open_in_mpv.uninstall, 'IS_LINUX', False)  # noqa: FBT003
-    mocker.patch.object(open_in_mpv.uninstall, 'IS_MAC', False)  # noqa: FBT003
+    mocker.patch.object(open_in_mpv.uninstall, 'IS_LINUX',
+                        False)  # ruff:ignore[boolean-positional-value-in-call]
+    mocker.patch.object(open_in_mpv.uninstall, 'IS_MAC',
+                        False)  # ruff:ignore[boolean-positional-value-in-call]
     mock_remove_from_all = mocker.patch('open_in_mpv.uninstall.remove_from_all')
 
     result = runner.invoke(main, ['--debug'])

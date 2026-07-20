@@ -192,7 +192,7 @@ def test_main_single_instance_connection_refused(runner: CliRunner, mocker: Mock
     assert run.call_count == 1
     assert mock_socket.return_value.connect.call_count == 1
     assert mock_socket.return_value.send.call_count == 1
-    assert mock_os._exit.call_count == 2  # noqa: SLF001
+    assert mock_os._exit.call_count == 2  # ruff:ignore[private-member-access]
 
 
 def test_main_single_instance_macports(runner: CliRunner, mocker: MockerFixture) -> None:
@@ -243,7 +243,7 @@ def test_main_spawn_exit_second_parent(mocker: MockerFixture) -> None:
     mock_callable = mocker.Mock()
     with pytest.raises(SystemExit):
         spawn(mock_callable)
-    assert mock_os._exit.call_count == 0  # noqa: SLF001
+    assert mock_os._exit.call_count == 0  # ruff:ignore[private-member-access]
 
 
 def test_main_debug_mode(runner: CliRunner, mocker: MockerFixture) -> None:
