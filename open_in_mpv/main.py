@@ -14,7 +14,7 @@ import subprocess as sp
 import sys
 
 from bascom import setup_logging
-from open_in_mpv import __version__ as VERSION  # noqa: N812
+from open_in_mpv import __version__ as VERSION  # ruff:ignore[lowercase-imported-as-non-lowercase]
 from typing_extensions import override
 import click
 
@@ -208,8 +208,11 @@ class CustomHelp(click.Command):
 @click.argument('message', type=click.File('rb'), default=sys.stdin.buffer)
 @click.option('-d', '--debug', help='Enable debug logging.', is_flag=True)
 @click.version_option(VERSION, '-V', '--version', message='%(version)s')
-def main(chrome_url: str, message: BinaryIO, *, debug: bool = False) -> None:  # noqa: ARG001
-    """Open a URL in mpv; read a 4-byte length prefix and JSON message from standard input."""  # noqa: DOC501
+def main(chrome_url: str,
+         message: BinaryIO,
+         *,
+         debug: bool = False) -> None:  # ruff:ignore[unused-function-argument]
+    """Open a URL in mpv; read a 4-byte length prefix and JSON message from standard input."""  # ruff:ignore[docstring-missing-exception]
     input_json = request(message)
     debug = input_json.get('debug', debug)
     single: bool = input_json.get('single', True)

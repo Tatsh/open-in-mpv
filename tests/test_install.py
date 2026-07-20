@@ -34,8 +34,10 @@ def test_install_open_in_mpv_not_found(runner: CliRunner, mocker: MockerFixture)
 
 
 def test_install_system_non_root_linux(runner: CliRunner, mocker: MockerFixture) -> None:
-    mocker.patch('open_in_mpv.install.IS_LINUX', True)  # noqa: FBT003
-    mocker.patch.object(open_in_mpv.install, 'IS_MAC', False)  # noqa: FBT003
+    mocker.patch('open_in_mpv.install.IS_LINUX',
+                 True)  # ruff:ignore[boolean-positional-value-in-call]
+    mocker.patch.object(open_in_mpv.install, 'IS_MAC',
+                        False)  # ruff:ignore[boolean-positional-value-in-call]
     mocker.patch('os.geteuid', return_value=1000)
     result = runner.invoke(main, ['--system'])
     assert result.exit_code != 0
@@ -44,39 +46,49 @@ def test_install_system_non_root_linux(runner: CliRunner, mocker: MockerFixture)
 
 def test_install_system_linux(runner: CliRunner, mocker: MockerFixture,
                               mock_dependencies: None) -> None:
-    mocker.patch.object(open_in_mpv.install, 'IS_LINUX', True)  # noqa: FBT003
-    mocker.patch.object(open_in_mpv.install, 'IS_MAC', False)  # noqa: FBT003
+    mocker.patch.object(open_in_mpv.install, 'IS_LINUX',
+                        True)  # ruff:ignore[boolean-positional-value-in-call]
+    mocker.patch.object(open_in_mpv.install, 'IS_MAC',
+                        False)  # ruff:ignore[boolean-positional-value-in-call]
     result = runner.invoke(main, ['--system'])
     assert result.exit_code == 0
 
 
 def test_install_user_linux(runner: CliRunner, mocker: MockerFixture,
                             mock_dependencies: None) -> None:
-    mocker.patch.object(open_in_mpv.install, 'IS_LINUX', True)  # noqa: FBT003
-    mocker.patch.object(open_in_mpv.install, 'IS_MAC', False)  # noqa: FBT003
+    mocker.patch.object(open_in_mpv.install, 'IS_LINUX',
+                        True)  # ruff:ignore[boolean-positional-value-in-call]
+    mocker.patch.object(open_in_mpv.install, 'IS_MAC',
+                        False)  # ruff:ignore[boolean-positional-value-in-call]
     result = runner.invoke(main, ['--user'])
     assert result.exit_code == 0
 
 
 def test_install_mac_system(runner: CliRunner, mocker: MockerFixture,
                             mock_dependencies: None) -> None:
-    mocker.patch.object(open_in_mpv.install, 'IS_LINUX', False)  # noqa: FBT003
-    mocker.patch.object(open_in_mpv.install, 'IS_MAC', True)  # noqa: FBT003
+    mocker.patch.object(open_in_mpv.install, 'IS_LINUX',
+                        False)  # ruff:ignore[boolean-positional-value-in-call]
+    mocker.patch.object(open_in_mpv.install, 'IS_MAC',
+                        True)  # ruff:ignore[boolean-positional-value-in-call]
     result = runner.invoke(main, ['--system'])
     assert result.exit_code == 0
 
 
 def test_install_mac_user(runner: CliRunner, mocker: MockerFixture,
                           mock_dependencies: None) -> None:
-    mocker.patch.object(open_in_mpv.install, 'IS_LINUX', False)  # noqa: FBT003
-    mocker.patch.object(open_in_mpv.install, 'IS_MAC', True)  # noqa: FBT003
+    mocker.patch.object(open_in_mpv.install, 'IS_LINUX',
+                        False)  # ruff:ignore[boolean-positional-value-in-call]
+    mocker.patch.object(open_in_mpv.install, 'IS_MAC',
+                        True)  # ruff:ignore[boolean-positional-value-in-call]
     result = runner.invoke(main, ['--user'])
     assert result.exit_code == 0
 
 
 def test_install_force_user_linux(runner: CliRunner, mocker: MockerFixture) -> None:
-    mocker.patch.object(open_in_mpv.install, 'IS_LINUX', True)  # noqa: FBT003
-    mocker.patch.object(open_in_mpv.install, 'IS_MAC', False)  # noqa: FBT003
+    mocker.patch.object(open_in_mpv.install, 'IS_LINUX',
+                        True)  # ruff:ignore[boolean-positional-value-in-call]
+    mocker.patch.object(open_in_mpv.install, 'IS_MAC',
+                        False)  # ruff:ignore[boolean-positional-value-in-call]
     mocker.patch('open_in_mpv.install.json.dump')
     mocker.patch('open_in_mpv.install.which', return_value='/usr/bin/open-in-mpv')
     mock_path = mocker.patch('open_in_mpv.install.Path')
@@ -86,8 +98,10 @@ def test_install_force_user_linux(runner: CliRunner, mocker: MockerFixture) -> N
 
 
 def test_install_user_linux_2(runner: CliRunner, mocker: MockerFixture) -> None:
-    mocker.patch.object(open_in_mpv.install, 'IS_LINUX', True)  # noqa: FBT003
-    mocker.patch.object(open_in_mpv.install, 'IS_MAC', False)  # noqa: FBT003
+    mocker.patch.object(open_in_mpv.install, 'IS_LINUX',
+                        True)  # ruff:ignore[boolean-positional-value-in-call]
+    mocker.patch.object(open_in_mpv.install, 'IS_MAC',
+                        False)  # ruff:ignore[boolean-positional-value-in-call]
     mocker.patch('open_in_mpv.install.json.dump')
     mocker.patch('open_in_mpv.install.which', return_value='/usr/bin/open-in-mpv')
     mock_path = mocker.patch('open_in_mpv.install.Path')

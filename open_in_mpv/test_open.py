@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 @click.argument('url')
 @click.option('-d', '--debug', help='Enable debug logging.', is_flag=True)
 def main(url: str, *, debug: bool = False) -> None:
-    """Test ``open-in-mpv`` command."""  # noqa: DOC501
+    """Test ``open-in-mpv`` command."""  # ruff:ignore[docstring-missing-exception]
     setup_logging(debug=debug,
                   loggers={'open_in_mpv': {
                       'handlers': ('console',),
