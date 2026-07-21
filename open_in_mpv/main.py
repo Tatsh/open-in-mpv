@@ -208,10 +208,7 @@ class CustomHelp(click.Command):
 @click.argument('message', type=click.File('rb'), default=sys.stdin.buffer)
 @click.option('-d', '--debug', help='Enable debug logging.', is_flag=True)
 @click.version_option(VERSION, '-V', '--version', message='%(version)s')
-def main(chrome_url: str,
-         message: BinaryIO,
-         *,
-         debug: bool = False) -> None:  # ruff:ignore[unused-function-argument]
+def main(chrome_url: str, message: BinaryIO, *, debug: bool = False) -> None:
     """Open a URL in mpv; read a 4-byte length prefix and JSON message from standard input."""  # ruff:ignore[docstring-missing-exception]
     input_json = request(message)
     debug = input_json.get('debug', debug)
