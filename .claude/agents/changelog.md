@@ -1,3 +1,8 @@
+---
+name: changelog
+description: Updates CHANGELOG.md with Keep-a-Changelog entries derived from commits and diffs since the last release. Use before a version bump or when the user asks for changelog work.
+---
+
 # Changelog Agent
 
 Updates `CHANGELOG.md` with entries for changes since the last release.

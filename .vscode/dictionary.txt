@@ -41,6 +41,7 @@ foxundermoon
 functools
 geteuid
 globaltoc
+handoff
 hkcu
 hoverxref
 htmlcov
@@ -74,7 +75,6 @@ mypy
 namedtuples
 norecursedirs
 notarytool
-npmjs
 nsis
 nsisdir
 numpy
@@ -86,6 +86,7 @@ pipx
 pkgbuild
 platformdirs
 plistlib
+preapproved
 proc
 productbuild
 prodvers
@@ -116,6 +117,7 @@ snapcraft
 softprops
 soupsieve
 sphinxcontrib
+statusline
 strerror
 syft
 tatsh
@@ -128,16 +130,21 @@ tostring
 tryfirst
 ubyte
 udvare
+undraft
+undrafted
 unicon
 vendored
 venv
 vers
 virtualenv
+winget
 wiswa
 wiswa's
+worktree
 xcrun
 yapf
 yapfignore
 yarnrc
 ytdl
 ytdlp
+zizmor

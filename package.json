@@ -1,8 +1,8 @@
 {
   "_wiswa": {
-    "commandLine": "wiswa",
-    "lastRun": "2026-04-27T14:45:12Z",
-    "version": "7b1ea54-dirty"
+    "commandLine": "wiswa -d",
+    "lastRun": "2026-08-05T00:24:07Z",
+    "version": "22472cc"
   },
   "contributors": ["Andrew Udvare <audvare@gmail.com>"],
   "cspell": {
@@ -48,8 +48,8 @@
     "cspell": "^10.0.1",
     "eslint": "^10.8.0",
     "eslint-config": "^0.3.0",
-    "globals": "^17.7.0",
-    "markdownlint-cli2": "^0.23.1",
+    "globals": "^17.8.0",
+    "markdownlint-cli2": "^0.23.2",
     "prettier": "^3.9.6",
     "prettier-plugin-ini": "^1.3.0",
     "prettier-plugin-sort-json": "^4.2.0",
@@ -81,7 +81,7 @@
     "showFound": true
   },
   "name": "open-in-mpv",
-  "packageManager": "yarn@4.14.1",
+  "packageManager": "yarn@4.18.0",
   "prettier": {
     "endOfLine": "lf",
     "iniSpaceAroundEquals": true,
@@ -106,7 +106,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:Tatsh/open-in-mpv.git"
+    "url": "git+https://github.com/Tatsh/open-in-mpv.git"
   },
   "scripts": {
     "check-formatting": "prettier --check . && uv run yapf --diff --parallel --recursive . && markdownlint-cli2 --config package.json --configPointer /markdownlint-cli2",
