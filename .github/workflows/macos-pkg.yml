@@ -3,21 +3,23 @@ jobs:
     runs-on: 'macos-latest'
     steps:
       - name: 'Checkout repository'
-        uses: 'actions/checkout@v7'
+        uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
+        with:
+          persist-credentials: false
       - name: 'Download PyInstaller artifact (ARM64)'
-        uses: 'actions/download-artifact@v8'
+        uses: 'actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c'
         with:
           name: open-in-mpv-binaries-mac-arm64
           path: dist/arm64
       - name: 'Download PyInstaller artifact (x86_64)'
-        uses: 'actions/download-artifact@v8'
+        uses: 'actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c'
         with:
           name: open-in-mpv-binaries-mac-x86_64
           path: dist/x86_64
       - name: 'Install yq'
         run: 'pipx install yq'
       - name: 'Install uv'
-        uses: 'astral-sh/setup-uv@v7'
+        uses: 'astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9'
       - name: 'Install dependencies (uv)'
         run: 'uv sync'
       - name: 'Create pkg structure'
@@ -93,28 +95,29 @@ jobs:
           build_pkg arm64
           build_pkg x86_64
       - name: 'Upload pkg artifacts'
-        uses: 'actions/upload-artifact@v7'
+        uses: 'actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a'
         with:
           if-no-files-found: error
           name: open-in-mpv-pkg-installers
           path: |
             open-in-mpv-*.pkg
       - name: 'Attest ARM64 pkg'
-        uses: 'actions/attest-build-provenance@v4'
+        uses: 'actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373'
         with:
           subject-path: 'open-in-mpv-*-arm64.pkg'
       - name: 'Attest x86_64 pkg'
-        uses: 'actions/attest-build-provenance@v4'
+        uses: 'actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373'
         with:
           subject-path: 'open-in-mpv-*-x86_64.pkg'
-      - if: github.ref_type == 'tag'
-        name: 'Upload pkg to release'
-        uses: softprops/action-gh-release@v3
-        with:
-          draft: true
-          fail_on_unmatched_files: true
-          files: |
-            open-in-mpv-*.pkg
+      - env:
+          GH_REPO: '${{ github.repository }}'
+          GH_TOKEN: '${{ github.token }}'
+        if: "github.ref_type == 'tag'"
+        name: 'Create or update draft release'
+        run: |
+          gh release create "$GITHUB_REF_NAME" --draft --notes '' open-in-mpv-*.pkg ||
+            gh release upload "$GITHUB_REF_NAME" open-in-mpv-*.pkg --clobber
+        shell: 'bash'
 name: 'macOS package'
 'on':
   workflow_call:

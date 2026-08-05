@@ -3,7 +3,9 @@ jobs:
     runs-on: 'ubuntu-latest'
     steps:
       - name: 'Checkout repository'
-        uses: 'actions/checkout@v7'
+        uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
+        with:
+          persist-credentials: false
       - env:
           CRX_PEM_BASE64: '${{ secrets.CRX_PEM_BASE64 }}'
         name: 'Decode signing key'
@@ -21,21 +23,23 @@ jobs:
           mv src.crx "open-in-mpv-${version}.crx"
         shell: 'bash'
       - name: 'Upload CRX artifact'
-        uses: 'actions/upload-artifact@v7'
+        uses: 'actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a'
         with:
           if-no-files-found: error
           name: open-in-mpv-crx
           path: 'open-in-mpv-*.crx'
       - name: 'Attest CRX'
-        uses: 'actions/attest-build-provenance@v4'
+        uses: 'actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373'
         with:
           subject-path: 'open-in-mpv-*.crx'
-      - name: 'Upload CRX to release'
-        uses: softprops/action-gh-release@v3
-        with:
-          draft: true
-          fail_on_unmatched_files: true
-          files: 'open-in-mpv-*.crx'
+      - env:
+          GH_REPO: '${{ github.repository }}'
+          GH_TOKEN: '${{ github.token }}'
+        name: 'Create or update draft release'
+        run: |
+          gh release create "$GITHUB_REF_NAME" --draft --notes '' open-in-mpv-*.crx ||
+            gh release upload "$GITHUB_REF_NAME" open-in-mpv-*.crx --clobber
+        shell: 'bash'
       - if: always()
         name: 'Remove signing key'
         run: 'rm -f "$RUNNER_TEMP/open-in-mpv.pem"'
