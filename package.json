@@ -44,7 +44,7 @@
     "@eslint/compat": "^2.1.0",
     "@eslint/js": "^10.0.1",
     "@prettier/plugin-xml": "^3.4.2",
-    "@types/chrome": "^0.2.2",
+    "@types/chrome": "^0.2.5",
     "cspell": "^10.0.1",
     "eslint": "^10.8.0",
     "eslint-config": "^0.3.0",
