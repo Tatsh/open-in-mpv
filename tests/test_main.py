@@ -5,8 +5,9 @@ import json
 import re
 import struct
 
-from open_in_mpv.main import get_callback, get_mpv_path, main, spawn
 import pytest
+
+from open_in_mpv.main import get_callback, get_mpv_path, main, spawn
 
 if TYPE_CHECKING:
     from unittest.mock import MagicMock

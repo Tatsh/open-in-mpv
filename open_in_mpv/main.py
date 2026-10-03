@@ -14,9 +14,10 @@ import subprocess as sp
 import sys
 
 from bascom import setup_logging
-from open_in_mpv import __version__ as VERSION  # ruff:ignore[lowercase-imported-as-non-lowercase]
 from typing_extensions import override
 import click
+
+from open_in_mpv import __version__ as VERSION  # ruff:ignore[lowercase-imported-as-non-lowercase]
 
 from .constants import IS_WIN, LOG_PATH, MACPORTS_BIN_PATH, MPV_LOG_PATH, MPV_SOCKET, _LOG_DIR_PATH
 
