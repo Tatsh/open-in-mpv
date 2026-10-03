@@ -272,14 +272,14 @@ jobs:
       attestations: 'write'
       contents: 'write'
       id-token: 'write'
-    uses: ./.github/workflows/macos-pkg.yml
+    uses: $/.github/workflows/macos-pkg.yml
   call-build-windows-installer:
     needs: build
     permissions:
       attestations: 'write'
       contents: 'write'
       id-token: 'write'
-    uses: ./.github/workflows/windows-installer.yml
+    uses: $/.github/workflows/windows-installer.yml
   release-assets:
     concurrency:
       group: release-assets-${{ github.ref }}
