@@ -5,7 +5,7 @@ jobs:
       APPLE_SIGNING_CERT: ${{ secrets.APPLE_SIGNING_CERTIFICATE }}
     permissions:
       attestations: 'write'
-      contents: 'write'
+      contents: 'read'
       id-token: 'write'
     runs-on: ${{ matrix.os }}
     steps:
@@ -15,13 +15,23 @@ jobs:
       - name: 'Install yq'
         run: 'pipx install yq'
       - name: 'Install uv'
-        uses: 'astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4'
+        uses: 'astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7'
         with:
           enable-cache: false
       - name: 'Set up Python'
         uses: 'actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97'
         with:
           python-version: '3.13'
+      - if: runner.os == 'macOS'
+        name: 'Link OpenSSL statically'
+        run: |
+          echo 'OPENSSL_STATIC=1' >> "$GITHUB_ENV"
+        shell: 'bash'
+      - if: runner.os == 'Windows'
+        name: 'Shorten uv cache path'
+        run: |
+          Add-Content -Path $env:GITHUB_ENV -Value 'UV_CACHE_DIR=C:\uv'
+        shell: 'pwsh'
       - name: 'Install dependencies (uv)'
         run: |
           uv sync
@@ -115,7 +125,7 @@ jobs:
             Write-Host "Testing '$($file.FullName)'."
             & $file.FullName --help
           }
-      - if: (matrix.os == 'macos-latest' || matrix.os == 'macos-15-intel') && env.APPLE_SIGNING_CERT != ''
+      - if: (matrix.os == 'macos-15-intel' || matrix.os == 'macos-15') && env.APPLE_SIGNING_CERT != ''
         name: 'Sign and notarise macOS binaries'
         env:
           APPLE_CERT_BASE64: ${{ secrets.APPLE_SIGNING_CERTIFICATE }}
@@ -158,7 +168,7 @@ jobs:
           rm -f "$cert_path" "$zip_path"
           security delete-keychain "$keychain"
         shell: 'bash'
-      - if: matrix.os == 'macos-latest' || matrix.os == 'macos-15-intel'
+      - if: matrix.os == 'macos-15-intel' || matrix.os == 'macos-15'
         name: 'Test binary'
         run: |
           dist_files=(dist/*)
@@ -183,7 +193,7 @@ jobs:
         with:
           subject-path: '${{ matrix.dist_path }}'
       - name: 'Generate SBOM'
-        uses: 'anchore/sbom-action@3ad7283483fc7af8ff2b4ea19663c2d5ca935e26'
+        uses: 'anchore/sbom-action@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c'
         env:
           SYFT_SOURCE_NAME: 'open-in-mpv'
           SYFT_SOURCE_VERSION: ${{ github.ref_name }}
@@ -196,7 +206,7 @@ jobs:
         with:
           subject-path: '${{ matrix.dist_path }}'
           sbom-path: 'sbom.spdx.json'
-      - if: (matrix.os == 'macos-latest' || matrix.os == 'macos-15-intel') && github.ref_type == 'tag'
+      - if: (matrix.os == 'macos-15-intel' || matrix.os == 'macos-15') && github.ref_type == 'tag'
         name: 'Zip files'
         env:
           DIST_PATH: ${{ matrix.dist_path }}
@@ -229,20 +239,25 @@ jobs:
         with:
           subject-path: '_out/*.zip'
           sbom-path: 'sbom.spdx.json'
+      # The archives, not the binaries, are what a release includes. Every matrix job builds a
+      # binary under the same name, and uploading the binaries directly would therefore collide
+      # once merged and silently drop every architecture but the last. An archive includes the
+      # version and the architecture in its name, and retains the executable bit and any
+      # notarisation that a bare release asset would lose.
       - if: github.ref_type == 'tag'
-        name: Create or update draft release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release create "$GITHUB_REF_NAME" --draft --notes '' _out/*.zip ||
-            gh release upload "$GITHUB_REF_NAME" _out/*.zip --clobber
+        name: 'Upload release archives'
+        uses: 'actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a'
+        with:
+          if-no-files-found: error
+          name: open-in-mpv-release-${{ matrix.suffix }}
+          path: '_out/*.zip'
     strategy:
       matrix:
         include:
           - os: 'macos-15-intel'
             dist_path: 'dist/*'
             suffix: 'mac-x86_64'
-          - os: 'macos-latest'
+          - os: 'macos-15'
             dist_path: 'dist/*'
             suffix: 'mac-arm64'
           - os: 'windows-latest'
@@ -251,13 +266,6 @@ jobs:
           - os: 'windows-11-arm'
             dist_path: 'dist/*.exe'
             suffix: 'win-arm64'
-  call-build-windows-installer:
-    needs: build
-    permissions:
-      attestations: 'write'
-      contents: 'write'
-      id-token: 'write'
-    uses: ./.github/workflows/windows-installer.yml
   call-build-macos-pkg:
     needs: build
     permissions:
@@ -265,6 +273,45 @@ jobs:
       contents: 'write'
       id-token: 'write'
     uses: ./.github/workflows/macos-pkg.yml
+  call-build-windows-installer:
+    needs: build
+    permissions:
+      attestations: 'write'
+      contents: 'write'
+      id-token: 'write'
+    uses: ./.github/workflows/windows-installer.yml
+  release-assets:
+    concurrency:
+      group: release-assets-${{ github.ref }}
+      queue: max
+    if: github.ref_type == 'tag'
+    needs:
+      - 'build'
+    permissions:
+      contents: 'write'
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: 'Download build artifacts'
+        uses: 'actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c'
+        with:
+          merge-multiple: true
+          path: '_release_assets'
+          pattern: open-in-mpv-release-*
+      - name: 'Create or update draft release'
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+        shell: 'bash'
+        run: |
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 ||
+            gh release create "$GITHUB_REF_NAME" --draft --notes ''
+          shopt -s nullglob
+          assets=(_release_assets/*)
+          if [ -z "${assets[0]-}" ]; then
+            echo 'No build artifacts to attach.'
+            exit 0
+          fi
+          gh release upload "$GITHUB_REF_NAME" "${assets[@]}" --clobber
 name: 'PyInstaller'
 'on':
   push:

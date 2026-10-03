@@ -1,11 +1,11 @@
 abortwarning
 anchore
-Ångström
 appdir
 appimage
 appinfo
 asyncio
 autodoc
+autouse
 bascom
 bsky
 cdrommsf
@@ -15,7 +15,6 @@ colorlog
 commitizen
 conftest
 contrib
-cooldown
 coveragerc
 coverallsapp
 ctypes
@@ -31,6 +30,7 @@ doctrees
 dunder
 eeyore
 elif
+endswith
 esac
 esbenp
 esbonio
@@ -49,7 +49,6 @@ inetc
 insertmacro
 instdir
 instfiles
-intersphinx
 isort
 itertools
 jinja
@@ -73,11 +72,15 @@ monkeypatch
 myproject
 mypy
 namedtuples
+noone
+noqa
 norecursedirs
 notarytool
 nsis
 nsisdir
+nullglob
 numpy
+numpydoc
 onefile
 oneline
 pathlib
@@ -86,6 +89,7 @@ pipx
 pkgbuild
 platformdirs
 plistlib
+popen
 preapproved
 proc
 productbuild
@@ -105,16 +109,17 @@ regen
 resp
 ripgreprc
 rstcheck
+sbclaude
 schemafile
 sdist
 setattr
 setsid
 shellcheck
 shellformat
+shopt
 signtool
 snapcore
 snapcraft
-softprops
 soupsieve
 sphinxcontrib
 statusline
@@ -140,7 +145,6 @@ virtualenv
 winget
 wiswa
 wiswa's
-worktree
 xcrun
 yapf
 yapfignore
@@ -148,3 +152,4 @@ yarnrc
 ytdl
 ytdlp
 zizmor
+Ångström

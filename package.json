@@ -1,8 +1,8 @@
 {
   "_wiswa": {
-    "commandLine": "wiswa -d",
-    "lastRun": "2026-08-05T00:24:07Z",
-    "version": "22472cc"
+    "commandLine": "wiswa -q --skip-remote --cache-time 86400",
+    "lastRun": "2026-10-02T23:46:56Z",
+    "version": "4bb9fe2"
   },
   "contributors": ["Andrew Udvare <audvare@gmail.com>"],
   "cspell": {
@@ -27,6 +27,7 @@
       ".git/**",
       ".yarn/**/*.cjs",
       ".vscode/extensions.json",
+      ".wiswa-ci/**",
       "dist/**",
       "man/**"
     ],
@@ -45,15 +46,15 @@
     "@eslint/js": "^10.0.1",
     "@prettier/plugin-xml": "^3.4.2",
     "@types/chrome": "^0.3.0",
-    "cspell": "^10.3.3",
+    "cspell": "^10.3.4",
     "eslint": "^10.11.0",
     "eslint-config": "^0.3.0",
     "globals": "^17.12.0",
     "markdownlint-cli2": "^0.23.3",
-    "prettier": "^3.9.8",
+    "prettier": "^3.9.9",
     "prettier-plugin-ini": "^1.3.0",
     "prettier-plugin-sort-json": "^4.2.0",
-    "prettier-plugin-toml": "^2.0.6",
+    "prettier-plugin-toml": "^3.0.2",
     "pyright": "^1.1.414"
   },
   "files": ["LICENSE.txt", "README.md", "man/open-in-mpv.1"],
@@ -81,7 +82,7 @@
     "showFound": true
   },
   "name": "open-in-mpv",
-  "packageManager": "yarn@4.18.0",
+  "packageManager": "yarn@4.18.1",
   "prettier": {
     "endOfLine": "lf",
     "iniSpaceAroundEquals": true,
@@ -117,7 +118,7 @@
   "scripts": {
     "check-formatting": "prettier --check . && uv run yapf --diff --parallel --recursive . && markdownlint-cli2 --config package.json --configPointer /markdownlint-cli2",
     "check-spelling": "cspell --no-progress",
-    "dict:update": "rm -f .vscode/dictionary.txt && cspell lint --no-progress --no-summary --unique --words-only | tr '[:upper:]' '[:lower:]' | sort -u > .vscode/dictionary.txt",
+    "dict:update": "rm -f .vscode/dictionary.txt && cspell lint --no-progress --no-summary --unique --words-only | LC_ALL=C tr '[:upper:]' '[:lower:]' | LC_ALL=C sort -u > .vscode/dictionary.txt",
     "format": "prettier --write . && uv run yapf --in-place --parallel --recursive . && markdownlint-cli2 --config package.json --configPointer /markdownlint-cli2 --fix",
     "gen-docs": "uv run sphinx-build --fresh-env --fail-on-warning --builder html --doctree-dir docs/_build/doctrees --define language=en docs docs/_build/html",
     "gen-manpage": "uv run sphinx-build --fresh-env --fail-on-warning --builder man --doctree-dir docs/_build/doctrees --define language=en docs man",
