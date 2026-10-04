@@ -1,5 +1,10 @@
 jobs:
   build-pkg:
+    name: 'Build package'
+    permissions:
+      attestations: 'write'
+      contents: 'write'
+      id-token: 'write'
     runs-on: 'macos-latest'
     steps:
       - name: 'Checkout repository'
@@ -50,7 +55,7 @@ jobs:
           # Make scripts executable.
           chmod +x pkg/arm64/scripts/postinstall
           chmod +x pkg/x86_64/scripts/postinstall
-          echo "PKG_VERSION=${version}" >> $GITHUB_ENV
+          echo "PKG_VERSION=${version}" >> "$GITHUB_ENV"
       - name: 'Build pkg installers'
         run: |
           # Function to create distribution XML and build the pkg.
@@ -121,7 +126,4 @@ jobs:
 name: 'macOS package'
 'on':
   workflow_call:
-permissions:
-  attestations: 'write'
-  contents: 'write'
-  id-token: 'write'
+permissions: {}

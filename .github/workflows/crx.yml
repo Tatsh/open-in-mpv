@@ -1,5 +1,14 @@
+concurrency:
+  cancel-in-progress: false
+  group: '${{ github.workflow }}-${{ github.ref }}'
+  queue: 'max'
 jobs:
   build-crx:
+    name: 'Build CRX'
+    permissions:
+      attestations: 'write'
+      contents: 'write'
+      id-token: 'write'
     runs-on: 'ubuntu-latest'
     steps:
       - name: 'Checkout repository'
@@ -49,7 +58,4 @@ name: 'CRX'
   push:
     tags:
       - 'v*.*.*'
-permissions:
-  attestations: 'write'
-  contents: 'write'
-  id-token: 'write'
+permissions: {}
