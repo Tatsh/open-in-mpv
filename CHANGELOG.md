@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- Support for Python 3.10. Python 3.11 or later is now required.
+
 ## [0.2.3] - 2026-04-27
 
 ### Added
