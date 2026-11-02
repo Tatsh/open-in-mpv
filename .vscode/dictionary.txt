@@ -61,6 +61,7 @@ launchable
 lextudio
 libera
 libjsonnet
+librsvg
 libsonnet
 linters
 localappdata
@@ -109,6 +110,7 @@ regen
 resp
 ripgreprc
 rstcheck
+rsvg
 sbclaude
 schemafile
 sdist
