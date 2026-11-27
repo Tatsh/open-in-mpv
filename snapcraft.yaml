@@ -20,7 +20,8 @@ parts:
     plugin: 'python'
     python-packages:
       - '.'
-    source: '.'
+    source: 'https://github.com/Tatsh/open-in-mpv.git'
+    source-tag: 'v0.2.3'
     stage-packages: []
 platforms:
   amd64:
